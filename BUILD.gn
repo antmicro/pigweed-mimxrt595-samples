@@ -14,3 +14,32 @@
 
 # Include this import first. Adding a comment prevents imports reordering.
 import("//build_overrides/pigweed.gni")
+
+# NOTE: All the `deps` listed in `//BUILD.gn` must either be instantiated with a
+# toolchain, e.g. `":my_host_target(//path/to/host:toolchain)"`, or listed
+# within an `if (current_toolchain != default_toolchain)` statement.
+# It also prevents the default toolchain from parsing any unnecessary BUILD.gn
+# files.
+
+group("host_only_apps") {
+  deps = []
+  if (current_toolchain != default_toolchain) {
+    deps += [ "//source:hello_world" ]
+  }
+}
+
+# Will group all targets that run on host only, e.g. tests, utils. For example
+# purposes it uses clang debug toolchain for building. It is recommended that
+# the user adds their own toolchain.
+group("host") {
+  deps = [
+    ":host_only_apps($dir_pigweed/targets/host:host_clang_debug)",
+  ]
+}
+
+# Lists all the targets build by default with e.g. `ninja -C out`.
+group("default") {
+  deps = [
+    ":host",
+  ]
+}

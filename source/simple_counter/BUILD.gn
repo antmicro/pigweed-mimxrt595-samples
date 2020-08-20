@@ -1,0 +1,13 @@
+# Comment this import to prevent it from being reordered.
+import("//build_overrides/pigweed.gni")
+
+import("$dir_pw_build/target_types.gni")
+config("default_config") {
+  include_dirs = [ "public" ]
+}
+
+pw_source_set("simple_counter") {
+  public_configs = [ ":default_config" ]
+  public = [ "public/simple_counter/simple_counter.h" ]
+  sources = [ "simple_counter.cc" ]
+}

@@ -24,3 +24,10 @@ Unix to enter the environment in a shell.
 ## Banner
 Make the project yours with your own banner. Create your own banner and place it
 in `banner.txt`.
+
+## Sample Application
+The sample application in `source/main.cc` uses the sample module
+`simple_counter`. Look at `source/BUILD.gn` and `source/simple_counter/BUILD.gn`
+to see how these are built respectively. The key part is in the root `BUILD.gn`,
+which creates the host target using the host toolchain. A toolchain is required
+for each target.
