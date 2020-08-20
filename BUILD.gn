@@ -14,12 +14,20 @@
 
 # Include this import first. Adding a comment prevents imports reordering.
 import("//build_overrides/pigweed.gni")
+import("$dir_pw_unit_test/test.gni")
 
 # NOTE: All the `deps` listed in `//BUILD.gn` must either be instantiated with a
 # toolchain, e.g. `":my_host_target(//path/to/host:toolchain)"`, or listed
 # within an `if (current_toolchain != default_toolchain)` statement.
 # It also prevents the default toolchain from parsing any unnecessary BUILD.gn
 # files.
+
+# Group the different modules tests together.
+pw_test_group("tests") {
+  tests = [
+    "//source/simple_counter:tests",
+  ]
+}
 
 group("host_only_apps") {
   deps = []
@@ -34,6 +42,7 @@ group("host_only_apps") {
 group("host") {
   deps = [
     ":host_only_apps($dir_pigweed/targets/host:host_clang_debug)",
+    ":tests($dir_pigweed/targets/host:host_clang_debug)"
   ]
 }
 

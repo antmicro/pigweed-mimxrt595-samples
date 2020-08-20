@@ -31,3 +31,8 @@ The sample application in `source/main.cc` uses the sample module
 to see how these are built respectively. The key part is in the root `BUILD.gn`,
 which creates the host target using the host toolchain. A toolchain is required
 for each target.
+
+## Sample Test
+The `simple_counter` module has tests defined in `source/simple_counter_tests.cc`.
+Look at `source/simple_counter/BUILD.gn` for an example of how a test is
+defined. The root `BUILD.gn` groups all the host tests together.
