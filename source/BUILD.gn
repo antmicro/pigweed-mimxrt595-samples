@@ -8,6 +8,10 @@ pw_executable("hello_world") {
   sources = [ "main.cc" ]
   deps = [
     "$dir_pw_log",
+
+    # The assert backend is defined in the toolchain with `pw_assert_BACKEND`.
+    "$dir_pw_assert",
+
     "//source/simple_counter:simple_counter",
     ]
 }
