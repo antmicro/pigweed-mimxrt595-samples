@@ -45,4 +45,21 @@ Look at `source/simple_counter/BUILD.gn` for an example of how a test is
 defined. The root `BUILD.gn` groups all the host tests together.
 
 [Build](#building) the project and run the tests.
-`./out/host_clang_debug/obj/source/simple_counter/test/simple_counter_test`
+`./out/host_clang_debug_tests/obj/source/simple_counter/test/simple_counter_test`
+
+## Tokenized Logging
+Logs entries in the sample app are tokenized to save binary space. See the
+Pigweed `pw_tokenizer` for more information.
+
+First, create the tokens database using the binary or the .elf file.
+`python -m pw_tokenizer.database create --database source/tokenizer_database.csv out/host_clang_debug/obj/source/bin/hello_world`
+
+Running the app shows log entries similiar to `$kgjLdg==`. These can be saved to
+a file and then detokenized.
+
+```./out/host_clang_debug/obj/source/bin/hello_world > log.txt
+python -m pw_tokenizer.detokenize base64 source/tokenizer_database.csv -i log.txt
+```
+
+Or can be detokenized in realtime.
+`./out/host_clang_debug/obj/source/bin/hello_world | python -m pw_tokenizer.detokenize base64 source/tokenizer_database.csv`

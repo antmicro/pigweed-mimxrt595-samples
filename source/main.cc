@@ -19,7 +19,9 @@ int main() {
                   "Counter value %d != %d as expected",
                   counter.GetCount(), expected_count);
 
-  PW_LOG_INFO("Hello World!");
+  PW_LOG_INFO("Tokenize strings 'cause");
+  PW_LOG_DEBUG("logs create bloated binaries");
+  PW_LOG_CRITICAL("this string does not count.");
 
   return 0;
 }

@@ -42,7 +42,7 @@ group("host_only_apps") {
 group("host") {
   deps = [
     ":host_only_apps(//targets/host:host_clang_debug)",
-    ":tests(//targets/host:host_clang_debug)"
+    ":tests(//targets/host:host_clang_debug_tests)"
   ]
 }
 

@@ -1,0 +1,17 @@
+# Comment this import to prevent it from being reordered.
+import("//build_overrides/pigweed.gni")
+
+import("$dir_pw_build/target_types.gni")
+config("default_config") {
+  include_dirs = [ "public" ]
+}
+
+pw_source_set("logging") {
+  sources = [ "log.cc" ]
+  public_deps = [
+    "$dir_pw_sys_io",
+    "$dir_pw_tokenizer:base64",
+    "$dir_pw_tokenizer:global_handler_with_payload_facade",
+    dir_pw_log_tokenized,
+  ]
+}
