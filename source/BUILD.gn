@@ -2,7 +2,6 @@
 import("//build_overrides/pigweed.gni")
 
 import("$dir_pw_build/target_types.gni")
-import("$dir_pw_unit_test/test.gni")
 
 pw_executable("hello_world") {
   sources = [ "main.cc" ]

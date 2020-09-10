@@ -41,8 +41,8 @@ group("host_only_apps") {
 # the user adds their own toolchain.
 group("host") {
   deps = [
-    ":host_only_apps($dir_pigweed/targets/host:host_clang_debug)",
-    ":tests($dir_pigweed/targets/host:host_clang_debug)"
+    ":host_only_apps(//targets/host:host_clang_debug)",
+    ":tests(//targets/host:host_clang_debug)"
   ]
 }
 
