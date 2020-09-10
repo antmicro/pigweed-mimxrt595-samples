@@ -25,6 +25,10 @@ Unix to enter the environment in a shell.
 Make the project yours with your own banner. Create your own banner and place it
 in `banner.txt`.
 
+## Building
+Generate the build files with `gn gen out` once, unless the build configuration
+has changed. Then, use ninja to build everything with `ninja -C out`.
+
 ## Sample Application
 The sample application in `source/main.cc` uses the sample module
 `simple_counter`. Look at `source/BUILD.gn` and `source/simple_counter/BUILD.gn`
@@ -32,7 +36,13 @@ to see how these are built respectively. The key part is in the root `BUILD.gn`,
 which creates the host target using the host toolchain. A toolchain is required
 for each target.
 
+[Build](#building) the project and run the application.
+`./out/host_clang_debug/obj/source/bin/hello_world`
+
 ## Sample Test
 The `simple_counter` module has tests defined in `source/simple_counter_tests.cc`.
 Look at `source/simple_counter/BUILD.gn` for an example of how a test is
 defined. The root `BUILD.gn` groups all the host tests together.
+
+[Build](#building) the project and run the tests.
+`./out/host_clang_debug/obj/source/simple_counter/test/simple_counter_test`
