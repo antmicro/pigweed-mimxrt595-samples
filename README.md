@@ -48,10 +48,12 @@ defined. The root `BUILD.gn` groups all the host tests together.
 `./out/host_clang_debug_tests/obj/source/simple_counter/test/simple_counter_test`
 
 ## Tokenized Logging
-Logs entries in the sample app are tokenized to save binary space. See the
-Pigweed `pw_tokenizer` for more information.
+Log entries in the sample app are tokenized to save binary space. The included
+tokens database, `source/tokenizer_database.csv`, is updated on each build. See
+the Pigweed `pw_tokenizer` for more information.
 
-First, create the tokens database using the binary or the .elf file.
+Optionally, the database can be created manually using the binary or the .elf
+file.
 `python -m pw_tokenizer.database create --database source/tokenizer_database.csv out/host_clang_debug/obj/source/bin/hello_world`
 
 Running the app shows log entries similiar to `$kgjLdg==`. These can be saved to

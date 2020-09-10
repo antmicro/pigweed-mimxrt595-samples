@@ -14,6 +14,7 @@
 
 # Include this import first. Adding a comment prevents imports reordering.
 import("//build_overrides/pigweed.gni")
+import("$dir_pw_tokenizer/database.gni")
 import("$dir_pw_unit_test/test.gni")
 
 # NOTE: All the `deps` listed in `//BUILD.gn` must either be instantiated with a
@@ -46,9 +47,15 @@ group("host") {
   ]
 }
 
+pw_tokenizer_database("tokenizer_database") {
+  database = "//source/tokenizer_database.csv"
+  targets = [ ":host_only_apps(//targets/host:host_clang_debug)" ]
+}
+
 # Lists all the targets build by default with e.g. `ninja -C out`.
 group("default") {
   deps = [
     ":host",
+    ":tokenizer_database",
   ]
 }
