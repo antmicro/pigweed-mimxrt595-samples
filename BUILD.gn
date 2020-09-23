@@ -30,7 +30,7 @@ pw_test_group("tests") {
   ]
 }
 
-group("host_only_apps") {
+group("app") {
   deps = []
   if (current_toolchain != default_toolchain) {
     deps += [ "//source:hello_world" ]
@@ -42,19 +42,28 @@ group("host_only_apps") {
 # the user adds their own toolchain.
 group("host") {
   deps = [
-    ":host_only_apps(//targets/host:host_clang_debug)",
+    ":app(//targets/host:host_clang_debug)",
     ":tests(//targets/host:host_clang_debug_tests)"
+  ]
+}
+
+group("arduino") {
+  deps = [
+    ":app(//targets/arduino:arduino_debug)",
+    ":tests(//targets/arduino:arduino_debug_tests)",
+    "//source/arduino_example:blink(//targets/arduino:arduino_debug)",
   ]
 }
 
 pw_tokenizer_database("tokenizer_database") {
   database = "//source/tokenizer_database.csv"
-  targets = [ ":host_only_apps(//targets/host:host_clang_debug)" ]
+  targets = [ ":app(//targets/host:host_clang_debug)" ]
 }
 
 # Lists all the targets build by default with e.g. `ninja -C out`.
 group("default") {
   deps = [
+    ":arduino",
     ":host",
     ":tokenizer_database",
   ]

@@ -65,3 +65,22 @@ python -m pw_tokenizer.detokenize base64 source/tokenizer_database.csv -i log.tx
 
 Or can be detokenized in realtime.
 `./out/host_clang_debug/obj/source/bin/hello_world | python -m pw_tokenizer.detokenize base64 source/tokenizer_database.csv`
+
+## Arduino Example
+Follow the Pigweed `pw_arduino` module documentation to install the Arduino core
+software under `third_party/piwgweed/third_party/arduino`. There is an example
+application under `source/arduino_example` that uses the common utilities from
+`Arduino.h`.The `source/arduino_example/BUILD.gn` demonstrates how to include
+the arduino core dependencies.
+The sample application in `source/main.cc` can also be compiled for a supported
+Arduino board. The `BUILD.gn` shows how to create a target using the arduino
+toolchain.
+The `source/target/arduino` contains a sample toolchain that inherits from the
+an arduino toolchain in upstream pigweed. It can override backends as needed.
+
+To build for a Teensy 3.1 board simply run the following.
+```
+gn gen out --args="arduino_board=\"teensy31\"\
+    dir_pw_third_party_arduino=\"//third_party/pigweed/third_party/arduino\""
+ninja -C out
+```
