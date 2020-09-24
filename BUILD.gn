@@ -57,7 +57,10 @@ group("arduino") {
 
 pw_tokenizer_database("tokenizer_database") {
   database = "//source/tokenizer_database.csv"
-  targets = [ ":app(//targets/host:host_clang_debug)" ]
+  targets = [ ":app(//targets/host:host_clang_debug)",
+              ":app(//targets/arduino:arduino_debug)",
+              "//source/arduino_example:blink(//targets/arduino:arduino_debug)",
+   ]
 }
 
 # Lists all the targets build by default with e.g. `ninja -C out`.

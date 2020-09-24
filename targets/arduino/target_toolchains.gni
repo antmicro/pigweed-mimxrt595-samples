@@ -22,6 +22,10 @@ _toolchain_overrides = {
   # Configure backend for assert facade.
   pw_assert_BACKEND = "$dir_pw_assert_basic"
 
+  # Configure backend for logging facade.
+  pw_log_BACKEND = "$dir_pw_log_tokenized:log_backend"
+  pw_tokenizer_GLOBAL_HANDLER_WITH_PAYLOAD_BACKEND = "//source/logging"
+
   # Tokenizer trace time.
   pw_trace_tokenizer_time = "$dir_pw_trace_tokenized:host_trace_time"
 }
