@@ -29,6 +29,10 @@ in `banner.txt`.
 Generate the build files with `gn gen out` once, unless the build configuration
 has changed. Then, use ninja to build everything with `ninja -C out`.
 
+The sample project examples have dependencies, each with some required build
+arguments. See the [Arduino](#arduino-example), and [RPC](#rpc-example) sections
+for more setup information. The build arguments can be set with `gn args out`.
+
 ## Sample Application
 The sample application in `source/main.cc` uses the sample module
 `simple_counter`. Look at `source/BUILD.gn` and `source/simple_counter/BUILD.gn`
@@ -84,3 +88,15 @@ gn gen out --args="arduino_board=\"teensy31\"\
     dir_pw_third_party_arduino=\"//third_party/pigweed/third_party/arduino\""
 ninja -C out
 ```
+
+## RPC Example
+The sample project uses nanopb for its `pw_rpc` dependency. The nanopb repo is
+conviniently included as a git submodule. This installation can be overridden
+following the instructions in `third_party/pigweed/third_party/nanopb/BUILD.gn`.
+Then set `dir_pw_third_party_nanopb` to the new installation location when
+building. For example:
+`gn gen out --args="dir_pw_third_party_nanopb=\"third_party/nanopb\""`
+
+The sample application registers the `EchoService`, which echoes any RPC message
+data sent to it. To test it out build for and flash the desired board, then run:
+`python third_party/pigweed/pw_hdlc_lite/rpc_example/example_script.py --device /dev/ttyACM0 --baud 115200`.
