@@ -1,18 +1,21 @@
 
 #include <span>
-#include <string_view>
 
+#include "pw_hdlc_lite/encoder.h"
+#include "pw_hdlc_lite/sys_io_stream.h"
 #include "pw_log/levels.h"
 #include "pw_log_tokenized/log_tokenized.h"
 #include "pw_tokenizer/base64.h"
 #include "pw_tokenizer/config.h"
-#include "pw_sys_io/sys_io.h"
+
+namespace {
+pw::stream::SysIoWriter writer;
+}  // namespace
 
 // The tokenizer handler implementation below exemplifies how to build a
-// tokenizer backend. However, this is not the recommended way to customize the
-// backend.
-// TODO(pwbug/264): move this implementation to upstream Pigweed as an optional
-// pw_log_basic backend.
+// tokenized logging backend that encodes log entries in HDLC frames sent to an
+// arbitrary RPC channel.
+// NOTE: this is not the recommended way to customize the backend.
 extern "C" void pw_tokenizer_HandleEncodedMessageWithPayload(
     pw_tokenizer_Payload payload,
     const uint8_t log_buffer[],
@@ -26,8 +29,11 @@ extern "C" void pw_tokenizer_HandleEncodedMessageWithPayload(
       std::span(log_buffer, size_bytes), base64_buffer);
   base64_buffer[base64_bytes] = '\0';
 
-  // Print the Base64 string.
+  // HDLC encode the Base64 string and send to RPC channel 1 via a SysIoWriter.
   if (metadata.level() >= PW_LOG_LEVEL_DEBUG) {
-    pw::sys_io::WriteLine(std::string_view(base64_buffer, base64_bytes));
+    pw::hdlc_lite::WriteInformationFrame(
+        /*address=*/1,
+        std::as_bytes(std::span(base64_buffer, base64_bytes)),
+        writer);
   }
 }

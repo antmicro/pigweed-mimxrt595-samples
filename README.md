@@ -100,3 +100,26 @@ building. For example:
 The sample application registers the `EchoService`, which echoes any RPC message
 data sent to it. To test it out build for and flash the desired board, then run:
 `python third_party/pigweed/pw_hdlc_lite/rpc_example/example_script.py --device /dev/ttyACM0 --baud 115200`.
+
+At the time of writing, the `example_script.py` does not parse log statements if
+they are not framed in the HDLC protocol used by RPC. There is ongoing work on
+an RPC log service that will handle sending logs in HDLC frames to an RPC
+channel. In addition, the sample application uses tokenized logging, which means
+that logs need to be detokenized after the RPC HDLC frames are decoded on the
+host side. To do that flash the hello_word application and use two terminals to
+parse RPCs and detokenize logs respectively.
+
+Terminal 1: receive RPCs.
+```
+source activate.sh
+python -m pw_hdlc_lite.rpc_console -o logfile.txt -d /dev/ttyACM0 ./third_party/pigweed/pw_rpc/pw_rpc_protos/echo.proto
+```
+Test Echo RPC:
+`rpcs.pw.rpc.EchoService.Echo(msg="hola")`
+
+
+Terminal 2: decode the logfile.
+```
+source activate.sh
+tail -f logfile.txt | python -m pw_tokenizer.detokenize base64 source/tokenizer_database.csv
+```
