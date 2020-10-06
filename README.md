@@ -33,6 +33,11 @@ The sample project examples have dependencies, each with some required build
 arguments. See the [Arduino](#arduino-example), and [RPC](#rpc-example) sections
 for more setup information. The build arguments can be set with `gn args out`.
 
+## Presubmits
+Sample presubmit checks are included in `tools/presubmit_checks.py`. To install
+them run `python tools/presubmit_checks.py --install`. See the `pw_presubmit`
+module documentation for more information.
+
 ## Sample Application
 The sample application in `source/main.cc` uses the sample module
 `simple_counter`. Look at `source/BUILD.gn` and `source/simple_counter/BUILD.gn`

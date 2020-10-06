@@ -6,7 +6,6 @@
 #include "pw_log/levels.h"
 #include "pw_log_tokenized/log_tokenized.h"
 #include "pw_tokenizer/base64.h"
-#include "pw_tokenizer/config.h"
 
 namespace {
 pw::stream::SysIoWriter writer;

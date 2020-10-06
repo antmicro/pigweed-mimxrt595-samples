@@ -32,6 +32,8 @@ if [ ! -e ${PW_BOOTSTRAP_SCRIPT} ]; then
   return
 fi
 
+export SAMPLE_PROJECT_ROOT=$(_project_abspath)
+
 source $PW_BOOTSTRAP_SCRIPT
 
 # Add user-defined environment setup here.
