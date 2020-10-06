@@ -20,7 +20,6 @@ extern "C" void pw_tokenizer_HandleEncodedMessageWithPayload(
     pw_tokenizer_Payload payload,
     const uint8_t log_buffer[],
     size_t size_bytes) {
-
   pw::log_tokenized::Metadata metadata = payload;
 
   // Encode the tokenized message as Base64.

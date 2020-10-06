@@ -26,9 +26,7 @@ import("$dir_pw_unit_test/test.gni")
 
 # Group the different modules tests together.
 pw_test_group("tests") {
-  tests = [
-    "//source/simple_counter:tests",
-  ]
+  tests = [ "//source/simple_counter:tests" ]
 }
 
 group("app") {
@@ -44,7 +42,7 @@ group("app") {
 group("host") {
   deps = [
     ":app(//targets/host:host_clang_debug)",
-    ":tests(//targets/host:host_clang_debug_tests)"
+    ":tests(//targets/host:host_clang_debug_tests)",
   ]
 }
 
@@ -64,8 +62,8 @@ pw_tokenizer_database("tokenizer_database") {
 
   if (dir_pw_third_party_arduino != "") {
     targets += [
-              ":app(//targets/arduino:arduino_debug)",
-              "//source/arduino_example:blink(//targets/arduino:arduino_debug)",
+      ":app(//targets/arduino:arduino_debug)",
+      "//source/arduino_example:blink(//targets/arduino:arduino_debug)",
     ]
   }
 }
