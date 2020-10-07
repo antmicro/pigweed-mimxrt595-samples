@@ -14,7 +14,7 @@ pw_executable("hello_world") {
     # RPC dependencies
     "$dir_pw_hdlc_lite:pw_hdlc_lite",
     "$dir_pw_hdlc_lite:pw_rpc",
-    "$dir_pw_rpc:nanopb_server",
+    "$dir_pw_rpc:server",
     "$dir_pw_rpc/nanopb:echo_service",
     "//source/simple_counter:simple_counter",
   ]
