@@ -26,7 +26,7 @@ import("$dir_pw_unit_test/test.gni")
 
 # Group the different modules tests together.
 pw_test_group("tests") {
-  tests = [ "//source/simple_counter:tests" ]
+  group_deps = [ "//source/simple_counter:tests" ]
 }
 
 group("app") {
@@ -42,8 +42,20 @@ group("app") {
 group("host") {
   deps = [
     ":app(//targets/host:host_clang_debug)",
-    ":tests(//targets/host:host_clang_debug_tests)",
+    ":host_tests(//targets/host:host_clang_debug_tests)",
   ]
+}
+
+group("host_tests") {
+  deps = []
+  if (pw_unit_test_AUTOMATIC_RUNNER == "") {
+    # Without a test runner defined, build the tests but don't run them.
+    deps += [ ":tests" ]
+  } else {
+    # With a test runner, depend on the run targets so they run with the
+    # build.
+    deps += [ ":tests_run" ]
+  }
 }
 
 group("arduino") {

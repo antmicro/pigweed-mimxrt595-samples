@@ -33,6 +33,11 @@ The sample project examples have dependencies, each with some required build
 arguments. See the [Arduino](#arduino-example), and [RPC](#rpc-example) sections
 for more setup information. The build arguments can be set with `gn args out`.
 
+## Pigweed's File System Watcher
+Speed up iteration running `pw watch` on a new terminal window. This utility
+builds targets and runs tests when their files are modified. See the `pw_watch`
+documentation for more information.
+
 ## Presubmits
 Sample presubmit checks are included in `tools/presubmit_checks.py`. To install
 them run `python tools/presubmit_checks.py --install`. See the `pw_presubmit`
