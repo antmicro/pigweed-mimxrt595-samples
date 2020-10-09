@@ -1,6 +1,7 @@
 # Build
 out/
 .presubmit/
+compile_commands.json
 
 # Editors
 .idea/
