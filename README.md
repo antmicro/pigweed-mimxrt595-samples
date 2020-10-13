@@ -127,14 +127,14 @@ arduino_builder install-core \
   --core-name teensy
 ```
 
-*NOTE:* At this time the Teensyduino core does not build with the c++17
+**NOTE:** At this time the Teensyduino core does not build with the c++17
 standard which is required for Pigweed. There is an [open pull
 request](https://github.com/PaulStoffregen/cores/pull/491) to fix this but in
 the meantime you will need to patch the core files. This will download a diff
 and patch the relevant files:
 
 ```sh
-pushd ./third_party/arduino/cores/teensy/hardware/teensy/avr/cores/
+pushd ./third_party/pigweed/third_party/arduino/cores/teensy/hardware/teensy/avr/cores/
 curl -O https://gist.githubusercontent.com/AnthonyDiGirolamo/9368d2879d9aec6be4118e72c2b0cf46/raw/0afc6c182dcb3aac5af3f05d54c4d2c7d941b52d/teensy34_cpp17_patch.diff
 patch -p1 < teensy34_cpp17_patch.diff
 popd
@@ -204,14 +204,14 @@ test server. Then in a second window start the `pw watch` command.
 2.  Start `pw watch` with the `arduino target` in a separate terminal.
 
     ```sh
-    env PW_ROOT=$(pwd) pw watch out arduino
+    pw watch out arduino
     ```
 
 For additional details check the Pigweed `arduino_builder` documentation in:
 
-- `third_party/pigweed/pw_arduino_build/docs.rst`
-- `third_party/pigweed/pw_sys_io_arduino/docs.rst`
-- `third_party/pigweed/targets/arduino/target_docs.rst`
+- [third_party/pigweed/pw_arduino_build/docs.rst](https://cs.opensource.google/pigweed/pigweed/+/master:pw_arduino_build/docs.rst)
+- [third_party/pigweed/pw_sys_io_arduino/docs.rst](https://cs.opensource.google/pigweed/pigweed/+/master:pw_sys_io_arduino/docs.rst)
+- [third_party/pigweed/targets/arduino/target_docs.rst](https://cs.opensource.google/pigweed/pigweed/+/master:targets/arduino/target_docs.rst)
 
 ## RPC Example
 
