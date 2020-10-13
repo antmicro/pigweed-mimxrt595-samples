@@ -110,8 +110,37 @@ Or can be detokenized in realtime.
 
 ## Arduino Example
 
-Follow the Pigweed `pw_arduino_build` module documentation to install the
-Arduino core software under `third_party/piwgweed/third_party/arduino`.
+### Prerequisites
+
+To build for Arduino boards you must install a core. At this time only the
+[Teensyduino core](https://www.pjrc.com/teensy/td_download.html) is supported.
+
+Check the Pigweed `pw_arduino_build` module documentation for detailed
+installation instructions. Cores should be installed into
+`third_party/piwgweed/third_party/arduino`.
+
+Run this to install the Teensy core:
+
+```sh
+arduino_builder install-core \
+  --prefix ./third_party/pigweed/third_party/arduino/cores/ \
+  --core-name teensy
+```
+
+*NOTE:* At this time the Teensyduino core does not build with the c++17
+standard which is required for Pigweed. There is an [open pull
+request](https://github.com/PaulStoffregen/cores/pull/491) to fix this but in
+the meantime you will need to patch the core files. This will download a diff
+and patch the relevant files:
+
+```sh
+pushd ./third_party/arduino/cores/teensy/hardware/teensy/avr/cores/
+curl -O https://gist.githubusercontent.com/AnthonyDiGirolamo/9368d2879d9aec6be4118e72c2b0cf46/raw/0afc6c182dcb3aac5af3f05d54c4d2c7d941b52d/teensy34_cpp17_patch.diff
+patch -p1 < teensy34_cpp17_patch.diff
+popd
+```
+
+### Arduino Files in the sample_project
 
 - `source/arduino_example`
     - An example application that uses the Arduino API included in `Arduino.h`.
@@ -125,13 +154,58 @@ Arduino core software under `third_party/piwgweed/third_party/arduino`.
     - Contains a sample toolchain that inherits from the an Arduino toolchain in
       upstream pigweed. It can override backends as needed.
 
-To build for a Teensy 3.1 board simply run the following.
+### Building
+
+To build for a Teensy 3.1 board run the following.
 
 ```sh
-gn gen out --args='arduino_board="teensy31" \
-    dir_pw_third_party_arduino="//third_party/pigweed/third_party/arduino"'
+gn gen out --args='
+  dir_pw_third_party_arduino="//third_party/pigweed/third_party/arduino"
+  arduino_board="teensy31"'
 ninja -C out
 ```
+
+Where `arduino_board=` is one of:
+
+- `"teensy41"` - Teensy 4.1
+- `"teensy40"` - Teensy 4.0
+- `"teensy36"` - Teensy 3.6
+- `"teensy35"` - Teensy 3.5
+- `"teensy31"` - Teensy 3.2 / 3.1
+
+### Running Tests
+
+Tests can be manually flashed an run with the `arduino_unit_test_runner`
+and the `.elf` file.
+
+```sh
+arduino_unit_test_runner --verbose \
+    --config-file ./out/arduino_debug/gen/arduino_builder_config.json \
+    --upload-tool teensyloader \
+    out/arduino_debug_tests/obj/source/simple_counter/test/simple_counter_test.elf
+```
+
+If you would like to use the unit test server to automatically run your tests
+you must set the `pw_arduino_use_test_server=true` build arg and startup the
+test server. Then in a second window start the `pw watch` command.
+
+1.  Start the test server in it's own terminal window.
+
+    ```sh
+    gn gen out --args='
+      dir_pw_third_party_arduino="//third_party/pigweed/third_party/arduino"
+      arduino_core_name="teensy"
+      arduino_board="teensy40"
+      pw_arduino_use_test_server=true'
+    arduino_test_server --verbose \
+      --config-file ./out/arduino_debug/gen/arduino_builder_config.json
+    ```
+
+2.  Start `pw watch` with the `arduino target` in a separate terminal.
+
+    ```sh
+    env PW_ROOT=$(pwd) pw watch out arduino
+    ```
 
 For additional details check the Pigweed `arduino_builder` documentation in:
 

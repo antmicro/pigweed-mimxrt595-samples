@@ -62,9 +62,21 @@ group("arduino") {
   if (dir_pw_third_party_arduino != "") {
     deps = [
       ":app(//targets/arduino:arduino_debug)",
-      ":tests(//targets/arduino:arduino_debug_tests)",
       "//source/arduino_example:blink(//targets/arduino:arduino_debug)",
+      ":arduino_tests(//targets/arduino:arduino_debug_tests)",
     ]
+  }
+}
+
+group("arduino_tests") {
+  deps = []
+  if (pw_unit_test_AUTOMATIC_RUNNER == "") {
+    # Without a test runner defined, build the tests but don't run them.
+    deps += [ ":tests" ]
+  } else {
+    # With a test runner, depend on the run targets so they run with the
+    # build.
+    deps += [ ":tests_run" ]
   }
 }
 
