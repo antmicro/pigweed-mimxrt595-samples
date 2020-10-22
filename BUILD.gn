@@ -62,8 +62,8 @@ group("arduino") {
   if (dir_pw_third_party_arduino != "") {
     deps = [
       ":app(//targets/arduino:arduino_debug)",
-      "//source/arduino_example:blink(//targets/arduino:arduino_debug)",
       ":arduino_tests(//targets/arduino:arduino_debug_tests)",
+      "//source/arduino_example:blink(//targets/arduino:arduino_debug)",
     ]
   }
 }

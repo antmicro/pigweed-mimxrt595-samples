@@ -1,6 +1,7 @@
 00000000,          ,""
 0a4c6bb5,          ,"this string does not count."
 0f831860,          ,"Failed to decode request payload from channel %u"
+0fbd23ba,          ,"Failed to send response packet for channel %u"
 130e2c4b,          ,"Received incomplete packet on interface %s"
 39b2c339,          ,"Failed to decode packet on interface %s"
 3f774ea7,          ,"Unable to handle packet of type %u"
