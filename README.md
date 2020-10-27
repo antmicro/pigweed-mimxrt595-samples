@@ -1,5 +1,7 @@
 # Pigweed Sample Project
 
+[TOC]
+
 This repository outlines the recommended way of using Pigweed in a new or
 existing project. Feel free to fork this repository, or read it as a reference.
 
@@ -10,25 +12,55 @@ Check back for more complex examples and features coming soon!
 
 ## Repository setup
 
-The preferred method to add the Pigweed source is to use git submodules and
-place the [Pigweed source
-repository](https://pigweed.googlesource.com/pigweed/pigweed) in
-`third_party/pigweed`. If you forked this repository, don't forget to run `git
-submodule init` and `git submodule update`.
+Clone this repo with `--recursive` to get all required submodules.
+
+```sh
+git clone --recursive https://pigweed.googlesource.com/pigweed/sample_project
+```
+
+This will pull the [Pigweed source
+repository](https://pigweed.googlesource.com/pigweed/pigweed) into
+`third_party/pigweed`. If you already cloned but forgot to `--recursive` run
+`git submodule update --init` to pull all submodules.
 
 ## Environment Setup
 
-The scripts `bootstrap.bat` for Windows, and `bootstrap.sh` for Unix systems
-call the respective Pigweed bootstrap scripts. Feel free to modify them to set
-up your development environment for the first time.
+After cloning the build tools will need to be installed with the `bootstrap`
+scripts. This is only required after the initial clone or updating Pigweed.
 
-After the initial setup, use the `activate.bat` in Windows or `activate.sh` in
-Unix to enter the environment in a shell.
+**Windows**
+
+```sh
+bootstrap.bat
+```
+
+**Linux & Mac**
+
+```sh
+source bootstrap.sh
+```
+
+`bootstrap.bat` and `bootstrap.sh` call the respective Pigweed bootstrap
+scripts. Feel free to modify them to set up your development environment for the
+first time.
+
+After the initial bootstrap, use the `activate` scripts to setup your shell for development.
+
+**Windows**
+
+```sh
+activate.bat
+```
+
+**Linux & Mac**
+
+```sh
+source activate.sh
+```
 
 ## Banner
 
-Make the project yours with your own banner. Create your own banner and place it
-in `banner.txt`.
+Make the project yours with your own banner! Edit `banner.txt` as desired `:-D`.
 
 ## Building
 
@@ -78,36 +110,6 @@ tests together.
 ./out/host_clang_debug_tests/obj/source/simple_counter/test/simple_counter_test
 ```
 
-## Tokenized Logging
-
-Log entries in the sample app are tokenized to save binary space. The included
-tokens database, `source/tokenizer_database.csv`, is updated on each build. See
-the Pigweed `pw_tokenizer` for more information.
-
-Optionally, the database can be created manually using the binary or the .elf
-file.
-
-```sh
-python -m pw_tokenizer.database create \
-    --database source/tokenizer_database.csv \
-    out/host_clang_debug/obj/source/bin/hello_world
-```
-
-Running the app shows log entries similiar to `$kgjLdg==`. These can be saved to
-a file and then detokenized.
-
-```sh
-./out/host_clang_debug/obj/source/bin/hello_world > log.txt
-python -m pw_tokenizer.detokenize base64 source/tokenizer_database.csv -i log.txt
-```
-
-Or can be detokenized in realtime.
-
-```sh
-./out/host_clang_debug/obj/source/bin/hello_world | python \
-    -m pw_tokenizer.detokenize base64 source/tokenizer_database.csv
-```
-
 ## Arduino Example
 
 ### Prerequisites
@@ -127,18 +129,21 @@ arduino_builder install-core \
   --core-name teensy
 ```
 
-**NOTE:** At this time the Teensyduino core does not build with the c++17
-standard which is required for Pigweed. There is an [open pull
+*** note
+**NOTE:** At this time [Teensyduino
+1.53](https://www.pjrc.com/teensy/td_download.html) does not build with the
+c++17 standard which is required for Pigweed. There is an [open pull
 request](https://github.com/PaulStoffregen/cores/pull/491) to fix this but in
 the meantime you will need to patch the core files. This will download a diff
 and patch the relevant files:
 
 ```sh
 pushd ./third_party/pigweed/third_party/arduino/cores/teensy/hardware/teensy/avr/cores/
-curl -O https://gist.githubusercontent.com/AnthonyDiGirolamo/9368d2879d9aec6be4118e72c2b0cf46/raw/0afc6c182dcb3aac5af3f05d54c4d2c7d941b52d/teensy34_cpp17_patch.diff
+curl -O https://gist.githubusercontent.com/AnthonyDiGirolamo/9368d2879d9aec6be4118e72c2b0cf46/raw/teensy34_cpp17_patch.diff
 patch -p1 < teensy34_cpp17_patch.diff
 popd
 ```
+***
 
 ### Arduino Files in the sample_project
 
@@ -161,7 +166,8 @@ To build for a Teensy 3.1 board run the following.
 ```sh
 gn gen out --args='
   dir_pw_third_party_arduino="//third_party/pigweed/third_party/arduino"
-  arduino_board="teensy31"'
+  arduino_core_name="teensy"
+  arduino_board="teensy40"'
 ninja -C out
 ```
 
@@ -209,9 +215,39 @@ test server. Then in a second window start the `pw watch` command.
 
 For additional details check the Pigweed `arduino_builder` documentation in:
 
-- [third_party/pigweed/pw_arduino_build/docs.rst](https://cs.opensource.google/pigweed/pigweed/+/master:pw_arduino_build/docs.rst)
-- [third_party/pigweed/pw_sys_io_arduino/docs.rst](https://cs.opensource.google/pigweed/pigweed/+/master:pw_sys_io_arduino/docs.rst)
-- [third_party/pigweed/targets/arduino/target_docs.rst](https://cs.opensource.google/pigweed/pigweed/+/master:targets/arduino/target_docs.rst)
+- [pigweed.dev/pw_arduino_build/](https://pigweed.dev/pw_arduino_build/)
+- [pigweed.dev/pw_sys_io_arduino/](https://pigweed.dev/pw_sys_io_arduino/)
+- [pigweed.dev/targets/arduino/target_docs](https://pigweed.dev/targets/arduino/target_docs.html)
+
+## Tokenized Logging
+
+Log entries in the sample app are tokenized to save binary space. The included
+tokens database, `source/tokenizer_database.csv`, is updated on each build. See
+the Pigweed `pw_tokenizer` for more information.
+
+Optionally, the database can be created manually using the binary or the .elf
+file.
+
+```sh
+python -m pw_tokenizer.database create \
+    --database source/tokenizer_database.csv \
+    out/host_clang_debug/obj/source/bin/hello_world
+```
+
+Running the app shows log entries similiar to `$kgjLdg==`. These can be saved to
+a file and then detokenized.
+
+```sh
+./out/host_clang_debug/obj/source/bin/hello_world > log.txt
+python -m pw_tokenizer.detokenize base64 source/tokenizer_database.csv -i log.txt
+```
+
+Or can be detokenized in realtime.
+
+```sh
+./out/host_clang_debug/obj/source/bin/hello_world | python \
+    -m pw_tokenizer.detokenize base64 source/tokenizer_database.csv
+```
 
 ## RPC Example
 
