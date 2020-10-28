@@ -33,7 +33,6 @@ _toolchain_overrides = {
 
   # Path to the nanopb installation. Defaults to included git module.
   dir_pw_third_party_nanopb = "//third_party/nanopb"
-  pw_protobuf_GENERATORS += [ "nanopb_rpc" ]
 }
 
 target_toolchain_arduino = {
