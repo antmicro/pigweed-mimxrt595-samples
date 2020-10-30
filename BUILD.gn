@@ -56,6 +56,7 @@ group("host_tests") {
     # build.
     deps += [ ":tests_run" ]
   }
+  deps += [ "$dir_pw_trace" ]
 }
 
 group("arduino") {
@@ -82,7 +83,11 @@ group("arduino_tests") {
 
 pw_tokenizer_database("tokenizer_database") {
   database = "//source/tokenizer_database.csv"
-  targets = [ ":app(//targets/host:host_clang_debug)" ]
+  if (host_os == "linux") {
+    targets = [ ":app(//targets/host:host_clang_debug)" ]
+  } else {
+    targets = []
+  }
 
   if (dir_pw_third_party_arduino != "") {
     targets += [
