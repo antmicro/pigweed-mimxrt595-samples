@@ -97,11 +97,18 @@ pw_tokenizer_database("tokenizer_database") {
   }
 }
 
+group("workshop") {
+  if (dir_pw_third_party_arduino != "") {
+    deps = [ "//workshop/01-blinky:blinky(//targets/arduino:arduino_debug)" ]
+  }
+}
+
 # Lists all the targets build by default with e.g. `ninja -C out`.
 group("default") {
   deps = [
     ":arduino",
     ":host",
     ":tokenizer_database",
+    ":workshop",
   ]
 }

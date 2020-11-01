@@ -1,0 +1,29 @@
+# Comment this import to prevent it from being reordered.
+import("//build_overrides/pigweed.gni")
+
+import("$dir_pw_arduino_build/arduino.gni")
+import("$dir_pw_build/target_types.gni")
+import("$dir_pw_tokenizer/database.gni")
+
+pw_executable("blinky") {
+  sources = [ "main.cc" ]
+  deps = [ "$dir_pw_log" ]
+
+  if (dir_pw_third_party_arduino != "") {
+    remove_configs = [ "$dir_pw_build:strict_warnings" ]
+    deps += [ "$dir_pw_third_party_arduino:arduino_core_sources" ]
+  }
+}
+
+# This doesn't work for arduino, token database must be manually created:
+#   python -m pw_tokenizer.database create \
+#     --database workshop/01-blinky/tokenizer_database.csv \
+#     out/arduino_debug/obj/workshop/01-blinky/blinky.main.cc.o
+pw_tokenizer_database("tokenizer_database") {
+  database = "//workshop/01-blinky/tokenizer_database.csv"
+  targets = []
+
+  if (dir_pw_third_party_arduino != "") {
+    targets += [ ":blinky" ]
+  }
+}

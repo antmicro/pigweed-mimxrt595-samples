@@ -25,8 +25,18 @@ _toolchain_overrides = {
   pw_assert_BACKEND = "$dir_pw_assert_basic"
 
   # Configure backend for logging facade.
-  pw_log_BACKEND = "$dir_pw_log_tokenized:log_backend"
-  pw_tokenizer_GLOBAL_HANDLER_WITH_PAYLOAD_BACKEND = "//source/logging"
+
+  # Plain text logging
+  pw_log_BACKEND = "$dir_pw_log_basic"
+
+  # Tokenized logging: https://pigweed.dev/pw_tokenizer/
+  # pw_log_BACKEND = "$dir_pw_log_tokenized:log_backend"
+
+  # Log handler backend
+  # pw_tokenizer_GLOBAL_HANDLER_WITH_PAYLOAD_BACKEND =
+  #     "//source/logging:tokenized_log_handler"
+  # pw_tokenizer_GLOBAL_HANDLER_WITH_PAYLOAD_BACKEND =
+  #     "//source/logging:hldc_log_handler"
 
   # Tokenizer trace time.
   pw_trace_tokenizer_time = "$dir_pw_trace_tokenized:host_trace_time"

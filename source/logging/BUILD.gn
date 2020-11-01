@@ -6,8 +6,18 @@ config("default_config") {
   include_dirs = [ "public" ]
 }
 
-pw_source_set("logging") {
-  sources = [ "log.cc" ]
+pw_source_set("tokenized_log_handler") {
+  sources = [ "tokenized_log_handler.cc" ]
+  public_deps = [
+    "$dir_pw_sys_io",
+    "$dir_pw_tokenizer:base64",
+    "$dir_pw_tokenizer:global_handler_with_payload_facade",
+    dir_pw_log_tokenized,
+  ]
+}
+
+pw_source_set("hldc_log_handler") {
+  sources = [ "hldc_log_handler.cc" ]
   public_deps = [
     "$dir_pw_hdlc_lite:encoder",
     "$dir_pw_tokenizer:base64",
