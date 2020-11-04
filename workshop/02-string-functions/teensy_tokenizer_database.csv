@@ -1,0 +1,3 @@
+382e6574,          ,"Teensy Time: RTC has set the system time."
+38c60010,          ,"%s"
+5cbe506d,          ,"Teensy Time: Unable to sync with the RTC."

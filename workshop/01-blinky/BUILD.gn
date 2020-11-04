@@ -11,10 +11,6 @@ pw_executable("blinky") {
   ]
 }
 
-# This doesn't work for arduino, token database must be manually created:
-#   python -m pw_tokenizer.database create \
-#     --database workshop/01-blinky/tokenizer_database.csv \
-#     out/arduino_debug/obj/workshop/01-blinky/blinky.main.cc.o
 pw_tokenizer_database("tokenizer_database") {
   database = "//workshop/01-blinky/tokenizer_database.csv"
   targets = [ ":blinky" ]

@@ -113,7 +113,10 @@ pw_tokenizer_database("tokenizer_database") {
 group("workshop") {
   deps = []
   if (dir_pw_third_party_arduino != "") {
-    deps += [ "//workshop/01-blinky:blinky(//targets/arduino:arduino_debug)" ]
+    deps = [
+      "//workshop/01-blinky:blinky(//targets/arduino:arduino_debug)",
+      "//workshop/02-string-functions:teensy_string_format(//targets/arduino:arduino_debug)",
+    ]
   }
   deps += [ "//workshop/01-blinky:blinky(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)" ]
 }
