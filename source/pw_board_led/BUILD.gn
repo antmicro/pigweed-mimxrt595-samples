@@ -14,9 +14,19 @@
 
 import("//build_overrides/pigweed.gni")
 
-import("$dir_pw_toolchain/generate_toolchain.gni")
-import("target_toolchains.gni")
+import("$dir_pw_build/facade.gni")
 
-generate_toolchains("toolchains") {
-  toolchains = toolchains_list
+declare_args() {
+  # The backend (driver) to use for the board LED.
+  pw_board_led_BACKEND = ""
+}
+
+config("public_includes") {
+  include_dirs = [ "public" ]
+}
+
+pw_facade("pw_board_led") {
+  backend = pw_board_led_BACKEND
+  public_configs = [ ":public_includes" ]
+  public = [ "public/pw_board_led/led.h" ]
 }

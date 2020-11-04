@@ -12,7 +12,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-# Include this import first. Adding a comment prevents imports reordering.
 import("//build_overrides/pigweed.gni")
 
 import("$dir_pigweed/targets/host/target_toolchains.gni")
@@ -41,9 +40,6 @@ _host_toolchain_overrides = {
   # Configure backend for pw_sys_io facade.
   pw_sys_io_BACKEND = "$dir_pw_sys_io_stdio"
 
-  # Tokenizer trace time.
-  pw_trace_tokenizer_time = "$dir_pw_trace_tokenized:host_trace_time"
-
   # Path to the nanopb installation. Defaults to included git module.
   dir_pw_third_party_nanopb = "//third_party/nanopb"
 }
@@ -54,12 +50,17 @@ target_toolchain_host = {
     "name",
   ]
 
+  _excluded_defaults = [
+    "pw_trace_BACKEND",
+    "pw_trace_tokenizer_time",
+  ]
+
   clang_debug = {
     name = "host_clang_debug"
     _toolchain_base = pw_target_toolchain_host.clang_debug
     forward_variables_from(_toolchain_base, "*", _excluded_members)
     defaults = {
-      forward_variables_from(_toolchain_base.defaults, "*")
+      forward_variables_from(_toolchain_base.defaults, "*", _excluded_defaults)
       forward_variables_from(_host_toolchain_overrides, "*")
     }
   }
@@ -70,7 +71,7 @@ target_toolchain_host = {
     _toolchain_base = pw_target_toolchain_host.clang_debug
     forward_variables_from(_toolchain_base, "*", _excluded_members)
     defaults = {
-      forward_variables_from(_toolchain_base.defaults, "*")
+      forward_variables_from(_toolchain_base.defaults, "*", _excluded_defaults)
       forward_variables_from(_host_toolchain_overrides, "*")
 
       # Force tests to use basic log backend to avoid generating and loading its

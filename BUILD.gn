@@ -56,7 +56,6 @@ group("host_tests") {
     # build.
     deps += [ ":tests_run" ]
   }
-  deps += [ "$dir_pw_trace" ]
 }
 
 group("arduino") {
@@ -67,6 +66,15 @@ group("arduino") {
       "//source/arduino_example:blink(//targets/arduino:arduino_debug)",
     ]
   }
+}
+
+group("stm32f429i_disc1") {
+  _default_toolchain = "//targets/stm32f429i-disc1:stm32f429i_disc1_debug"
+  _testing_toolchain = "${_default_toolchain}_tests"
+  deps = [
+    ":app(${_default_toolchain})",
+    ":tests(${_testing_toolchain})",
+  ]
 }
 
 group("arduino_tests") {
@@ -98,9 +106,11 @@ pw_tokenizer_database("tokenizer_database") {
 }
 
 group("workshop") {
+  deps = []
   if (dir_pw_third_party_arduino != "") {
-    deps = [ "//workshop/01-blinky:blinky(//targets/arduino:arduino_debug)" ]
+    deps += [ "//workshop/01-blinky:blinky(//targets/arduino:arduino_debug)" ]
   }
+  deps += [ "//workshop/01-blinky:blinky(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)" ]
 }
 
 # Lists all the targets build by default with e.g. `ninja -C out`.
