@@ -27,9 +27,6 @@ toolchain_overrides = {
   # Alternately, configure pw_log for plain text logging
   # pw_log_BACKEND = "$dir_pw_log_basic"
 
-  # Tokenizer trace time.
-  pw_trace_tokenizer_time = "$dir_pw_trace_tokenized:host_trace_time"
-
   # Path to the nanopb installation. Defaults to included git module.
   dir_pw_third_party_nanopb = "//third_party/nanopb"
 }

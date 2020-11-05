@@ -26,6 +26,7 @@
 
 :: First, activate the Pigweed development environment.
 set "_pw_bootstrap_script=%~dp0\third_party\pigweed\bootstrap.bat"
+set PW_PROJECT_ROOT="%~dp0"
 
 if not exist "%_pw_bootstrap_script%" (
   echo Error: "%_pw_bootstrap_script%" not found.
