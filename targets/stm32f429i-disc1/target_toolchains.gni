@@ -38,6 +38,7 @@ target_toolchain_stm32f429i_disc1 = {
       forward_variables_from(_toolchain_base.defaults, "*", _excluded_defaults)
       forward_variables_from(toolchain_overrides, "*")
       pw_board_led_BACKEND = "//source/pw_board_led_stm32f429i_disc1"
+      pw_spin_delay_BACKEND = "//source/pw_spin_delay_stm32f429i_disc1"
     }
   }
 

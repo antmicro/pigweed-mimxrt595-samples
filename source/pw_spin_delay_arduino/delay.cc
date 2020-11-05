@@ -12,20 +12,14 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-#include "pw_board_led/led.h"
-#include "pw_log/log.h"
 #include "pw_spin_delay/delay.h"
 
-int main() {
-  pw::board_led::Init();
-  while (true) {
-    PW_LOG_INFO("Blink High!");
-    pw::board_led::TurnOn();
-    pw::spin_delay::WaitMillis(1000);
-    PW_LOG_INFO("Blink Low!");
-    pw::board_led::TurnOff();
-    pw::spin_delay::WaitMillis(1000);
-  }
+#include <Arduino.h>
 
-  return 0;
-}
+#include <cstddef>
+
+namespace pw::spin_delay {
+
+void WaitMillis(size_t delay_ms) { delay(delay_ms); }
+
+}  // namespace pw::spin_delay

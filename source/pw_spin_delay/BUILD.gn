@@ -14,26 +14,19 @@
 
 import("//build_overrides/pigweed.gni")
 
-import("$dir_pw_build/target_types.gni")
-import("$dir_pw_tokenizer/database.gni")
+import("$dir_pw_build/facade.gni")
 
-group("all") {
-  deps = [
-    ":blinky",
-    ":tokenizer_database",
-  ]
+declare_args() {
+  # The backend (driver) to use for the board LED.
+  pw_spin_delay_BACKEND = ""
 }
 
-pw_executable("blinky") {
-  sources = [ "main.cc" ]
-  deps = [
-    "//source/pw_board_led",
-    "//source/pw_spin_delay",
-    dir_pw_log,
-  ]
+config("public_includes") {
+  include_dirs = [ "public" ]
 }
 
-pw_tokenizer_database("tokenizer_database") {
-  database = "tokenizer_database.csv"
-  targets = [ ":blinky" ]
+pw_facade("pw_spin_delay") {
+  backend = pw_spin_delay_BACKEND
+  public_configs = [ ":public_includes" ]
+  public = [ "public/pw_spin_delay/delay.h" ]
 }

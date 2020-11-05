@@ -15,25 +15,11 @@
 import("//build_overrides/pigweed.gni")
 
 import("$dir_pw_build/target_types.gni")
-import("$dir_pw_tokenizer/database.gni")
 
-group("all") {
+pw_source_set("pw_spin_delay_stm32f429i_disc1") {
   deps = [
-    ":blinky",
-    ":tokenizer_database",
+    "//source/pw_spin_delay:pw_spin_delay.facade",
+    dir_pw_preprocessor,
   ]
-}
-
-pw_executable("blinky") {
-  sources = [ "main.cc" ]
-  deps = [
-    "//source/pw_board_led",
-    "//source/pw_spin_delay",
-    dir_pw_log,
-  ]
-}
-
-pw_tokenizer_database("tokenizer_database") {
-  database = "tokenizer_database.csv"
-  targets = [ ":blinky" ]
+  sources = [ "delay.cc" ]
 }

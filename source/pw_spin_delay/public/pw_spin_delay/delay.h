@@ -11,21 +11,12 @@
 // WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 // License for the specific language governing permissions and limitations under
 // the License.
+#pragma once
 
-#include "pw_board_led/led.h"
-#include "pw_log/log.h"
-#include "pw_spin_delay/delay.h"
+#include <cstddef>
 
-int main() {
-  pw::board_led::Init();
-  while (true) {
-    PW_LOG_INFO("Blink High!");
-    pw::board_led::TurnOn();
-    pw::spin_delay::WaitMillis(1000);
-    PW_LOG_INFO("Blink Low!");
-    pw::board_led::TurnOff();
-    pw::spin_delay::WaitMillis(1000);
-  }
+namespace pw::spin_delay {
 
-  return 0;
-}
+void WaitMillis(size_t delay_ms);
+
+}  // namespace pw::spin_delay
