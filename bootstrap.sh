@@ -69,8 +69,13 @@ else  # All other shells: examine $0 for known shell binary filenames
   case ${0##*/} in sh|dash) _pw_sourced=1;; esac
 fi
 
-# The SAMPLE_PROJECT_ROOT variable points to the root of the sample_project repo structure.
-SAMPLE_PROJECT_ROOT="$(_bootstrap_abspath "$(dirname "$_BOOTSTRAP_PATH")")"
+# The PW_PROJECT_ROOT variable points to the root of the sample_project repo
+# structure.
+PW_PROJECT_ROOT="$(_bootstrap_abspath "$(dirname "$_BOOTSTRAP_PATH")")"
+export PW_PROJECT_ROOT
+
+# You might also wish to set a root variable that makes sense to you.
+SAMPLE_PROJECT_ROOT="$PW_PROJECT_ROOT"
 export SAMPLE_PROJECT_ROOT
 
 # Set PW_ROOT based on where the Pigweed submodule is in your repository.
