@@ -25,10 +25,10 @@
 :: After that, use activate.bat to enter the environment in a shell.
 
 :: First, activate the Pigweed development environment.
-set "pw_bootstrap_script=%~dp0\third_party\pigweed\bootstrap.bat"
+set "_pw_bootstrap_script=%~dp0\third_party\pigweed\bootstrap.bat"
 
-if not exist "%pw_bootstrap_script%" (
-  echo Error: "%pw_bootstrap_script%" not found.
+if not exist "%_pw_bootstrap_script%" (
+  echo Error: "%_pw_bootstrap_script%" not found.
   echo Did you forget to initialize the git submodules?
   echo To setup the git submodules run:
   echo   git submodule init
@@ -36,7 +36,7 @@ if not exist "%pw_bootstrap_script%" (
   goto finish
 )
 
-call "%pw_bootstrap_script%"
+call "%_pw_bootstrap_script%"
 
 :: Add user-defined initial setup here.
 
