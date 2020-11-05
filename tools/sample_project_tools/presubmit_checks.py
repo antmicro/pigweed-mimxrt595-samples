@@ -50,9 +50,11 @@ def init_cipd(ctx: PresubmitContext):
 
 def init_virtualenv(ctx: PresubmitContext):
     """Initialize a virtual environment to run presubmits."""
-    environment.init_virtualenv(PIGWEED_ROOT,
-                                ctx.output_dir,
-                                setup_py_roots=[PROJECT_ROOT])
+    environment.init_virtualenv(
+        PIGWEED_ROOT,
+        ctx.output_dir,
+        gn_targets=(f'{ctx.root}#:python.install',
+                    'third_party/pigweed#:python.install'))
 
 
 # Rerun the build if files with these extensions change.
