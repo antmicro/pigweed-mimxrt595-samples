@@ -14,35 +14,10 @@
 
 import("//build_overrides/pigweed.gni")
 
+import("//targets/common_backends.gni")
 import("$dir_pigweed/targets/host/target_toolchains.gni")
 import("$dir_pw_protobuf_compiler/proto.gni")
 import("$dir_pw_third_party/nanopb/nanopb.gni")
-
-# Inherit from a Pigweed upstream toolchain and override backends as needed.
-_host_toolchain_overrides = {
-  # Configure backend for assert facade.
-  pw_assert_BACKEND = "$dir_pw_assert_basic"
-
-  # Configure backend for logging facade.
-
-  # Plain text logging
-  pw_log_BACKEND = "$dir_pw_log_basic"
-
-  # Tokenized logging: https://pigweed.dev/pw_tokenizer/
-  # pw_log_BACKEND = "$dir_pw_log_tokenized:log_backend"
-
-  # Log handler backend
-  # pw_tokenizer_GLOBAL_HANDLER_WITH_PAYLOAD_BACKEND =
-  #     "//source/logging:tokenized_log_handler"
-  # pw_tokenizer_GLOBAL_HANDLER_WITH_PAYLOAD_BACKEND =
-  #     "//source/logging:hldc_log_handler"
-
-  # Configure backend for pw_sys_io facade.
-  pw_sys_io_BACKEND = "$dir_pw_sys_io_stdio"
-
-  # Path to the nanopb installation. Defaults to included git module.
-  dir_pw_third_party_nanopb = "//third_party/nanopb"
-}
 
 target_toolchain_host = {
   _excluded_members = [
@@ -61,7 +36,10 @@ target_toolchain_host = {
     forward_variables_from(_toolchain_base, "*", _excluded_members)
     defaults = {
       forward_variables_from(_toolchain_base.defaults, "*", _excluded_defaults)
-      forward_variables_from(_host_toolchain_overrides, "*")
+      forward_variables_from(toolchain_overrides, "*")
+
+      # Configure backend for pw_sys_io facade.
+      pw_sys_io_BACKEND = "$dir_pw_sys_io_stdio"
     }
   }
 
@@ -72,7 +50,7 @@ target_toolchain_host = {
     forward_variables_from(_toolchain_base, "*", _excluded_members)
     defaults = {
       forward_variables_from(_toolchain_base.defaults, "*", _excluded_defaults)
-      forward_variables_from(_host_toolchain_overrides, "*")
+      forward_variables_from(toolchain_overrides, "*")
 
       # Force tests to use basic log backend to avoid generating and loading its
       # own tokenized database.
