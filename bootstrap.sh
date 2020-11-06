@@ -103,11 +103,12 @@ SETUP_SH="$_PW_ACTUAL_ENVIRONMENT_ROOT/activate.sh"
 
 # Set your project's banner and color.
 export PW_BRANDING_BANNER="$SAMPLE_PROJECT_ROOT/banner.txt"
-export PW_BRANDING_BANNER_COLOR=cyan
+export PW_BRANDING_BANNER_COLOR=magenta
 
 sample_project_banner() {
-  # TODO(pwbug/274) Figure out how to use the color here too.
+  echo -n -e "\033[35m"
   cat "$PW_BRANDING_BANNER"
+  echo -n -e "\e[0m"
   echo
 }
 
