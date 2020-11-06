@@ -106,9 +106,7 @@ export PW_BRANDING_BANNER="$SAMPLE_PROJECT_ROOT/banner.txt"
 export PW_BRANDING_BANNER_COLOR=magenta
 
 sample_project_banner() {
-  echo -n -e "\033[35m"
   cat "$PW_BRANDING_BANNER"
-  echo -n -e "\e[0m"
   echo
 }
 
