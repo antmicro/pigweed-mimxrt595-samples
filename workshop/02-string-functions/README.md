@@ -1,13 +1,16 @@
 # String App & Unit Test
 
-Instructions for building with a `teensy36` board.
+Instructions for building with a `teensy40` board.
+
+[TOC]
+
+## Build/Flash/Serial
 
 1. Create the `out` build directory.
 
    ```sh
-   gn gen out --export-compile-commands \
-     --args='
-       arduino_board="teensy36"
+   gn gen out --export-compile-commands --args='
+       arduino_board="teensy40"
        dir_pw_third_party_arduino="//third_party/pigweed/third_party/arduino"
        arduino_core_name="teensy"
        pw_arduino_use_test_server=false'
@@ -28,6 +31,12 @@ Instructions for building with a `teensy36` board.
      --verbose \
      --flash-only \
      out/arduino_debug/obj/workshop/02-string-functions/bin/teensy_string_format.elf
+   ```
+
+   **Single line:**
+
+   ```sh
+   arduino_unit_test_runner --config out/arduino_debug/gen/arduino_builder_config.json --upload-tool teensyloader --verbose --flash-only out/arduino_debug/obj/workshop/02-string-functions/bin/teensy_string_format.elf
    ```
 
 1. Tail the output. If using plaintext logging using
@@ -58,12 +67,4 @@ Instructions for building with a `teensy36` board.
    INF  2020-11-04 14:35:39
 
    --- exit ---
-   ```
-
-1. Create tokenizer databases.
-
-   ```sh
-    python -m pw_tokenizer.database create --force \
-      --database workshop/02-string-functions/teensy_tokenizer_database.csv \
-      out/arduino_debug/obj/workshop/02-string-functions/bin/teensy_string_format.elf
    ```

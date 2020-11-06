@@ -3,6 +3,13 @@ import("//build_overrides/pigweed.gni")
 import("$dir_pw_build/target_types.gni")
 import("$dir_pw_tokenizer/database.gni")
 
+group("all") {
+  deps = [
+    ":kvs",
+    ":tokenizer_database",
+  ]
+}
+
 pw_executable("kvs") {
   sources = [ "main.cc" ]
   deps = [
@@ -13,10 +20,6 @@ pw_executable("kvs") {
   ]
 }
 
-# This doesn't work for arduino, token database must be manually created:
-#   python -m pw_tokenizer.database create \
-#     --database workshop/04-kvs/tokenizer_database.csv \
-#     out/arduino_debug/obj/workshop/04-kvs/kvs.main.cc.o
 pw_tokenizer_database("tokenizer_database") {
   database = "//workshop/04-kvs/tokenizer_database.csv"
   targets = [ ":kvs" ]

@@ -3,6 +3,13 @@ import("//build_overrides/pigweed.gni")
 import("$dir_pw_build/target_types.gni")
 import("$dir_pw_tokenizer/database.gni")
 
+group("all") {
+  deps = [
+    ":blinky",
+    ":tokenizer_database",
+  ]
+}
+
 pw_executable("blinky") {
   sources = [ "main.cc" ]
   deps = [

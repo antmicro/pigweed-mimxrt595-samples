@@ -5,6 +5,13 @@ import("$dir_pw_arduino_build/arduino.gni")
 import("$dir_pw_build/target_types.gni")
 import("$dir_pw_tokenizer/database.gni")
 
+group("all") {
+  deps = [
+    ":teensy_string_format",
+    ":tokenizer_database",
+  ]
+}
+
 _library_args = [
   "--library-path",
   rebase_path(
@@ -15,31 +22,29 @@ _library_args = [
 ]
 
 pw_executable("teensy_string_format") {
-  if (dir_pw_third_party_arduino != "") {
-    _library_cpp_files = exec_script(arduino_builder_script,
-                                     arduino_show_command_args + _library_args +
-                                         [ "--library-cpp-files" ],
-                                     "list lines")
+  _library_cpp_files = exec_script(
+          arduino_builder_script,
+          arduino_show_command_args + _library_args + [ "--library-cpp-files" ],
+          "list lines")
 
-    sources = [ "teensy_main.cc" ] + _library_cpp_files
+  sources = [ "teensy_main.cc" ] + _library_cpp_files
 
-    deps = [
-      "$dir_pw_hex_dump",
-      "$dir_pw_log",
-      "$dir_pw_string",
-    ]
+  deps = [
+    "$dir_pw_hex_dump",
+    "$dir_pw_log",
+    "$dir_pw_string",
+  ]
 
-    include_dirs = exec_script(arduino_builder_script,
-                               arduino_show_command_args + _library_args +
-                                   [ "--library-include-dirs" ],
-                               "list lines")
+  include_dirs = exec_script(arduino_builder_script,
+                             arduino_show_command_args + _library_args +
+                                 [ "--library-include-dirs" ],
+                             "list lines")
 
-    remove_configs = [ "$dir_pw_build:strict_warnings" ]
-    deps += [ "$dir_pw_third_party_arduino:arduino_core_sources" ]
-  }
+  remove_configs = [ "$dir_pw_build:strict_warnings" ]
+  deps += [ "$dir_pw_third_party_arduino:arduino_core_sources" ]
 }
 
-pw_tokenizer_database("tokenizer_database") {
+pw_tokenizer_database("teensy_tokenizer_database") {
   database = "//workshop/02-string-functions/teensy_tokenizer_database.csv"
   targets = []
 
