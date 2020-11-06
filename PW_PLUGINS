@@ -14,3 +14,4 @@
 presubmit sample_project_tools.presubmit_checks main
 heap-viewer pw_allocator.heap_viewer main
 rpc pw_hdlc_lite.rpc_console main
+find-files sample_project_tools.find_files main
