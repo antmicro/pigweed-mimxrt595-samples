@@ -16,12 +16,20 @@
 
 #include <chrono>
 #include <cstddef>
-#include <thread>
 
 namespace pw::spin_delay {
 
 void WaitMillis(size_t delay_ms) {
-  std::this_thread::sleep_for(std::chrono::milliseconds(delay_ms));
+  std::chrono::system_clock::time_point start =
+      std::chrono::system_clock::now();
+  std::chrono::system_clock::time_point now;
+  size_t difference;
+  do {
+    now = std::chrono::system_clock::now();
+    difference =
+        std::chrono::duration_cast<std::chrono::milliseconds>(now - start)
+            .count();
+  } while (difference < delay_ms);
 }
 
 }  // namespace pw::spin_delay
