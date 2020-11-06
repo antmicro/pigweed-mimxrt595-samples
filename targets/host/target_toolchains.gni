@@ -31,8 +31,12 @@ target_toolchain_host = {
   ]
 
   clang_debug = {
-    name = "host_clang_debug"
-    _toolchain_base = pw_target_toolchain_host.clang_debug
+    name = "host_debug"
+    if (host_os == "win") {
+      _toolchain_base = pw_target_toolchain_host.gcc_debug
+    } else {
+      _toolchain_base = pw_target_toolchain_host.clang_debug
+    }
     forward_variables_from(_toolchain_base, "*", _excluded_members)
     defaults = {
       forward_variables_from(_toolchain_base.defaults, "*", _excluded_defaults)
@@ -40,13 +44,19 @@ target_toolchain_host = {
 
       # Configure backend for pw_sys_io facade.
       pw_sys_io_BACKEND = "$dir_pw_sys_io_stdio"
+      pw_board_led_BACKEND = "//source/pw_board_led_host"
+      pw_spin_delay_BACKEND = "//source/pw_spin_delay_host"
     }
   }
 
   # Toolchain for tests only.
   clang_debug_tests = {
-    name = "host_clang_debug_tests"
-    _toolchain_base = pw_target_toolchain_host.clang_debug
+    name = "host_debug_tests"
+    if (host_os == "win") {
+      _toolchain_base = pw_target_toolchain_host.gcc_debug
+    } else {
+      _toolchain_base = pw_target_toolchain_host.clang_debug
+    }
     forward_variables_from(_toolchain_base, "*", _excluded_members)
     defaults = {
       forward_variables_from(_toolchain_base.defaults, "*", _excluded_defaults)

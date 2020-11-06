@@ -42,8 +42,8 @@ group("app") {
 # the user adds their own toolchain.
 group("host") {
   deps = [
-    ":app(//targets/host:host_clang_debug)",
-    ":host_tests(//targets/host:host_clang_debug_tests)",
+    ":app(//targets/host:host_debug)",
+    ":host_tests(//targets/host:host_debug_tests)",
   ]
 }
 
@@ -91,13 +91,13 @@ group("arduino_tests") {
 }
 
 pw_python_group("python") {
-  python_deps = [ "//tools(//targets/host:host_clang_debug)" ]
+  python_deps = [ "//tools(//targets/host:host_debug)" ]
 }
 
 pw_tokenizer_database("tokenizer_database") {
   database = "//source/tokenizer_database.csv"
   if (host_os == "linux") {
-    targets = [ ":app(//targets/host:host_clang_debug)" ]
+    targets = [ ":app(//targets/host:host_debug)" ]
   } else {
     targets = []
   }
@@ -112,18 +112,24 @@ pw_tokenizer_database("tokenizer_database") {
 
 group("workshop") {
   deps = []
+
+  # Teensy 3.0/4.0 workshop steps.
   if (dir_pw_third_party_arduino != "") {
     deps += [
       "//workshop/01-blinky:all(//targets/arduino:arduino_debug)",
       "//workshop/02-string-functions:all(//targets/arduino:arduino_debug)",
       "//workshop/04-kvs:all(//targets/arduino:arduino_debug)",
     ]
-  } else {
-    deps += [
-      "//workshop/01-blinky:blinky(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)",
-      "//workshop/04-kvs:all(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)",
-    ]
   }
+
+  # STMicroelectronics STM32F429I-DISC1 workshop steps.
+  deps += [
+    "//workshop/01-blinky:blinky(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)",
+    "//workshop/04-kvs:all(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)",
+  ]
+
+  # Host workshop steps.
+  deps += [ "//workshop/01-blinky:blinky(//targets/host:host_debug)" ]
 }
 
 # Lists all the targets build by default with e.g. `ninja -C out`.
