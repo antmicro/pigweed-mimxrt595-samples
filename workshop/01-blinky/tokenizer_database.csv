@@ -8,3 +8,5 @@ be290f47,          ,"          free() is called %u times. (realloc() counted as 
 c5792a96,          ,"    The current heap information: "
 da03df49,          ,"          The cumulative freed heap memory is %u bytes."
 e457fb7d,          ,"          The total heap size is %u bytes."
+f716dbeb,          ,"[ ]"
+fc0376f5,          ,"[*]"

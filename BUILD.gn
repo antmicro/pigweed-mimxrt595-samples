@@ -30,6 +30,8 @@ group("default") {
   deps = [
     ":arduino",
     ":host",
+    ":python.lint",
+    ":python.tests",
     ":tokenizer_database",
     ":workshop",
   ]
@@ -82,7 +84,10 @@ group("stm32f429i_disc1") {
 # Python packages are built using the host toolchain.
 pw_python_group("python") {
   # This depends on the 'tools' target in //tools/BUILD.gn
-  python_deps = [ "//tools(//targets/host:host_debug)" ]
+  python_deps = [
+    "tools(//targets/host:host_debug)",
+    "workshop/05-factory-test:factory_test_script(//targets/host:host_debug)",
+  ]
 }
 
 # This 'pw_tokenizer_database' target will update the tokenizer_database.csv
@@ -116,6 +121,7 @@ group("workshop") {
       "//workshop/01-blinky:all(//targets/arduino:arduino_debug)",
       "//workshop/02-string-functions:all(//targets/arduino:arduino_debug)",
       "//workshop/04-kvs:all(//targets/arduino:arduino_debug)",
+      "//workshop/05-factory-test:all(//targets/arduino:arduino_debug)",
     ]
   }
 
@@ -125,12 +131,13 @@ group("workshop") {
     "//workshop/01-blinky:blinky(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)",
     "//workshop/02-string-functions:all(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)",
     "//workshop/04-kvs:all(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)",
+    "//workshop/05-factory-test:all(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)",
   ]
 
   # Host workshop steps.
   deps += [
     ":workshop_tests(//targets/host:host_debug)",
-    "//workshop/01-blinky:blinky(//targets/host:host_debug)",
+    "//workshop/01-blinky:all(//targets/host:host_debug)",
     "//workshop/02-string-functions:all(//targets/host:host_debug)",
   ]
 }
