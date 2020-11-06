@@ -112,7 +112,7 @@ tests together.
 
 ## Arduino Example
 
-### Prerequisites
+### 1. Install an Arduino Core
 
 To build for Arduino boards you must install a core. At this time only the
 [Teensyduino core](https://www.pjrc.com/teensy/td_download.html) is supported.
@@ -124,44 +124,14 @@ installation instructions. Cores should be installed into
 Run this to install the Teensy core:
 
 ```sh
-arduino_builder install-core \
-  --prefix ./third_party/pigweed/third_party/arduino/cores/ \
-  --core-name teensy
+arduino_builder install-core --prefix ./third_party/pigweed/third_party/arduino/cores/ --core-name teensy
 ```
 
-*** note
-**NOTE:** At this time [Teensyduino
-1.53](https://www.pjrc.com/teensy/td_download.html) does not build with the
-c++17 standard which is required for Pigweed. There is an [open pull
-request](https://github.com/PaulStoffregen/cores/pull/491) to fix this but in
-the meantime you will need to patch the core files. This will download a diff
-and patch the relevant files:
+### 2. Build
 
-```sh
-pushd ./third_party/pigweed/third_party/arduino/cores/teensy/hardware/teensy/avr/cores/
-curl -O https://gist.githubusercontent.com/AnthonyDiGirolamo/9368d2879d9aec6be4118e72c2b0cf46/raw/teensy34_cpp17_patch.diff
-patch -p1 < teensy34_cpp17_patch.diff
-popd
-```
-***
+To build for a Teensy 4.0 board run the following.
 
-### Arduino Files in the sample_project
-
-- `source/arduino_example`
-    - An example application that uses the Arduino API included in `Arduino.h`.
-- `source/arduino_example/BUILD.gn`
-    - Demonstrates how to include the Arduino core dependencies.
-- `source/main.cc`
-    - A sample application that can be compiled for a supported Arduino board.
-- `BUILD.gn`
-    - Shows how to create a target using the Arduino toolchain.
-- `source/target/arduino`
-    - Contains a sample toolchain that inherits from the an Arduino toolchain in
-      upstream pigweed. It can override backends as needed.
-
-### Building
-
-To build for a Teensy 3.1 board run the following.
+**Linux & Mac**
 
 ```sh
 gn gen out --args='
@@ -171,25 +141,63 @@ gn gen out --args='
 ninja -C out
 ```
 
+**Windows**
+
+Run `gn gen out` which will open a text editor. Paste in the following, save and
+close the editor.
+
+```sh
+dir_pw_third_party_arduino="//third_party/pigweed/third_party/arduino"
+arduino_core_name="teensy"
+arduino_board="teensy40"
+```
+
 Where `arduino_board=` is one of:
 
-- `"teensy41"` - Teensy 4.1
-- `"teensy40"` - Teensy 4.0
-- `"teensy36"` - Teensy 3.6
-- `"teensy35"` - Teensy 3.5
 - `"teensy31"` - Teensy 3.2 / 3.1
+- `"teensy35"` - Teensy 3.5
+- `"teensy36"` - Teensy 3.6
+- `"teensy40"` - Teensy 4.0
+- `"teensy41"` - Teensy 4.1
 
-### Running Tests
+### 3. Run a Test
+
+#### Manual Test
 
 Tests can be manually flashed an run with the `arduino_unit_test_runner`
 and the `.elf` file.
 
 ```sh
 arduino_unit_test_runner --verbose \
-    --config-file ./out/arduino_debug/gen/arduino_builder_config.json \
+    --config-file out/arduino_debug/gen/arduino_builder_config.json \
     --upload-tool teensyloader \
     out/arduino_debug_tests/obj/source/simple_counter/test/simple_counter_test.elf
 ```
+
+**Single line:**
+```sh
+arduino_unit_test_runner --verbose --config-file out/arduino_debug/gen/arduino_builder_config.json --upload-tool teensyloader out/arduino_debug_tests/obj/source/simple_counter/test/simple_counter_test.elf
+```
+
+#### Flash Only
+
+A given binary can be flashed without checking for test pass or fail messages
+with the `--flash-only` option:
+
+```sh
+arduino_unit_test_runner --verbose \
+  --config out/arduino_debug/gen/arduino_builder_config.json \
+  --upload-tool teensyloader \
+  --flash-only \
+  out/arduino_debug_tests/obj/source/simple_counter/test/simple_counter_test.elf
+```
+
+**Single line:**
+```sh
+arduino_unit_test_runner --verbose --config out/arduino_debug/gen/arduino_builder_config.json --upload-tool teensyloader --flash-only out/arduino_debug_tests/obj/source/simple_counter/test/simple_counter_test.elf
+```
+
+#### Unit Test Server
 
 If you would like to use the unit test server to automatically run your tests
 you must set the `pw_arduino_use_test_server=true` build arg and startup the
@@ -203,14 +211,13 @@ test server. Then in a second window start the `pw watch` command.
       arduino_core_name="teensy"
       arduino_board="teensy40"
       pw_arduino_use_test_server=true'
-    arduino_test_server --verbose \
-      --config-file ./out/arduino_debug/gen/arduino_builder_config.json
+    arduino_test_server --verbose --config-file ./out/arduino_debug/gen/arduino_builder_config.json
     ```
 
-2.  Start `pw watch` with the `arduino target` in a separate terminal.
+1.  Start `pw watch out` in a separate terminal.
 
     ```sh
-    pw watch out arduino
+    pw watch out
     ```
 
 For additional details check the Pigweed `arduino_builder` documentation in:
@@ -232,6 +239,11 @@ file.
 python -m pw_tokenizer.database create \
     --database source/tokenizer_database.csv \
     out/host_clang_debug/obj/source/bin/hello_world
+```
+
+**Single line:**
+```sh
+python -m pw_tokenizer.database create --database source/tokenizer_database.csv out/host_clang_debug/obj/source/bin/hello_world
 ```
 
 Running the app shows log entries similiar to `$kgjLdg==`. These can be saved to
@@ -265,8 +277,7 @@ The sample application registers the `EchoService`, which echoes any RPC message
 data sent to it. To test it out build for and flash the desired board, then run:
 
 ```sh
-python third_party/pigweed/pw_hdlc_lite/rpc_example/example_script.py \
-    --device /dev/ttyACM0 --baud 115200
+python third_party/pigweed/pw_hdlc_lite/rpc_example/example_script.py --device /dev/ttyACM0 --baud 115200
 ```
 
 At the time of writing, the `example_script.py` does not parse log statements if
