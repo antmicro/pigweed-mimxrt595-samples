@@ -1,4 +1,4 @@
-# String App & Unit Test
+# Teensy Time Example
 
 Instructions for building with a `teensy40` board.
 
@@ -30,13 +30,13 @@ Instructions for building with a `teensy40` board.
      --upload-tool teensyloader \
      --verbose \
      --flash-only \
-     out/arduino_debug/obj/workshop/02-string-functions/bin/string_demo.elf
+     out/arduino_debug/obj/source/teensy_time/bin/teensy_time.elf
    ```
 
    **Single line:**
 
    ```sh
-   arduino_unit_test_runner --config out/arduino_debug/gen/arduino_builder_config.json --upload-tool teensyloader --verbose --flash-only out/arduino_debug/obj/workshop/02-string-functions/bin/string_demo.elf
+   arduino_unit_test_runner --config out/arduino_debug/gen/arduino_builder_config.json --upload-tool teensyloader --verbose --flash-only out/arduino_debug/obj/source/teensy_time/bin/teensy_time.elf
    ```
 
 1. Tail the output. If using plaintext logging using
@@ -68,9 +68,3 @@ Instructions for building with a `teensy40` board.
 
    --- exit ---
    ```
-
-## Run Tests
-
-```sh
-arduino_unit_test_runner --config out/arduino_debug/gen/arduino_builder_config.json --upload-tool teensyloader --verbose out/arduino_debug_tests/obj/workshop/02-string-functions/test/string_function_test.elf
-```

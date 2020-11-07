@@ -25,21 +25,25 @@ import("$dir_pw_unit_test/test.gni")
 # It also prevents the default toolchain from parsing any unnecessary BUILD.gn
 # files.
 
-# Group the different modules tests together.
-pw_test_group("tests") {
-  group_deps = [ "//source/simple_counter:tests" ]
+# Lists all the targets build by default with e.g. `ninja -C out`.
+group("default") {
+  deps = [
+    ":arduino",
+    ":host",
+    ":tokenizer_database",
+    ":workshop",
+  ]
 }
 
+# Hello world group, this will be built using multiple toolchains.
 group("app") {
   deps = []
   if (current_toolchain != default_toolchain) {
-    deps += [ "//source:hello_world" ]
+    deps = [ "//source:hello_world" ]
   }
 }
 
-# Will group all targets that run on host only, e.g. tests, utils. For example
-# purposes it uses clang debug toolchain for building. It is recommended that
-# the user adds their own toolchain.
+# Group all targets that run on host only, e.g. tests, utils.
 group("host") {
   deps = [
     ":app(//targets/host:host_debug)",
@@ -47,28 +51,25 @@ group("host") {
   ]
 }
 
-group("host_tests") {
-  deps = []
-  if (pw_unit_test_AUTOMATIC_RUNNER == "") {
-    # Without a test runner defined, build the tests but don't run them.
-    deps += [ ":tests" ]
-  } else {
-    # With a test runner, depend on the run targets so they run with the
-    # build.
-    deps += [ ":tests_run" ]
-  }
-}
-
+# Arduino specific targets.
 group("arduino") {
+  # If the 'dir_pw_third_party_arduino' build arg is defined assume an arduino
+  # core is available for building.
+  #
+  # For example:
+  #   dir_pw_third_party_arduino="//third_party/pigweed/third_party/arduino"
+
   if (dir_pw_third_party_arduino != "") {
     deps = [
       ":app(//targets/arduino:arduino_debug)",
       ":arduino_tests(//targets/arduino:arduino_debug_tests)",
       "//source/arduino_example:blink(//targets/arduino:arduino_debug)",
+      "//source/teensy_time:all(//targets/arduino:arduino_debug)",
     ]
   }
 }
 
+# stm32f429i_disc1 specific targets
 group("stm32f429i_disc1") {
   _default_toolchain = "//targets/stm32f429i-disc1:stm32f429i_disc1_debug"
   _testing_toolchain = "${_default_toolchain}_tests"
@@ -78,24 +79,18 @@ group("stm32f429i_disc1") {
   ]
 }
 
-group("arduino_tests") {
-  deps = []
-  if (pw_unit_test_AUTOMATIC_RUNNER == "") {
-    # Without a test runner defined, build the tests but don't run them.
-    deps += [ ":tests" ]
-  } else {
-    # With a test runner, depend on the run targets so they run with the
-    # build.
-    deps += [ ":tests_run" ]
-  }
-}
-
+# Python packages are built using the host toolchain.
 pw_python_group("python") {
+  # This depends on the 'tools' target in //tools/BUILD.gn
   python_deps = [ "//tools(//targets/host:host_debug)" ]
 }
 
+# This 'pw_tokenizer_database' target will update the tokenizer_database.csv
+# file for all dependencies listed in 'targets'.
 pw_tokenizer_database("tokenizer_database") {
   database = "//source/tokenizer_database.csv"
+
+  # Tokenizer databases can only be created for elf binaries
   if (host_os == "linux") {
     targets = [ ":app(//targets/host:host_debug)" ]
   } else {
@@ -110,12 +105,14 @@ pw_tokenizer_database("tokenizer_database") {
   }
 }
 
+# Workshop Exercises
 group("workshop") {
   deps = []
 
   # Teensy 3.0/4.0 workshop steps.
   if (dir_pw_third_party_arduino != "") {
     deps += [
+      ":workshop_tests(//targets/arduino:arduino_debug)",
       "//workshop/01-blinky:all(//targets/arduino:arduino_debug)",
       "//workshop/02-string-functions:all(//targets/arduino:arduino_debug)",
       "//workshop/04-kvs:all(//targets/arduino:arduino_debug)",
@@ -124,20 +121,43 @@ group("workshop") {
 
   # STMicroelectronics STM32F429I-DISC1 workshop steps.
   deps += [
+    ":workshop_tests(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)",
     "//workshop/01-blinky:blinky(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)",
+    "//workshop/02-string-functions:all(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)",
     "//workshop/04-kvs:all(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)",
   ]
 
   # Host workshop steps.
-  deps += [ "//workshop/01-blinky:blinky(//targets/host:host_debug)" ]
+  deps += [
+    ":workshop_tests(//targets/host:host_debug)",
+    "//workshop/01-blinky:blinky(//targets/host:host_debug)",
+    "//workshop/02-string-functions:all(//targets/host:host_debug)",
+  ]
 }
 
-# Lists all the targets build by default with e.g. `ninja -C out`.
-group("default") {
-  deps = [
-    ":arduino",
-    ":host",
-    ":tokenizer_database",
-    ":workshop",
+# Group the different modules tests together.
+pw_test_group("tests") {
+  group_deps = [
+    "//source/simple_counter:tests",
+    "//workshop/02-string-functions:tests",
   ]
+}
+
+# Test groups for each platform that will build and optionally run the tests.
+foreach(test_group,
+        [
+          "arduino",
+          "host",
+          "workshop",
+        ]) {
+  group("${test_group}_tests") {
+    deps = []
+    if (pw_unit_test_AUTOMATIC_RUNNER == "") {
+      # Without a test runner defined, build the tests but don't run them.
+      deps += [ ":tests" ]
+    } else {
+      # With a test runner, build and run tests.
+      deps += [ ":tests_run" ]
+    }
+  }
 }
