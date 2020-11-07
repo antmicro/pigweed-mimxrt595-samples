@@ -48,35 +48,82 @@ TBD...
 
 ## Repo Setup
 
-git clone...
+Clone this repo with:
+
+```sh
+git clone --recursive https://pigweed.googlesource.com/pigweed/sample_project
+```
+
+No worries if you missed `--recursive`! Run `git submodules update --init` to pull `third_party/nanopb` and `third_party/pigweed`.
+
+To pull new changes down run:
+
+```sh
+git pull --recurse-submodules
+```
 
 ## Using GN
 
-Create build directory
+### Basics
+
+* Create a build directory named `out`.
+
+  ```sh
+  gn gen out
+  ```
+
+* Set build options with `gn args`.
+
+  ```sh
+  gn args out
+  ```
+
+* Compile with
+
+  ```sh
+  ninja -C out
+  ```
+
+### Inspecting
+
+* List buildable targets.
+
+  ```sh
+  gn ls out
+  ```
+
+* Inspect a target to see it's dependencies, `cflags`, `ldflags`, etc.
+
+  **Teensy**
+  ```sh
+  gn desc out "//workshop/01-blinky:blinky(//targets/arduino:arduino_debug)" --tree
+  ```
+
+  **stm32f429i_disc1**
+  ```sh
+  gn desc out "//workshop/01-blinky:blinky(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)" --tree
+  ```
+
+  **Host**
+  ```sh
+  gn desc out "//workshop/01-blinky:blinky(//targets/host:host_debug)" --tree
+  ```
+
+### Editor Integration
+
+Use `--export-compile-commands` to create the `out/compile_commands.json` file for use with lsp servers like `clangd`.
+
 ```sh
-gn gen out
+gn gen out --export-compile-commands
 ```
 
-Set build options with args
+`clangd` can be integrating with various text editor extensions such as:
 
-```sh
-gn args out
-```
+* [VSCode clangd](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd)
+* [emacs lsp-mode](https://github.com/emacs-lsp/lsp-mode)
+* [vim lsp](https://github.com/prabirshrestha/vim-lsp)
 
-List buildable targets
+### Further Reading
 
-```sh
-gn ls out
-```
-
-Inspect a target to see dependencies / cflags etc
-
-```sh
-gn desc out "//workshop/01-blinky:blinky(//targets/arduino:arduino_debug)" --tree
-```
-
-```sh
-gn desc out "//workshop/01-blinky:blinky(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)" --tree
-```
-
-Advanced: `use gn gen out --export-compile-commands` for lsp server integration.
+* [GN Quick Start Guide](https://gn.googlesource.com/gn/+/master/docs/quick_start.md)
+* [GN Reference](https://gn.googlesource.com/gn/+/master/docs/reference.md)
