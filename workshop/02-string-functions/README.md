@@ -1,10 +1,50 @@
-# String App & Unit Test
+# Unit Tests & Strings
 
-Instructions for building with a `teensy40` board.
+|||---|||
+
+*** aside
+#### [00: <br/> Setup](/workshop/README.md)
+
+`Intro + setup.`
+***
+
+*** aside
+#### [01: <br/> Blinky](/workshop/01-blinky/README.md)
+
+`Getting to blink.`
+***
+
+*** promo
+#### [02: <br/> Testing](/workshop/02-string-functions/README.md)
+
+`Writing tests.`
+***
+
+*** aside
+#### [03: <br/> RPC](/workshop/03-rpc/README.md)
+
+`Calling RPCs.`
+***
+
+*** aside
+#### [04: <br/> KVS](/workshop/04-kvs/README.md)
+
+`Key Value Store.`
+***
+
+*** aside
+#### [05: <br/> FactoryTest](/workshop/05-factory-test/README.md)
+
+`Testing in the factory.`
+***
+
+|||---|||
 
 [TOC]
 
 ## Build/Flash/Serial
+
+Instructions for building with a `teensy40` board.
 
 1. Create the `out` build directory.
 
@@ -13,7 +53,8 @@ Instructions for building with a `teensy40` board.
        arduino_board="teensy40"
        dir_pw_third_party_arduino="//third_party/pigweed/third_party/arduino"
        arduino_core_name="teensy"
-       pw_arduino_use_test_server=false'
+       pw_arduino_use_test_server=false
+   '
    ```
 
 1. Run the compile.
@@ -69,8 +110,51 @@ Instructions for building with a `teensy40` board.
    --- exit ---
    ```
 
-## Run Tests
+## Exercise
+
+**Goal:** Write a test for the
+[`GetStatusString()`](/workshop/02-string-functions/system_status.cc#9)
+function.
+
+It can be added to
+[/workshop/02-string-functions/system_status_test.cc](/workshop/02-string-functions/system_status_test.cc).
+
+*** promo
+- Refer to the [gTest string comparison
+  documentation](https://github.com/google/googletest/blob/master/googletest/docs/primer.md#string-comparison)
+  for how to check the contents of strings.
+- Note that [gMock
+  matchers](https://github.com/google/googletest/blob/master/googletest/docs/advanced.md#more-string-assertions)
+  are not supported in Pigweed yet.
+***
+
+### Step 1: Run Tests
+
+**Running a single test manually.**
+
+#### Teensy
 
 ```sh
-arduino_unit_test_runner --config out/arduino_debug/gen/arduino_builder_config.json --upload-tool teensyloader --verbose out/arduino_debug_tests/obj/workshop/02-string-functions/test/string_function_test.elf
+arduino_unit_test_runner --config out/arduino_debug/gen/arduino_builder_config.json --upload-tool teensyloader --verbose --flash-only out/arduino_debug/obj/workshop/02-string-functions/test/system_status_test.elf
+```
+
+#### stm32f429i_disc1
+
+```sh
+stm32f429i_disc1_unit_test_runner --verbose ...
+```
+
+
+**Run tests with the unit test server.**
+
+#### Teensy
+
+```sh
+arduino_test_server --verbose --config-file ./out/arduino_debug/gen/arduino_builder_config.json
+```
+
+#### stm32f429i_disc1
+
+```sh
+stm32f429i_disc1_test_server --verbose ...
 ```

@@ -1,10 +1,51 @@
 # Factory Test Example
 
-Instructions for building with a `teensy40` board.
+|||---|||
+
+*** aside
+#### [00: <br/> Setup](/workshop/README.md)
+
+`Intro + setup.`
+***
+
+*** aside
+#### [01: <br/> Blinky](/workshop/01-blinky/README.md)
+
+`Getting to blink.`
+***
+
+*** aside
+#### [02: <br/> Testing](/workshop/02-string-functions/README.md)
+
+`Writing tests.`
+***
+
+*** aside
+#### [03: <br/> RPC](/workshop/03-rpc/README.md)
+
+`Calling RPCs.`
+***
+
+*** aside
+#### [04: <br/> KVS](/workshop/04-kvs/README.md)
+
+`Key Value Store.`
+***
+
+*** promo
+#### [05: <br/> FactoryTest](/workshop/05-factory-test/README.md)
+
+`Testing in the factory.`
+***
+
+|||---|||
 
 [TOC]
 
+
 ## Build/Flash/Serial
+
+Instructions for building with a `teensy40` board.
 
 1. Create the `out` build directory.
 
