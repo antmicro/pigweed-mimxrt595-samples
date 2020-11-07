@@ -118,7 +118,7 @@ if [ "$(basename "$_BOOTSTRAP_PATH")" = "bootstrap.sh" ] || \
   [ ! -f "$SETUP_SH" ] || \
   [ ! -s "$SETUP_SH" ]; then
   # These arguments will be passed through to Pigweed's env_setup.
-  pw_bootstrap --shell-file "$SETUP_SH" --install-dir "$_PW_ACTUAL_ENVIRONMENT_ROOT" --use-pigweed-defaults --virtualenv-gn-target ".#:python.install"
+  pw_bootstrap --shell-file "$SETUP_SH" --install-dir "$_PW_ACTUAL_ENVIRONMENT_ROOT" --use-pigweed-defaults --virtualenv-gn-target "$PW_PROJECT_ROOT#:python.install" --virtualenv-gn-target "$PW_ROOT#:target_support_packages.install"
   pw_finalize bootstrap "$SETUP_SH"
 else
   pw_activate

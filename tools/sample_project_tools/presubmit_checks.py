@@ -66,8 +66,11 @@ def init_virtualenv(ctx: PresubmitContext):
     environment.init_virtualenv(
         PIGWEED_ROOT,
         ctx.output_dir,
-        gn_targets=(f'{ctx.root}#:python.install',
-                    'third_party/pigweed#:python.install'))
+        gn_targets=(
+            f'{ctx.root}#:python.install',
+            f'{ctx.root}/third_party/pigweed#:python.install',
+            f'{ctx.root}/third_party/pigweed#:target_support_packages.install',
+        ))
 
 
 # Rerun the build if files with these extensions change.
