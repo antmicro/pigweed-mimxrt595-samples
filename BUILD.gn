@@ -40,7 +40,9 @@ group("default") {
 # Hello world group, this will be built using multiple toolchains.
 group("app") {
   deps = []
-  if (current_toolchain != default_toolchain) {
+
+  # pw_rpc codegen is broken on Windows, so it won't be built for host yet.
+  if (current_toolchain != default_toolchain && current_os != "win") {
     deps = [ "//source:hello_world" ]
   }
 }
