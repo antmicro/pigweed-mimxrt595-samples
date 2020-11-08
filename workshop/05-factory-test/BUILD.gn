@@ -26,7 +26,7 @@ config("default_config") {
 }
 
 group("all") {
-  deps = [ ":rpc" ]
+  deps = [ ":factory_test" ]
 
   # Build tokenizer_database for elf binaries only
   if (host_os == "linux" || current_toolchain != "//targets/host:host_debug") {
@@ -34,7 +34,7 @@ group("all") {
   }
 }
 
-pw_executable("rpc") {
+pw_executable("factory_test") {
   sources = [ "main.cc" ]
   deps = [
     "//source/pw_board_led",
@@ -56,7 +56,7 @@ pw_executable("rpc") {
 
 pw_tokenizer_database("tokenizer_database") {
   database = "tokenizer_database.csv"
-  targets = [ ":rpc" ]
+  targets = [ ":factory_test" ]
 }
 
 ################################################################################

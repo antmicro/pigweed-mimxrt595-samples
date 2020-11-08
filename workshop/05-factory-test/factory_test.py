@@ -19,15 +19,20 @@ import logging
 import os
 from pathlib import Path
 import sys
-from typing import Callable, List, Tuple
+from typing import Any, Callable, List, Tuple
 
 import serial  # type: ignore
 
+import pw_cli.log
 from pw_hdlc_lite.rpc import HdlcRpcClient
 from pw_tokenizer.detokenize import AutoUpdatingDetokenizer, detokenize_base64
 
 # Point the script to the .proto file with our RPC services.
-PROTO = Path(os.environ['PW_ROOT']) / 'pw_rpc' / 'pw_rpc_protos' / 'echo.proto'
+PROTOS = (
+    Path(os.environ['PW_ROOT'], 'pw_rpc', 'pw_rpc_protos', 'echo.proto'),
+    Path(os.environ['PW_PROJECT_ROOT'], 'workshop', '03-rpc',
+         'remoticon_proto', 'remoticon.proto'),
+)
 
 _LOG = logging.getLogger('factory_test_example')
 
@@ -36,7 +41,8 @@ class TestFailure(Exception):
     """Indicates that a test failed."""
 
 
-FailedTests = List[Tuple[Callable, TestFailure]]
+TestFunction = Callable[['TestContext'], Any]
+FailedTests = List[Tuple[TestFunction, TestFailure]]
 
 # Set up a detokenizer so logs can be printed in plain text.
 _detokenizer = AutoUpdatingDetokenizer(
@@ -51,6 +57,7 @@ class TestContext:
     """Used to track the state of ongoing tests."""
     def __init__(self, client: HdlcRpcClient):
         self.client = client
+        self.passed: List[TestFunction] = []
         self.failed: FailedTests = []
         self._current_test: str = ''
 
@@ -59,15 +66,27 @@ class TestContext:
         """Returns the RPC accessor object for the device."""
         return self.client.rpcs()
 
-    def run(self, test: Callable) -> None:
+    def run(self, test: TestFunction) -> None:
         """Runs a function as a factory test."""
         try:
             _LOG.info('%s: Running test', test.__name__)
             test(self)
+            self.passed.append(test)
             _LOG.info('%s: PASSED ', test.__name__)
         except TestFailure as failure:
             self.failed.append((test, failure))
             _LOG.info('%s: FAILED - %s', test.__name__, failure)
+
+    def log_results(self):
+        total = len(self.passed) + len(self.failed)
+
+        _LOG.info('%d/%d tests passed', len(self.passed), total)
+
+        if self.failed:
+            _LOG.error('%d/%d  tests FAILED', len(self.failed), total)
+
+            for test, failure in self.failed:
+                _LOG.warning('  %s: %s', test.__name__, failure)
 
 
 def expect_ok(result: tuple):
@@ -89,16 +108,56 @@ def test_echo(ctx: TestContext) -> None:
             raise TestFailure(f'Expected {test_str!r}, got {reply.msg!r}')
 
 
+def test_counter(ctx: TestContext) -> None:
+    """Tests that the super loop is iterating."""
+
+    stats_1 = expect_ok(ctx.rpcs.remoticon.Superloop.GetStats())
+    stats_2 = expect_ok(ctx.rpcs.remoticon.Superloop.GetStats())
+
+    if stats_1.loop_iterations >= stats_2.loop_iterations:
+        raise TestFailure(
+            'Super loop counter is not incrementing! '
+            f'{stats_1.loop_iterations} >= {stats_2.loop_iterations}')
+
+
+def test_led(ctx: TestContext) -> None:
+    """Tests that the LED functions correctly."""
+
+    result = input('Did the LED turn on? (Y/N) ').lower()
+
+    _ = ctx.rpcs  # TODO FOR WORKSHOP: call the RPC to turn on the LED
+
+    if result not in ('y', 'yes', 'yup'):
+        raise TestFailure('LED did not turn on')
+
+    result = input('Did the LED turn off? (Y/N) ').lower()
+
+    _ = ctx.rpcs  # TODO FOR WORKSHOP: call the RPC to turn off the LED
+
+    if result not in ('y', 'yes', 'yup'):
+        raise TestFailure('LED did not turn off')
+
+
 def run_tests(device: str, baud: int) -> FailedTests:
     """Runs the factory tests."""
 
     # Set up a pw_rpc client that uses HDLC.
-    hdlc_client = HdlcRpcClient(serial.Serial(device, baud), [PROTO],
+    hdlc_client = HdlcRpcClient(serial.Serial(device, baud),
+                                PROTOS,
                                 output=detokenize_and_print)
+
+    _LOG.info('Starting factory tests!')
 
     # Create a TestContext and run the tests with it.
     tester = TestContext(hdlc_client)
     tester.run(test_echo)
+    tester.run(test_counter)
+    tester.run(test_led)
+
+    # TODO FOR WORKSHOP: Add a new test.
+
+    _LOG.info('Factory tests completed.')
+    tester.log_results()
 
     return tester.failed
 
@@ -122,5 +181,5 @@ def main() -> int:
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
+    pw_cli.log.install()
     sys.exit(main())
