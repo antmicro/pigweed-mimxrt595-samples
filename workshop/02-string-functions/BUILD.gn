@@ -19,10 +19,12 @@ import("$dir_pw_tokenizer/database.gni")
 import("$dir_pw_unit_test/test.gni")
 
 group("all") {
-  deps = [
-    ":string_demo",
-    ":tokenizer_database",
-  ]
+  deps = [ ":string_demo" ]
+
+  # Build tokenizer_database for elf binaries only
+  if (host_os == "linux" || current_toolchain != "//targets/host:host_debug") {
+    deps += [ ":tokenizer_database" ]
+  }
 }
 
 pw_executable("string_demo") {

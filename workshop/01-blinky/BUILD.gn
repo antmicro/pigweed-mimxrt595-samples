@@ -18,10 +18,12 @@ import("$dir_pw_build/target_types.gni")
 import("$dir_pw_tokenizer/database.gni")
 
 group("all") {
-  deps = [
-    ":blinky",
-    ":tokenizer_database",
-  ]
+  deps = [ ":blinky" ]
+
+  # Build tokenizer_database for elf binaries only
+  if (host_os == "linux" || current_toolchain != "//targets/host:host_debug") {
+    deps += [ ":tokenizer_database" ]
+  }
 }
 
 pw_executable("blinky") {
