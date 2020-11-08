@@ -32,7 +32,9 @@ _library_args = [
       "$dir_pw_third_party_arduino/cores/teensy/hardware/teensy/avr/libraries"),
   "--library-names",
   "Time",
-  "Wire",
+
+  # TODO(tonymd): Wire.h on teensy3 is not working at the moment.
+  # "Wire",
 ]
 
 pw_executable("teensy_time") {
