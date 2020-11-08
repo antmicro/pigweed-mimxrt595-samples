@@ -122,6 +122,7 @@ group("workshop") {
       ":workshop_tests(//targets/arduino:arduino_debug)",
       "//workshop/01-blinky:all(//targets/arduino:arduino_debug)",
       "//workshop/02-string-functions:all(//targets/arduino:arduino_debug)",
+      "//workshop/03-rpc:all(//targets/arduino:arduino_debug)",
       "//workshop/04-kvs:all(//targets/arduino:arduino_debug)",
       "//workshop/05-factory-test:all(//targets/arduino:arduino_debug)",
     ]
