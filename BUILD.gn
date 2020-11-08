@@ -119,7 +119,7 @@ group("workshop") {
   # Teensy 3.0/4.0 workshop steps.
   if (dir_pw_third_party_arduino != "") {
     deps += [
-      ":workshop_tests(//targets/arduino:arduino_debug)",
+      ":workshop_tests(//targets/arduino:arduino_debug_tests)",
       "//workshop/01-blinky:all(//targets/arduino:arduino_debug)",
       "//workshop/02-string-functions:all(//targets/arduino:arduino_debug)",
       "//workshop/03-rpc:all(//targets/arduino:arduino_debug)",
@@ -130,7 +130,7 @@ group("workshop") {
 
   # STMicroelectronics STM32F429I-DISC1 workshop steps.
   deps += [
-    ":workshop_tests(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)",
+    ":workshop_tests(//targets/stm32f429i-disc1:stm32f429i_disc1_debug_tests)",
     "//workshop/01-blinky:blinky(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)",
     "//workshop/02-string-functions:all(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)",
     "//workshop/04-kvs:all(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)",
@@ -139,7 +139,7 @@ group("workshop") {
 
   # Host workshop steps.
   deps += [
-    ":workshop_tests(//targets/host:host_debug)",
+    ":workshop_tests(//targets/host:host_debug_tests)",
     "//workshop/01-blinky:all(//targets/host:host_debug)",
     "//workshop/02-string-functions:all(//targets/host:host_debug)",
   ]
