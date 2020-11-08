@@ -46,53 +46,132 @@
 
 TBD...
 
-## Repo Setup
+## 1. Host Machine Setup
 
-Clone this repo with:
+Python and Git are the only prerequisites for getting started with
+Pigweed. Download and install if you don't already have them available.
+
+**Windows**
+
+1. Use the Windows installers for Python and Git from:
+
+   - https://www.python.org/downloads/windows/
+   - https://git-scm.com/download/win
+
+   Make sure to add them to your system path during installation.
+
+2. Enable long file paths enabled on Windows. This can be done using `regedit`
+   or by running this as an administrator:
+
+   ```bat
+   REG ADD HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem /v LongPathsEnabled /t REG_DWORD /d 1
+   ```
+
+**Linux**
+
+If you are using a [Teensy 3.x or
+4.x](https://www.pjrc.com/teensy/td_download.html) board for the first time on a
+Linux machine you will need to install the udev rules from:
+https://www.pjrc.com/teensy/49-teensy.rules
+
+**Mac**
+
+Python and Git should be installed by default on Mac OS.
+
+## 2. Repo Setup
+
+Open a Terminal (`cmd.exe` on Windows) and clone this repo with:
 
 ```sh
 git clone --recursive https://pigweed.googlesource.com/pigweed/sample_project
 ```
 
-No worries if you missed `--recursive`! Run `git submodules update --init` to pull `third_party/nanopb` and `third_party/pigweed`.
+*** note
+No worries if you missed `--recursive`! Run this to pull `third_party/nanopb`
+and `third_party/pigweed`.
 
-To pull new changes down run:
+```sh
+git submodules update --init
+```
+
+If you want to pull new changes run:
 
 ```sh
 git pull --recurse-submodules
 ```
+***
 
-## Using GN
+## 3. Run `bootstrap`
+
+After cloning the build tools can be installed with the `bootstrap`
+scripts. This is only required after the initial clone or updating Pigweed.
+
+**Windows**
+
+```sh
+bootstrap.bat
+```
+
+**Linux & Mac**
+
+```sh
+. bootstrap.sh
+```
+
+After the initial bootstrap, use the `activate` scripts to setup your shell for
+development.
+
+**Windows**
+
+```sh
+activate.bat
+```
+
+**Linux & Mac**
+
+```sh
+. activate.sh
+```
+
+
+## Using GN and Ninja
 
 ### Basics
 
-* Create a build directory named `out`.
+- Create a build directory named `out`.
 
   ```sh
   gn gen out
   ```
 
-* Set build options with `gn args`.
+- Set build options with `gn args`.
 
   ```sh
   gn args out
   ```
 
-* Compile with
+- Compile with
 
   ```sh
   ninja -C out
   ```
 
+- Clean by deleting the out folder or running:
+
+  ```sh
+  ninja -C out -t clean
+  ```
+
+
 ### Inspecting
 
-* List buildable targets.
+- List buildable targets.
 
   ```sh
   gn ls out
   ```
 
-* Inspect a target to see it's dependencies, `cflags`, `ldflags`, etc.
+- Inspect a target to see it's dependencies. E.g. `cflags`, `ldflags`, etc.
 
   **Teensy**
   ```sh
@@ -111,7 +190,8 @@ git pull --recurse-submodules
 
 ### Editor Integration
 
-Use `--export-compile-commands` to create the `out/compile_commands.json` file for use with lsp servers like `clangd`.
+Use `--export-compile-commands` to create the `out/compile_commands.json` file
+for use with lsp servers like `clangd`.
 
 ```sh
 gn gen out --export-compile-commands
@@ -119,11 +199,11 @@ gn gen out --export-compile-commands
 
 `clangd` can be integrating with various text editor extensions such as:
 
-* [VSCode clangd](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd)
-* [emacs lsp-mode](https://github.com/emacs-lsp/lsp-mode)
-* [vim lsp](https://github.com/prabirshrestha/vim-lsp)
+- [VSCode clangd](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd)
+- [emacs lsp-mode](https://github.com/emacs-lsp/lsp-mode)
+- [vim lsp](https://github.com/prabirshrestha/vim-lsp)
 
 ### Further Reading
 
-* [GN Quick Start Guide](https://gn.googlesource.com/gn/+/master/docs/quick_start.md)
-* [GN Reference](https://gn.googlesource.com/gn/+/master/docs/reference.md)
+- [GN Quick Start Guide](https://gn.googlesource.com/gn/+/master/docs/quick_start.md)
+- [GN Reference](https://gn.googlesource.com/gn/+/master/docs/reference.md)
