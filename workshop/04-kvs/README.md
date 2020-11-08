@@ -11,7 +11,7 @@
 *** aside
 #### [01: <br/> Blinky](/workshop/01-blinky/README.md)
 
-`Getting to blink.`
+`Getting to blinky.`
 ***
 
 *** aside

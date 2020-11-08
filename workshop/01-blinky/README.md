@@ -11,7 +11,7 @@
 *** promo
 #### [01: <br/> Blinky](/workshop/01-blinky/README.md)
 
-`Getting to blink.`
+`Getting to blinky.`
 ***
 
 *** aside
@@ -42,7 +42,7 @@
 
 [TOC]
 
-## Demo: Build/Flash/Serial
+## Build/Flash/Serial
 
 Instructions for building with a `teensy40` board.
 

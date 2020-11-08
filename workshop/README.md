@@ -40,13 +40,13 @@
 
 |||---|||
 
+![logo](/images/site_logo.png)
+
 [TOC]
 
 ## Intro
 
----
-
-TBD...
+Welcome! ...
 
 ## 1. Host Machine Setup
 
