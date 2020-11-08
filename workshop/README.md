@@ -44,9 +44,13 @@
 
 ## Intro
 
+---
+
 TBD...
 
 ## 1. Host Machine Setup
+
+---
 
 Python and Git are the only prerequisites for getting started with
 Pigweed. Download and install if you don't already have them available.
@@ -80,6 +84,8 @@ Python and Git should be installed by default on Mac OS.
 
 ## 2. Repo Setup
 
+---
+
 Open a Terminal (`cmd.exe` on Windows) and clone this repo with:
 
 ```sh
@@ -102,6 +108,8 @@ git pull --recurse-submodules
 ***
 
 ## 3. Run `bootstrap`
+
+---
 
 After cloning the build tools can be installed with the `bootstrap`
 scripts. This is only required after the initial clone or updating Pigweed.
@@ -133,8 +141,97 @@ activate.bat
 . activate.sh
 ```
 
+## 4. Install Teensyduino Core
 
-## Using GN and Ninja
+---
+
+To build for Arduino boards you must install a core. At this time only the
+[Teensyduino core](https://www.pjrc.com/teensy/td_download.html) is
+supported. Check the Pigweed [Arduino target
+docs](https://pigweed.dev/targets/arduino/target_docs.html) for more info.
+
+All Arduino cores should be installed into
+`third_party/pigweed/third_party/arduino/cores/`
+
+Run this to install the Teensy core:
+
+```sh
+arduino_builder install-core --prefix third_party/pigweed/third_party/arduino/cores/ --core-name teensy
+```
+
+## 5. Build!
+
+---
+
+### STM32F429i Discovery Board
+
+To build for the `stm32f429i_disc1` board run:
+
+```sh
+gn gen out
+```
+
+Then start the compile with:
+
+```sh
+ninja -C out
+```
+
+
+### Teensy 3.x/4.x
+
+To build for a Teensy 4.0 board run the following.
+
+**Windows**
+
+Run `gn args out` which will open a text editor. Paste in the following, save and
+close the editor.
+
+```sh
+dir_pw_third_party_arduino="//third_party/pigweed/third_party/arduino"
+arduino_core_name="teensy"
+arduino_board="teensy40"
+arduino_menu_options=["menu.usb.serial", "menu.keys.en-us"]
+pw_arduino_use_test_server=false
+```
+
+The `arduino_board` arg can be set to any of these:
+
+- `"teensy31"` - Teensy 3.2 / 3.1
+- `"teensy35"` - Teensy 3.5
+- `"teensy36"` - Teensy 3.6
+- `"teensy40"` - Teensy 4.0
+- `"teensy41"` - Teensy 4.1
+
+After `gn` is done, compile everything with:
+
+```sh
+ninja -C out
+```
+
+**Linux & Mac**
+
+You can use `gn args out` as shown above or include the args on the command line:
+
+```sh
+gn gen out --args='
+  dir_pw_third_party_arduino="//third_party/pigweed/third_party/arduino"
+  arduino_core_name="teensy"
+  arduino_board="teensy40"
+  arduino_menu_options=["menu.usb.serial", "menu.keys.en-us"]
+  pw_arduino_use_test_server=false
+'
+```
+
+After `gn` is done, compile everything with:
+
+```sh
+ninja -C out
+```
+
+## GN and Ninja Reference
+
+---
 
 ### Basics
 
