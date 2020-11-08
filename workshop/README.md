@@ -126,7 +126,7 @@ bootstrap.bat
 **Linux & Mac**
 
 ```sh
-. bootstrap.sh
+. ./bootstrap.sh
 ```
 
 After the initial bootstrap, use the `activate` scripts to setup your shell for
@@ -141,7 +141,7 @@ activate.bat
 **Linux & Mac**
 
 ```sh
-. activate.sh
+. ./activate.sh
 ```
 
 ## 4. Install Teensyduino Core
