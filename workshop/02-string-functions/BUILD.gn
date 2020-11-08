@@ -56,9 +56,4 @@ pw_test("system_status_test") {
 
 pw_test_group("tests") {
   tests = [ ":system_status_test" ]
-  group_deps = [
-    "$dir_pw_preprocessor:tests",
-    "$dir_pw_span:tests",
-    "$dir_pw_status:tests",
-  ]
 }

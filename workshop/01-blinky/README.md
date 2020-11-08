@@ -42,7 +42,7 @@
 
 [TOC]
 
-## Build/Flash/Serial
+## Build and Flash
 
 Instructions for building with a `teensy40` board.
 
@@ -80,18 +80,20 @@ Instructions for building with a `teensy40` board.
    arduino_unit_test_runner --config out/arduino_debug/gen/arduino_builder_config.json --upload-tool teensyloader --verbose --flash-only out/arduino_debug/obj/workshop/01-blinky/bin/blinky.elf
    ```
 
-1. Tail the output with `miniterm`, (use `Ctrl-]` to quit).
+## Viewing Plain Text Log Output
 
-   *** note
-   **Note:** This will only work when `pw_log_BACKEND = "$dir_pw_log_basic"`
-   is set in `//targets/common_backends.gni`.
-   ***
+*** note
+**Note:** This will only work when `pw_log_BACKEND = "$dir_pw_log_basic"` is set
+in `//targets/common_backends.gni`.
+***
 
-   ```sh
-   python -m serial.tools.miniterm --raw - 115200
-   ```
+Tail the output with `miniterm`, (use `Ctrl-]` to quit).
 
-## Viewing Tokenized Log Output
+```sh
+python -m serial.tools.miniterm --raw - 115200
+```
+
+## Viewing HDLC Encoded Log Output
 
 1. **Optional:** Create / update the log token database. This will be automatically updated when compiling.
 
@@ -107,20 +109,7 @@ Instructions for building with a `teensy40` board.
    python -m pw_tokenizer.database create --force --database workshop/01-blinky/tokenizer_database.csv out/arduino_debug/obj/workshop/01-blinky/bin/blinky.elf
    ```
 
-
-1. Flash `blinky.elf` and watch the serial output with:
-
-   *** note
-   **Note:** This will only work when `pw_log_BACKEND = "$dir_pw_log_tokenized:log_backend"`
-   is set in `//targets/common_backends.gni`.
-   ***
-
-
-   ```sh
-   python -m pw_tokenizer.serial_detokenizer --device /dev/ttyACM0 --baudrate 115200 workshop/01-blinky/tokenizer_database.csv
-   ```
-
-## Viewing HLDC Encoded Log Output
+1. Flash `blinky.elf`.
 
 1. Start the rpc_console that saves log output to a file.
 

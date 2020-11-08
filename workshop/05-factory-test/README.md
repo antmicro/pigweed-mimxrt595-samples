@@ -122,7 +122,7 @@ Instructions for building with a `teensy40` board.
    python -m pw_tokenizer.serial_detokenizer --device /dev/ttyACM0 --baudrate 115200 workshop/05-factory-test/tokenizer_database.csv
    ```
 
-## Viewing HLDC Encoded Log Output
+## Viewing HDLC Encoded Log Output
 
 1. Start the rpc_console that saves log output to a file.
 

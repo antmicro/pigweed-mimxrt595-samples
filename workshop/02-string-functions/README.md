@@ -128,33 +128,45 @@ It can be added to
   are not supported in Pigweed yet.
 ***
 
-### Step 1: Run Tests
+## Runing Tests
 
-**Running a single test manually.**
+### Run a Single Test Manually
 
-#### Teensy
+After compiling use `arduino_unit_test_runner` to flash and check test output.
 
-```sh
-arduino_unit_test_runner --config out/arduino_debug/gen/arduino_builder_config.json --upload-tool teensyloader --verbose --flash-only out/arduino_debug/obj/workshop/02-string-functions/test/system_status_test.elf
-```
+   **Teensy**
 
-#### stm32f429i_disc1
+   ```sh
+   arduino_unit_test_runner --config out/arduino_debug/gen/arduino_builder_config.json --upload-tool teensyloader --verbose out/arduino_debug/obj/workshop/02-string-functions/test/system_status_test.elf
+   ```
 
-```sh
-stm32f429i_disc1_unit_test_runner --verbose ...
-```
+   **stm32f429i_disc1**
+
+   ```sh
+   stm32f429i_disc1_unit_test_runner --verbose out/stm32f429i_disc1_debug/obj/workshop/02-string-functions/test/system_status_test.elf
+   ```
 
 
-**Run tests with the unit test server.**
+### Using the Test Server.
 
-#### Teensy
+1. Make sure the `pw_arduino_use_test_server=true` build arg is set.
 
-```sh
-arduino_test_server --verbose --config-file ./out/arduino_debug/gen/arduino_builder_config.json
-```
+1. Start the unit test server for your board.
 
-#### stm32f429i_disc1
+   **Teensy**
 
-```sh
-stm32f429i_disc1_test_server --verbose ...
-```
+   ```sh
+   arduino_test_server --verbose --config-file ./out/arduino_debug/gen/arduino_builder_config.json
+   ```
+
+   **stm32f429i_disc1**
+
+   ```sh
+   stm32f429i_disc1_test_server --verbose
+   ```
+
+1. In a separate terminal start pw watch.
+
+   ```sh
+   pw watch out
+   ```
