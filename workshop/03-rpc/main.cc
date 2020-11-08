@@ -25,7 +25,12 @@
 #include "pw_rpc/echo_service_nanopb.h"
 #include "pw_rpc/server.h"
 #include "pw_spin_delay/delay.h"
-// TODO FOR WORKSHOP: Include your RPC service declaration here!
+#include "remoticon/remoticon_service_nanopb.h"
+
+// ------------------- superloop data -------------------
+// This is some "application" state that eventually exported by RPCs.
+
+unsigned superloop_iterations;
 
 // ------------------- pw_rpc subsystem setup -------------------
 // There are multiple ways to plumb pw_rpc in your product. In the future,
@@ -71,11 +76,13 @@ pw::hdlc_lite::Decoder hdlc_decoder(input_buffer);
 
 // ------------------- pw_rpc service registration  -------------------
 pw::rpc::EchoService echo_service;
+remoticon::SuperloopService superloop_service(superloop_iterations);
 
 // TODO FOR WORKSHOP: Declare your service object here!
 
 void RegisterServices() {
   server.RegisterService(echo_service);
+  server.RegisterService(superloop_service);
   // TODO FOR WORKSHOP: Register your service here!
 }
 
@@ -119,8 +126,6 @@ void ParseByteFromUartAndHandleRpcs() {
     return;
   }
 
-  pw::board_led::Toggle();
-
   // Packet was validated and correct (CRC, etc); so send it to the RPC server.
   // The RPC server may send response packets before returning from this call.
   server.ProcessPacket(hdlc_frame.data(), hdlc_channel_output);
@@ -129,7 +134,10 @@ void ParseByteFromUartAndHandleRpcs() {
 // TODO FOR WORKSHOP: Add an RPC to change the blink time.
 int state = 0;
 int counter = 0;
+// TODO FOR WORKSHOP: Change this value. 5M is good for Teensy 4.0; what value
+// is good for the Discovery?
 int counter_max = 5'000'000;
+
 void Blink() {
   // Toggle the state if needed.
   counter += 1;
@@ -150,7 +158,7 @@ void Blink() {
   }
 }
 
-// TODO FOR WORKSHOP: Why doesn't this work instead of Blink() above?
+// TODO FOR WORKSHOP: Why doesn't this work, when of Blink() above does?
 void BlinkNoWorky() {
   PW_LOG_INFO("Blink High!");
   pw::board_led::TurnOn();
@@ -171,9 +179,13 @@ int main() {
   while (true) {
     // Toggle the LED if needed.
     Blink();
+    // BlinkNoWorky();  // Pop quiz: This doesn't work. Why?
 
     // Examine incoming serial byte; if a packet finished, send it to RPC.
     ParseByteFromUartAndHandleRpcs();
+
+    // Increment the number of iterations.
+    superloop_iterations++;
   }
 
   return 0;
