@@ -100,7 +100,7 @@ No worries if you missed `--recursive`! Run this to pull `third_party/nanopb`
 and `third_party/pigweed`.
 
 ```sh
-git submodules update --init
+git submodule update --init
 ```
 
 If you want to pull new changes run:
