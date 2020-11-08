@@ -52,13 +52,13 @@ constexpr size_t kMaxTransmissionUnit = 256;  // bytes
 
 // Used to write HDLC data to pw::sys_io. This is an implementation of the
 // pw::stream::Stream interface.
-pw::stream::SysIoWriter writer;
+pw::stream::SysIoWriter sys_io_writer;
 
 // Set up the output channel for the pw_rpc server to use. This one happens to
 // implement the packet in / packet out with HDLC. pw_rpc can use any
 // ChannelOptput implementation, including custom ones for your product.
 pw::hdlc_lite::RpcChannelOutputBuffer<kMaxTransmissionUnit> hdlc_channel_output(
-    writer, pw::hdlc_lite::kDefaultRpcAddress, "HDLC channel");
+    sys_io_writer, pw::hdlc_lite::kDefaultRpcAddress, "HDLC channel");
 
 // A pw::rpc::Server can have multiple channels (e.g. a UART and a BLE
 // connection). In this case, there is only one (HDLC over UART).

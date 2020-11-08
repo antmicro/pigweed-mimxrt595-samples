@@ -133,6 +133,7 @@ group("workshop") {
     ":workshop_tests(//targets/stm32f429i-disc1:stm32f429i_disc1_debug_tests)",
     "//workshop/01-blinky:blinky(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)",
     "//workshop/02-string-functions:all(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)",
+    "//workshop/03-rpc:all(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)",
     "//workshop/04-kvs:all(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)",
     "//workshop/05-factory-test:all(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)",
   ]

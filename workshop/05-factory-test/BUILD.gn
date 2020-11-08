@@ -16,10 +16,17 @@ import("//build_overrides/pigweed.gni")
 
 import("$dir_pw_build/python.gni")
 import("$dir_pw_build/target_types.gni")
+import("$dir_pw_protobuf_compiler/proto.gni")
+import("$dir_pw_third_party/nanopb/nanopb.gni")
 import("$dir_pw_tokenizer/database.gni")
+import("$dir_pw_unit_test/test.gni")
+
+config("default_config") {
+  include_dirs = [ "public" ]
+}
 
 group("all") {
-  deps = [ ":factory_test" ]
+  deps = [ ":rpc" ]
 
   # Build tokenizer_database for elf binaries only
   if (host_os == "linux" || current_toolchain != "//targets/host:host_debug") {
@@ -27,21 +34,48 @@ group("all") {
   }
 }
 
-pw_executable("factory_test") {
+pw_executable("rpc") {
   sources = [ "main.cc" ]
   deps = [
-    "$dir_pw_kvs",
-    "$dir_pw_kvs:fake_flash",
-    "$dir_pw_log",
-    "$dir_pw_rpc/nanopb:echo_service",
     "//source/pw_board_led",
     "//source/pw_spin_delay",
+    dir_pw_log,
+
+    # RPC related dependencies.
+    "$dir_pw_hdlc_lite:pw_rpc",
+    "$dir_pw_rpc:server",
+    dir_pw_hdlc_lite,
+
+    # This is the service we are implementing!
+    ":remoticon_service_nanopb",
+
+    # This is an example service that just responds with that it was sent.
+    "$dir_pw_rpc/nanopb:echo_service",
   ]
 }
 
 pw_tokenizer_database("tokenizer_database") {
   database = "tokenizer_database.csv"
-  targets = [ ":factory_test" ]
+  targets = [ ":rpc" ]
+}
+
+################################################################################
+# Service
+
+pw_source_set("remoticon_service_nanopb") {
+  public_configs = [ ":default_config" ]
+  public_deps = [ "//workshop/03-rpc:remoticon_proto.nanopb_rpc" ]
+  public = [ "public/remoticon/remoticon_service_nanopb.h" ]
+  deps = [ "//workshop/03-rpc:remoticon_proto.nanopb_rpc" ]
+  sources = [ "remoticon_service_nanopb.cc" ]
+}
+
+pw_test("remoticon_service_nanopb_test") {
+  deps = [
+    ":remoticon_service_nanopb",
+    "$dir_pw_rpc/nanopb:test_method_context",
+  ]
+  sources = [ "remoticon_service_nanopb_test.cc" ]
 }
 
 pw_python_script("factory_test_script") {
