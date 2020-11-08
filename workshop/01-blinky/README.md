@@ -42,6 +42,11 @@
 
 [TOC]
 
+## Goal
+
+Blinky introduces the basics of building, flashing and checking log output. The
+instructions here will be the same for each exercise and binary to be flashed.
+
 ## Build and Flash
 
 Instructions for building with a `teensy40` board.

@@ -75,7 +75,7 @@ but passing in a different `.elf`.
 1. Start the rpc_console that saves log output to a file.
 
    ```sh
-   python -m pw_hdlc_lite.rpc_console -o logfile.txt -d /dev/ttyACM0 third_party/pigweed/pw_rpc/pw_rpc_protos/echo.proto
+   python -m pw_hdlc_lite.rpc_console -o logfile.txt -d /dev/ttyACM0 third_party/pigweed/pw_rpc/pw_rpc_protos/echo.proto workshop/03-rpc/remoticon_proto/remoticon.proto
    ```
 
    This will launch an interactive `ipython` console where you can send

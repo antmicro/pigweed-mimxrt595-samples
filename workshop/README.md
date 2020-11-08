@@ -206,7 +206,8 @@ The `arduino_board` arg can be set to any of these:
 - `"teensy40"` - Teensy 4.0
 - `"teensy41"` - Teensy 4.1
 
-After `gn` is done, compile everything with:
+Args need only be set once per `out` directory. After setting them `gn gen out`
+alone can be used. Once `gn` is done, compile everything with:
 
 ```sh
 ninja -C out
@@ -271,7 +272,14 @@ ninja -C out
   gn ls out
   ```
 
-- Inspect a target to see it's dependencies. E.g. `cflags`, `ldflags`, etc.
+- Inspect a target to see it's dependencies. E.g. `cflags`, `ldflags`,
+  etc.
+
+  *** promo
+  Target names start with a `//` to denote the root level of the
+  project. The format in this example is
+  `//{FOLDER1}/{$FOLDER2}:{BUILD.gn_TARGET_NAME}({TOOLCHAIN})`
+  ***
 
   **Teensy**
   ```sh
