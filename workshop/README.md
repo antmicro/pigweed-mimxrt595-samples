@@ -46,7 +46,10 @@
 
 ## Intro
 
-Welcome! ...
+Welcome! In this workshop we will introduce some of the more compelling Pigweed
+features that make embedded product development easier.
+
+You can find each section linked above numbering `00` to `05`.
 
 ## 1. Host Machine Setup
 
@@ -284,6 +287,17 @@ ninja -C out
   ```sh
   gn desc out "//workshop/01-blinky:blinky(//targets/host:host_debug)" --tree
   ```
+
+### ccache
+
+Pigweed can make use of `ccache` if you have it available on your system
+`PATH`. This will speed up recompiling previously compiled artifacts
+dramatically. Useful if you regularly clean your out directory. Set this build
+arg to enable:
+
+```text
+pw_command_launcher="ccache"
+```
 
 ### Editor Integration
 

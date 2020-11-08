@@ -46,7 +46,7 @@
 
 Instructions for building with a `teensy40` board.
 
-1. Create the `out` build directory.
+1. Create the `out` build directory if needed.
 
    ```sh
    gn gen out --export-compile-commands --args='
@@ -57,34 +57,28 @@ Instructions for building with a `teensy40` board.
    '
    ```
 
-1. Run the compile.
-
-   ```sh
-   ninja -C out
-   ```
+1. Run the compile with `pw watch out` or `ninja -C out`.
 
 1. Flash `blinky.elf`.
 
-   ```sh
-   arduino_unit_test_runner \
-     --config out/arduino_debug/gen/arduino_builder_config.json \
-     --upload-tool teensyloader \
-     --verbose \
-     --flash-only \
-     out/arduino_debug/obj/workshop/01-blinky/bin/blinky.elf
-   ```
-
-   **Single line:**
+   **Teensy**
 
    ```sh
-   arduino_unit_test_runner --config out/arduino_debug/gen/arduino_builder_config.json --upload-tool teensyloader --verbose --flash-only out/arduino_debug/obj/workshop/01-blinky/bin/blinky.elf
+   arduino_unit_test_runner --verbose --config out/arduino_debug/gen/arduino_builder_config.json --upload-tool teensyloader --flash-only out/arduino_debug/obj/workshop/01-blinky/bin/blinky.elf
    ```
 
-## Viewing Plain Text Log Output
+   **stm32f429i_disc1**
+
+   ```sh
+   openocd -s ${PW_PIGWEED_CIPD_INSTALL_DIR}/share/openocd/scripts -f ${PW_ROOT}/targets/stm32f429i-disc1/py/stm32f429i_disc1_utils/openocd_stm32f4xx.cfg -c "program out/stm32f429i_disc1_debug/obj/workshop/01-blinky/bin/blinky.elf reset exit"
+   ```
+
+## View Plain Text Log Output
 
 *** note
 **Note:** This will only work when `pw_log_BACKEND = "$dir_pw_log_basic"` is set
-in `//targets/common_backends.gni`.
+in `//targets/common_backends.gni`. The default is set to use tokenized logging
+over HDLC as shown below.
 ***
 
 Tail the output with `miniterm`, (use `Ctrl-]` to quit).
@@ -93,23 +87,13 @@ Tail the output with `miniterm`, (use `Ctrl-]` to quit).
 python -m serial.tools.miniterm --raw - 115200
 ```
 
-## Viewing HDLC Encoded Log Output
+## View HDLC Encoded Log Output
 
 1. **Optional:** Create / update the log token database. This will be automatically updated when compiling.
 
    ```sh
-   python -m pw_tokenizer.database create --force \
-     --database workshop/01-blinky/tokenizer_database.csv \
-     out/arduino_debug/obj/workshop/01-blinky/bin/blinky.elf
-   ```
-
-   **Single line**
-
-   ```sh
    python -m pw_tokenizer.database create --force --database workshop/01-blinky/tokenizer_database.csv out/arduino_debug/obj/workshop/01-blinky/bin/blinky.elf
    ```
-
-1. Flash `blinky.elf`.
 
 1. Start the rpc_console that saves log output to a file.
 
@@ -119,14 +103,6 @@ python -m serial.tools.miniterm --raw - 115200
 
 1. Tail the log output.
 
-   **Linux & Mac**
-
    ```sh
-   tail -F logfile.txt | python -m pw_tokenizer.detokenize base64 workshop/01-blinky/tokenizer_database.csv
-   ```
-
-   **Windows**
-
-   ```sh
-   python -m pw_tokenizer.detokenize base64 workshop/01-blinky/tokenizer_database.csv -i logfile.txt
+   python -m pw_tokenizer.detokenize base64 workshop/01-blinky/tokenizer_database.csv -i logfile.txt --follow
    ```

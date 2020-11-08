@@ -42,47 +42,20 @@
 
 [TOC]
 
-## Build/Flash/Serial
+## Build and Flash
 
-Instructions for building with a `teensy40` board.
+Instructions are the same as flashing [blinky](/workshop/01-blinky/README.md)
+but passing in a different `.elf`.
 
-1. Create the `out` build directory.
+1. Run the compile with `pw watch out` or `ninja -C out`.
 
-   ```sh
-   gn gen out --export-compile-commands --args='
-       arduino_board="teensy40"
-       dir_pw_third_party_arduino="//third_party/pigweed/third_party/arduino"
-       arduino_core_name="teensy"
-       pw_arduino_use_test_server=false
-   '
-   ```
-
-1. Run the compile.
-
-   ```sh
-   ninja -C out
-   ```
-
-1. Flash.
-
-   ```sh
-   arduino_unit_test_runner \
-     --config out/arduino_debug/gen/arduino_builder_config.json \
-     --upload-tool teensyloader \
-     --verbose \
-     --flash-only \
-     out/arduino_debug/obj/workshop/02-string-functions/bin/string_demo.elf
-   ```
-
-   **Single line:**
+1. Flash the test `.elf`
 
    ```sh
    arduino_unit_test_runner --config out/arduino_debug/gen/arduino_builder_config.json --upload-tool teensyloader --verbose --flash-only out/arduino_debug/obj/workshop/02-string-functions/bin/string_demo.elf
    ```
 
-1. Tail the output. If using plaintext logging using
-   `pw_log_BACKEND = "$dir_pw_log_basic"` use `miniterm`, (use `Ctrl-]` to
-   quit).
+1. Tail the output with `miniterm`, (use `Ctrl-]` to quit).
 
    ```sh
    python -m serial.tools.miniterm --raw - 115200
@@ -109,6 +82,12 @@ Instructions for building with a `teensy40` board.
 
    --- exit ---
    ```
+
+   All tests are set to use plain text logging. This is specified by the
+   `pw_log_BACKEND` variable in the `target_toolchain.gni` files. For example
+   the `arduino_debug_tests` toolchain in
+   [`//targets/arduino/target_toolchains.gni`](/targets/arduino/target_toolchains.gni)
+   defines: `pw_log_BACKEND = "$dir_pw_log_basic"`
 
 ## Exercise
 
