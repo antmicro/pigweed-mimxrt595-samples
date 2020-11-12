@@ -150,6 +150,11 @@ group("workshop") {
 pw_test_group("tests") {
   group_deps = [
     "//source/simple_counter:tests",
+
+    # Disable teensy flash tests until the patcher is available.
+    # To enable: uncomment this and modify eeprom.c to remove static from
+    # flash_write() and flash_erase_sector()
+    # "//source/teensy_flash:tests",
     "//workshop/02-string-functions:tests",
   ]
 }

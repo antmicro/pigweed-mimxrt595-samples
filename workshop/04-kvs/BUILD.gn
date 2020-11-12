@@ -14,6 +14,7 @@
 
 import("//build_overrides/pigweed.gni")
 
+import("$dir_pw_arduino_build/arduino.gni")
 import("$dir_pw_build/target_types.gni")
 import("$dir_pw_tokenizer/database.gni")
 
@@ -30,10 +31,23 @@ pw_executable("kvs") {
   sources = [ "main.cc" ]
   deps = [
     "$dir_pw_kvs",
-    "$dir_pw_kvs:fake_flash",
+    "$dir_pw_kvs:flash_test_partition",
     "$dir_pw_log",
     "//source/pw_board_led",
+    "//source/pw_spin_delay",
   ]
+
+  # Disable teensy flash tests until the patcher is available.
+  # To enable: uncomment this and modify eeprom.c to remove static from
+  # flash_write() and flash_erase_sector()
+  # if (pw_build_EXECUTABLE_TARGET_TYPE == "arduino_executable" &&
+  #     dir_pw_third_party_arduino != "" &&
+  #     (arduino_board == "teensy40" || arduino_board == "teensy41")) {
+  #   deps += [ "//source/teensy_flash:teensy_flash_test_partition" ]
+  # } else {
+  deps += [ "$dir_pw_kvs:fake_flash_small_partition" ]
+
+  # }
 }
 
 pw_tokenizer_database("tokenizer_database") {
