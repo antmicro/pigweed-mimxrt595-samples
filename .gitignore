@@ -3,6 +3,9 @@ out/
 .presubmit/
 compile_commands.json
 
+# Environment
+.environment
+
 # Editors
 .idea/
 .project
