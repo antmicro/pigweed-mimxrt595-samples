@@ -43,6 +43,7 @@ pw_executable("rpc") {
     # RPC related dependencies.
     "$dir_pw_hdlc_lite:pw_rpc",
     "$dir_pw_rpc:server",
+    "$dir_pw_stream:sys_io_stream",
     dir_pw_hdlc_lite,
 
     # This is the service we are implementing!

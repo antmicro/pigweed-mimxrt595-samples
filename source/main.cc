@@ -20,10 +20,10 @@
 #include "pw_hdlc_lite/encoder.h"
 #include "pw_hdlc_lite/rpc_channel.h"
 #include "pw_hdlc_lite/rpc_packets.h"
-#include "pw_hdlc_lite/sys_io_stream.h"
 #include "pw_log/log.h"
 #include "pw_rpc/echo_service_nanopb.h"
 #include "pw_rpc/server.h"
+#include "pw_stream/sys_io_stream.h"
 #include "simple_counter/simple_counter.h"
 
 namespace {

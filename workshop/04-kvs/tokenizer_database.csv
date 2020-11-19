@@ -30,6 +30,7 @@
 2f70d33f,          ,"KVS Sector descriptors:"
 316ccf72,          ,"KVS    Found corrupt entry, invalidating this copy of the key"
 3444a941,          ,"KVS    Transaction  = %u"
+3529625f,          ,"KVS KVS init failed: FlashParition sector count (=%u) must be at 2. KVS requires at least 1 working sector + 1 free/reserved sector"
 38a2f82f,          ,"KVS Found stale entry when appending; ignoring"
 39218c10,          ,"KVS    Find empty sector"
 3e5baea1,          ,"KVS Found space for entry in sector %u at address %u"

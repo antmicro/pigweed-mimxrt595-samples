@@ -29,6 +29,7 @@ pw_executable("hello_world") {
     "$dir_pw_hdlc_lite:pw_rpc",
     "$dir_pw_rpc:server",
     "$dir_pw_rpc/nanopb:echo_service",
+    "$dir_pw_stream:sys_io_stream",
     "//source/simple_counter:simple_counter",
   ]
 }

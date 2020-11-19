@@ -20,11 +20,11 @@
 #include "pw_hdlc_lite/encoder.h"
 #include "pw_hdlc_lite/rpc_channel.h"
 #include "pw_hdlc_lite/rpc_packets.h"
-#include "pw_hdlc_lite/sys_io_stream.h"
 #include "pw_log/log.h"
 #include "pw_rpc/echo_service_nanopb.h"
 #include "pw_rpc/server.h"
 #include "pw_spin_delay/delay.h"
+#include "pw_stream/sys_io_stream.h"
 #include "remoticon/remoticon_service_nanopb.h"
 
 // ------------------- superloop data -------------------
