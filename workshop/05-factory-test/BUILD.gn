@@ -84,4 +84,5 @@ pw_python_script("factory_test_script") {
     "$dir_pw_hdlc_lite/py",
     "$dir_pw_rpc/py",
   ]
+  pylintrc = "$dir_pigweed/.pylintrc"
 }

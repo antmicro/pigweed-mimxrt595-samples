@@ -23,4 +23,5 @@ pw_python_package("tools") {
     "sample_project_tools/presubmit_checks.py",
   ]
   python_deps = [ "$dir_pw_cli/py" ]
+  pylintrc = "$dir_pigweed/.pylintrc"
 }
