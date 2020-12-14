@@ -87,12 +87,6 @@ def default_build(ctx: PresubmitContext):
     build.ninja(ctx.output_dir)
 
 
-def host_tests(ctx: PresubmitContext):
-    """Runs tests on host."""
-    build.gn_gen(PROJECT_ROOT, ctx.output_dir, run_host_tests='true')
-    build.ninja(ctx.output_dir)
-
-
 def check_for_git_changes(_: PresubmitContext):
     """Checks that repositories have all changes commited."""
     checked_repos = (PIGWEED_ROOT, *REPOS)
@@ -127,7 +121,6 @@ def pragma_once(ctx: PresubmitContext):
 QUICK = (
     # List some presubmit checks to run
     default_build,
-    host_tests,
     # Use the upstream formatting checks, with custom path filters applied.
     format_code.presubmit_checks(exclude=PATH_EXCLUSIONS),
 )
