@@ -142,7 +142,9 @@ def run_tests(device: str, baud: int) -> FailedTests:
     """Runs the factory tests."""
 
     # Set up a pw_rpc client that uses HDLC.
-    hdlc_client = HdlcRpcClient(serial.Serial(device, baud),
+    ser = serial.Serial(device, baud, timeout=0.01)
+    hdlc_client = HdlcRpcClient(lambda: ser.read(4096),
+                                ser.write,
                                 PROTOS,
                                 output=detokenize_and_print)
 
