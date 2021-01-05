@@ -24,7 +24,7 @@ from typing import Any, Callable, List, Tuple
 import serial  # type: ignore
 
 import pw_cli.log
-from pw_hdlc_lite.rpc import HdlcRpcClient
+from pw_hdlc_lite.rpc import HdlcRpcClient, default_channels
 from pw_tokenizer.detokenize import AutoUpdatingDetokenizer, detokenize_base64
 
 # Point the script to the .proto file with our RPC services.
@@ -144,8 +144,8 @@ def run_tests(device: str, baud: int) -> FailedTests:
     # Set up a pw_rpc client that uses HDLC.
     ser = serial.Serial(device, baud, timeout=0.01)
     hdlc_client = HdlcRpcClient(lambda: ser.read(4096),
-                                ser.write,
                                 PROTOS,
+                                default_channels(ser.write),
                                 output=detokenize_and_print)
 
     _LOG.info('Starting factory tests!')
