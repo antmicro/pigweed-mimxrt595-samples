@@ -277,7 +277,7 @@ The sample application registers the `EchoService`, which echoes any RPC message
 data sent to it. To test it out build for and flash the desired board, then run:
 
 ```sh
-python third_party/pigweed/pw_hdlc_lite/rpc_example/example_script.py --device /dev/ttyACM0 --baud 115200
+python third_party/pigweed/pw_hdlc/rpc_example/example_script.py --device /dev/ttyACM0 --baud 115200
 ```
 
 At the time of writing, the `example_script.py` does not parse log statements if
@@ -292,7 +292,7 @@ Terminal 1: receive RPCs.
 
 ```sh
 source activate.sh
-python -m pw_hdlc_lite.rpc_console \
+python -m pw_hdlc.rpc_console \
        -o logfile.txt \
        -d /dev/ttyACM0 \
        ./third_party/pigweed/pw_rpc/pw_rpc_protos/echo.proto

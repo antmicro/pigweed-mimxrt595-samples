@@ -17,9 +17,9 @@
 #include <string_view>
 
 #include "pw_board_led/led.h"
-#include "pw_hdlc_lite/encoder.h"
-#include "pw_hdlc_lite/rpc_channel.h"
-#include "pw_hdlc_lite/rpc_packets.h"
+#include "pw_hdlc/encoder.h"
+#include "pw_hdlc/rpc_channel.h"
+#include "pw_hdlc/rpc_packets.h"
 #include "pw_log/log.h"
 #include "pw_rpc/echo_service_nanopb.h"
 #include "pw_rpc/server.h"
@@ -57,8 +57,8 @@ pw::stream::SysIoWriter sys_io_writer;
 // Set up the output channel for the pw_rpc server to use. This one happens to
 // implement the packet in / packet out with HDLC. pw_rpc can use any
 // ChannelOptput implementation, including custom ones for your product.
-pw::hdlc_lite::RpcChannelOutputBuffer<kMaxTransmissionUnit> hdlc_channel_output(
-    sys_io_writer, pw::hdlc_lite::kDefaultRpcAddress, "HDLC channel");
+pw::hdlc::RpcChannelOutputBuffer<kMaxTransmissionUnit> hdlc_channel_output(
+    sys_io_writer, pw::hdlc::kDefaultRpcAddress, "HDLC channel");
 
 // A pw::rpc::Server can have multiple channels (e.g. a UART and a BLE
 // connection). In this case, there is only one (HDLC over UART).
@@ -72,7 +72,7 @@ pw::rpc::Server server(channels);
 std::array<std::byte, kMaxTransmissionUnit> input_buffer;
 
 // Decoder object consumes bytes and return if a HDLC packet was completed.
-pw::hdlc_lite::Decoder hdlc_decoder(input_buffer);
+pw::hdlc::Decoder hdlc_decoder(input_buffer);
 
 // ------------------- pw_rpc service registration  -------------------
 pw::rpc::EchoService echo_service;
@@ -88,7 +88,7 @@ void RegisterServices() {
 
 // ------------------- pw_rpc  -------------------
 
-constexpr unsigned kHdlcChannelForRpc = pw::hdlc_lite::kDefaultRpcAddress;
+constexpr unsigned kHdlcChannelForRpc = pw::hdlc::kDefaultRpcAddress;
 constexpr unsigned kHdlcChannelForLogs = 1;
 
 void ParseByteFromUartAndHandleRpcs() {
@@ -117,7 +117,7 @@ void ParseByteFromUartAndHandleRpcs() {
   PW_LOG_INFO("Got complete HDLC packet");
 
   // A frame was completed.
-  pw::hdlc_lite::Frame& hdlc_frame = result.value();
+  pw::hdlc::Frame& hdlc_frame = result.value();
   if (hdlc_frame.address() != kHdlcChannelForRpc) {
     // We ignore frames that are for unknown addresses, but you could put
     // some code here if you wanted to stream custom data from PC --> device.

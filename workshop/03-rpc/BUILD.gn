@@ -41,10 +41,10 @@ pw_executable("rpc") {
     dir_pw_log,
 
     # RPC related dependencies.
-    "$dir_pw_hdlc_lite:pw_rpc",
+    "$dir_pw_hdlc:pw_rpc",
     "$dir_pw_rpc:server",
     "$dir_pw_stream:sys_io_stream",
-    dir_pw_hdlc_lite,
+    dir_pw_hdlc,
 
     # This is the service we are implementing!
     ":remoticon_service_nanopb",

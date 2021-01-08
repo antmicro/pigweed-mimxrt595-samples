@@ -24,7 +24,7 @@ from typing import Any, Callable, List, Tuple
 import serial  # type: ignore
 
 import pw_cli.log
-from pw_hdlc_lite.rpc import HdlcRpcClient, default_channels
+from pw_hdlc.rpc import HdlcRpcClient, default_channels
 from pw_tokenizer.detokenize import AutoUpdatingDetokenizer, detokenize_base64
 
 # Point the script to the .proto file with our RPC services.

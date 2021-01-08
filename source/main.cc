@@ -17,9 +17,9 @@
 #include <string_view>
 
 #include "pw_assert/assert.h"
-#include "pw_hdlc_lite/encoder.h"
-#include "pw_hdlc_lite/rpc_channel.h"
-#include "pw_hdlc_lite/rpc_packets.h"
+#include "pw_hdlc/encoder.h"
+#include "pw_hdlc/rpc_channel.h"
+#include "pw_hdlc/rpc_packets.h"
 #include "pw_log/log.h"
 #include "pw_rpc/echo_service_nanopb.h"
 #include "pw_rpc/server.h"
@@ -34,8 +34,8 @@ constexpr size_t kMaxTransmissionUnit = 256;
 pw::stream::SysIoWriter writer;
 
 // Set up the output channel for the pw_rpc server to use to use.
-pw::hdlc_lite::RpcChannelOutputBuffer<kMaxTransmissionUnit> hdlc_channel_output(
-    writer, pw::hdlc_lite::kDefaultRpcAddress, "HDLC channel");
+pw::hdlc::RpcChannelOutputBuffer<kMaxTransmissionUnit> hdlc_channel_output(
+    writer, pw::hdlc::kDefaultRpcAddress, "HDLC channel");
 
 pw::rpc::Channel channels[] = {
     pw::rpc::Channel::Create<1>(&hdlc_channel_output)};
@@ -56,10 +56,8 @@ void CreateAndRunRpcServerWithEchoService() {
   // Declare a buffer for decoding incoming HDLC frames.
   std::array<std::byte, kMaxTransmissionUnit> input_buffer;
 
-  pw::hdlc_lite::ReadAndProcessPackets(server,
-                                       hdlc_channel_output,
-                                       input_buffer,
-                                       pw::hdlc_lite::kDefaultRpcAddress);
+  pw::hdlc::ReadAndProcessPackets(
+      server, hdlc_channel_output, input_buffer, pw::hdlc::kDefaultRpcAddress);
 }
 
 int main() {
