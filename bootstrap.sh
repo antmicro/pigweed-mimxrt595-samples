@@ -69,17 +69,28 @@ else  # All other shells: examine $0 for known shell binary filenames
   case ${0##*/} in sh|dash) _pw_sourced=1;; esac
 fi
 
-# The PW_PROJECT_ROOT variable points to the root of the sample_project repo
-# structure.
-PW_PROJECT_ROOT="$(_bootstrap_abspath "$(dirname "$_BOOTSTRAP_PATH")")"
-export PW_PROJECT_ROOT
-
-# You might also wish to set a root variable that makes sense to you.
-SAMPLE_PROJECT_ROOT="$PW_PROJECT_ROOT"
+# Downstream projects need to set something other than PW_ROOT here, like
+# YOUR_PROJECT_ROOT. Please also set PW_PROJECT_ROOT and PW_ROOT before
+# invoking pw_bootstrap or pw_activate.
+######### BEGIN PROJECT-SPECIFIC CODE #########
+SAMPLE_PROJECT_ROOT="$(_bootstrap_abspath "$(dirname "$_BOOTSTRAP_PATH")")"
 export SAMPLE_PROJECT_ROOT
-
-# Set PW_ROOT based on where the Pigweed submodule is in your repository.
+PW_PROJECT_ROOT="$SAMPLE_PROJECT_ROOT"
 PW_ROOT="$SAMPLE_PROJECT_ROOT/third_party/pigweed"
+
+# Set your project's banner and color.
+export PW_BRANDING_BANNER="$SAMPLE_PROJECT_ROOT/banner.txt"
+export PW_BRANDING_BANNER_COLOR=magenta
+
+sample_project_banner() {
+  cat "$PW_BRANDING_BANNER"
+  echo
+}
+
+PW_BANNER_FUNC="sample_project_banner"
+########## END PROJECT-SPECIFIC CODE ##########
+export PW_BANNER_FUNC
+export PW_PROJECT_ROOT
 export PW_ROOT
 
 _util_sh="$PW_ROOT/pw_env_setup/util.sh"
@@ -95,30 +106,22 @@ fi
 
 . "$_util_sh"
 
+pw_deactivate
 pw_eval_sourced "$_pw_sourced"
 pw_check_root "$PW_ROOT"
 _PW_ACTUAL_ENVIRONMENT_ROOT="$(pw_get_env_root)"
 export _PW_ACTUAL_ENVIRONMENT_ROOT
 SETUP_SH="$_PW_ACTUAL_ENVIRONMENT_ROOT/activate.sh"
 
-# Set your project's banner and color.
-export PW_BRANDING_BANNER="$SAMPLE_PROJECT_ROOT/banner.txt"
-export PW_BRANDING_BANNER_COLOR=magenta
-
-sample_project_banner() {
-  cat "$PW_BRANDING_BANNER"
-  echo
-}
-
-PW_BANNER_FUNC="sample_project_banner"
-export PW_BANNER_FUNC
-
 # Run full bootstrap when invoked as bootstrap, or env file is missing/empty.
 if [ "$(basename "$_BOOTSTRAP_PATH")" = "bootstrap.sh" ] || \
   [ ! -f "$SETUP_SH" ] || \
   [ ! -s "$SETUP_SH" ]; then
-  # These arguments will be passed through to Pigweed's env_setup.
-  pw_bootstrap --shell-file "$SETUP_SH" --install-dir "$_PW_ACTUAL_ENVIRONMENT_ROOT" --use-pigweed-defaults --virtualenv-gn-target "$PW_PROJECT_ROOT#:python.install" --virtualenv-gn-target "$PW_ROOT#:target_support_packages.install"
+# This is where pw_bootstrap is called. Most small projects will include
+# --use-pigweed-defaults.
+######### BEGIN PROJECT-SPECIFIC CODE #########
+  pw_bootstrap --shell-file "$SETUP_SH" --install-dir "$_PW_ACTUAL_ENVIRONMENT_ROOT" --use-pigweed-defaults --virtualenv-gn-target "PW_PROJECT_ROOT#:python.install" --virtualenv-gn-target "PW_ROOT#:target_support_packages.install"
+########## END PROJECT-SPECIFIC CODE ##########
   pw_finalize bootstrap "$SETUP_SH"
 else
   pw_activate
@@ -126,6 +129,8 @@ else
 fi
 
 # This is where any additional checks about the environment should go.
+######### BEGIN PROJECT-SPECIFIC CODE #########
+########## END PROJECT-SPECIFIC CODE ##########
 
 unset _pw_sourced
 unset _BOOTSTRAP_PATH
