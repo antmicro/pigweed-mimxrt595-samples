@@ -47,7 +47,7 @@ pw::Status TeensyFlashMemory::Erase(Address address, size_t num_sectors) {
     flash_erase_sector(sector_address);  // See sed comment above
   }
 
-  return pw::Status::OK;
+  return pw::OkStatus();
 }
 
 // Reads bytes from flash into buffer.

@@ -23,9 +23,9 @@ class TeensyFlashMemory : public pw::kvs::FlashMemory {
   TeensyFlashMemory()
       : FlashMemory(kSectorSize, kSectorCount, kAlignment, kStartAddress) {}
 
-  pw::Status Enable() override { return pw::Status::Ok(); }
+  pw::Status Enable() override { return pw::OkStatus(); }
 
-  pw::Status Disable() override { return pw::Status::Ok(); }
+  pw::Status Disable() override { return pw::OkStatus(); }
 
   bool IsEnabled() const override { return true; }
 

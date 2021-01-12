@@ -34,7 +34,7 @@ pw::Status SuperloopService::GetStats(
   //
   // Note: pw_rpc also supports raw methods where you are responsible for
   // serializing and deserializing the request & response.
-  return pw::Status::Ok();
+  return pw::OkStatus();
 }
 
 // TODO FOR WORKSHOP: Implement methods for your service here!
