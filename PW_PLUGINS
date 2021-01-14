@@ -15,3 +15,4 @@ presubmit sample_project_tools.presubmit_checks main
 heap-viewer pw_allocator.heap_viewer main
 rpc pw_hdlc.rpc_console main
 find-files sample_project_tools.find_files main
+package pw_package.pigweed_packages main

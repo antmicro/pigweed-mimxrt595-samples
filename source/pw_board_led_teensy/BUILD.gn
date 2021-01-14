@@ -19,7 +19,7 @@ import("$dir_pw_build/target_types.gni")
 
 pw_source_set("pw_board_led_teensy") {
   deps = [
-    "$dir_pw_third_party_arduino:arduino_core_sources",
+    "$dir_pw_third_party/arduino:arduino_core_sources",
     "//source/pw_board_led:pw_board_led.facade",
   ]
   sources = [ "led.cc" ]

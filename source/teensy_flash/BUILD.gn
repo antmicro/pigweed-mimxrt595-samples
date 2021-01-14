@@ -76,5 +76,6 @@ pw_test_group("tests") {
   ]
 
   enable_if = pw_build_EXECUTABLE_TARGET_TYPE == "arduino_executable" &&
-              (arduino_board == "teensy40" || arduino_board == "teensy41")
+              (pw_arduino_build_BOARD == "teensy40" ||
+               pw_arduino_build_BOARD == "teensy41")
 }

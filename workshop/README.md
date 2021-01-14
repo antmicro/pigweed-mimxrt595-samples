@@ -191,10 +191,10 @@ Run `gn args out` which will open a text editor. Paste in the following, save an
 close the editor.
 
 ```sh
-dir_pw_third_party_arduino="//third_party/pigweed/third_party/arduino"
-arduino_core_name="teensy"
-arduino_board="teensy40"
-arduino_menu_options=["menu.usb.serial", "menu.keys.en-us"]
+pw_arduino_build_CORE_PATH="//third_party/pigweed/third_party/arduino"
+pw_arduino_build_CORE_NAME="teensy"
+pw_arduino_build_BOARD="teensy40"
+pw_arduino_build_MENU_OPTIONS=["menu.usb.serial", "menu.keys.en-us"]
 pw_arduino_use_test_server=false
 ```
 
@@ -219,10 +219,10 @@ You can use `gn args out` as shown above or include the args on the command line
 
 ```sh
 gn gen out --args='
-  dir_pw_third_party_arduino="//third_party/pigweed/third_party/arduino"
-  arduino_core_name="teensy"
-  arduino_board="teensy40"
-  arduino_menu_options=["menu.usb.serial", "menu.keys.en-us"]
+  pw_arduino_build_CORE_PATH="//third_party/pigweed/third_party/arduino"
+  pw_arduino_build_CORE_NAME="teensy"
+  pw_arduino_build_BOARD="teensy40"
+  pw_arduino_build_MENU_OPTIONS=["menu.usb.serial", "menu.keys.en-us"]
   pw_arduino_use_test_server=false
 '
 ```

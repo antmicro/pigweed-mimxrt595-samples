@@ -57,13 +57,13 @@ group("host") {
 
 # Arduino specific targets.
 group("arduino") {
-  # If the 'dir_pw_third_party_arduino' build arg is defined assume an arduino
+  # If the 'pw_arduino_build_CORE_PATH' build arg is defined assume an arduino
   # core is available for building.
   #
   # For example:
-  #   dir_pw_third_party_arduino="//third_party/pigweed/third_party/arduino"
+  #   pw_arduino_build_CORE_PATH="//third_party/pigweed/third_party/arduino"
 
-  if (dir_pw_third_party_arduino != "") {
+  if (pw_arduino_build_CORE_PATH != "") {
     deps = [
       ":app(//targets/arduino:arduino_debug)",
       ":arduino_tests(//targets/arduino:arduino_debug_tests)",
@@ -104,7 +104,7 @@ pw_tokenizer_database("tokenizer_database") {
     targets = []
   }
 
-  if (dir_pw_third_party_arduino != "") {
+  if (pw_arduino_build_CORE_PATH != "") {
     targets += [
       ":app(//targets/arduino:arduino_debug)",
       "//source/arduino_example:blink(//targets/arduino:arduino_debug)",
@@ -117,7 +117,7 @@ group("workshop") {
   deps = []
 
   # Teensy 3.0/4.0 workshop steps.
-  if (dir_pw_third_party_arduino != "") {
+  if (pw_arduino_build_CORE_PATH != "") {
     deps += [
       ":workshop_tests(//targets/arduino:arduino_debug_tests)",
       "//workshop/01-blinky:all(//targets/arduino:arduino_debug)",

@@ -135,9 +135,9 @@ To build for a Teensy 4.0 board run the following.
 
 ```sh
 gn gen out --args='
-  dir_pw_third_party_arduino="//third_party/pigweed/third_party/arduino"
-  arduino_core_name="teensy"
-  arduino_board="teensy40"'
+  pw_arduino_build_CORE_PATH="//third_party/pigweed/third_party/arduino"
+  pw_arduino_build_CORE_NAME="teensy"
+  pw_arduino_build_BOARD="teensy40"'
 ninja -C out
 ```
 
@@ -147,12 +147,12 @@ Run `gn gen out` which will open a text editor. Paste in the following, save and
 close the editor.
 
 ```sh
-dir_pw_third_party_arduino="//third_party/pigweed/third_party/arduino"
-arduino_core_name="teensy"
-arduino_board="teensy40"
+pw_arduino_build_CORE_PATH="//third_party/pigweed/third_party/arduino"
+pw_arduino_build_CORE_NAME="teensy"
+pw_arduino_build_BOARD="teensy40"
 ```
 
-Where `arduino_board=` is one of:
+Where `pw_arduino_build_BOARD=` is one of:
 
 - `"teensy31"` - Teensy 3.2 / 3.1
 - `"teensy35"` - Teensy 3.5
@@ -207,9 +207,9 @@ test server. Then in a second window start the `pw watch` command.
 
     ```sh
     gn gen out --args='
-      dir_pw_third_party_arduino="//third_party/pigweed/third_party/arduino"
-      arduino_core_name="teensy"
-      arduino_board="teensy40"
+      pw_arduino_build_CORE_PATH="//third_party/pigweed/third_party/arduino"
+      pw_arduino_build_CORE_NAME="teensy"
+      pw_arduino_build_BOARD="teensy40"
       pw_arduino_use_test_server=true'
     arduino_test_server --verbose --config-file ./out/arduino_debug/gen/arduino_builder_config.json
     ```
