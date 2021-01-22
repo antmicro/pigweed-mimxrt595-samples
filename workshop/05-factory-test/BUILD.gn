@@ -43,6 +43,7 @@ pw_executable("factory_test") {
 
     # RPC related dependencies.
     "$dir_pw_hdlc:pw_rpc",
+    "$dir_pw_hdlc:rpc_channel_output",
     "$dir_pw_rpc:server",
     "$dir_pw_stream:sys_io_stream",
     dir_pw_hdlc,
@@ -69,14 +70,6 @@ pw_source_set("remoticon_service_nanopb") {
   public = [ "public/remoticon/remoticon_service_nanopb.h" ]
   deps = [ "//workshop/03-rpc:remoticon_proto.nanopb_rpc" ]
   sources = [ "remoticon_service_nanopb.cc" ]
-}
-
-pw_test("remoticon_service_nanopb_test") {
-  deps = [
-    ":remoticon_service_nanopb",
-    "$dir_pw_rpc/nanopb:test_method_context",
-  ]
-  sources = [ "remoticon_service_nanopb_test.cc" ]
 }
 
 pw_python_script("factory_test_script") {

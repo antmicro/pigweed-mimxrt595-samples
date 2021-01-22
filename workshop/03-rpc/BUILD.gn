@@ -18,7 +18,6 @@ import("$dir_pw_build/target_types.gni")
 import("$dir_pw_protobuf_compiler/proto.gni")
 import("$dir_pw_third_party/nanopb/nanopb.gni")
 import("$dir_pw_tokenizer/database.gni")
-import("$dir_pw_unit_test/test.gni")
 
 config("default_config") {
   include_dirs = [ "public" ]
@@ -42,6 +41,7 @@ pw_executable("rpc") {
 
     # RPC related dependencies.
     "$dir_pw_hdlc:pw_rpc",
+    "$dir_pw_hdlc:rpc_channel_output",
     "$dir_pw_rpc:server",
     "$dir_pw_stream:sys_io_stream",
     dir_pw_hdlc,
@@ -72,12 +72,4 @@ pw_source_set("remoticon_service_nanopb") {
   public = [ "public/remoticon/remoticon_service_nanopb.h" ]
   deps = [ ":remoticon_proto.nanopb_rpc" ]
   sources = [ "remoticon_service_nanopb.cc" ]
-}
-
-pw_test("remoticon_service_nanopb_test") {
-  deps = [
-    ":remoticon_service_nanopb",
-    "$dir_pw_rpc/nanopb:test_method_context",
-  ]
-  sources = [ "remoticon_service_nanopb_test.cc" ]
 }
