@@ -191,8 +191,9 @@ Run `gn args out` which will open a text editor. Paste in the following, save an
 close the editor.
 
 ```sh
-pw_arduino_build_CORE_PATH="//third_party/pigweed/third_party/arduino"
+pw_arduino_build_CORE_PATH="//third_party/pigweed/third_party/arduino/cores"
 pw_arduino_build_CORE_NAME="teensy"
+pw_arduino_build_PACKAGE_NAME = "teensy/avr"
 pw_arduino_build_BOARD="teensy40"
 pw_arduino_build_MENU_OPTIONS=["menu.usb.serial", "menu.keys.en-us"]
 pw_arduino_use_test_server=false
@@ -219,8 +220,9 @@ You can use `gn args out` as shown above or include the args on the command line
 
 ```sh
 gn gen out --args='
-  pw_arduino_build_CORE_PATH="//third_party/pigweed/third_party/arduino"
+  pw_arduino_build_CORE_PATH="//third_party/pigweed/third_party/arduino/cores"
   pw_arduino_build_CORE_NAME="teensy"
+  pw_arduino_build_PACKAGE_NAME = "teensy/avr"
   pw_arduino_build_BOARD="teensy40"
   pw_arduino_build_MENU_OPTIONS=["menu.usb.serial", "menu.keys.en-us"]
   pw_arduino_use_test_server=false

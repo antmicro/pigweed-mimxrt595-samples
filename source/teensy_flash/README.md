@@ -10,9 +10,10 @@ Instructions for building with a `teensy40` board.
 
    ```sh
    gn gen out --export-compile-commands --args='
-       pw_arduino_build_BOARD="teensy40"
-       pw_arduino_build_CORE_PATH="//third_party/pigweed/third_party/arduino"
+       pw_arduino_build_CORE_PATH="//third_party/pigweed/third_party/arduino/cores"
        pw_arduino_build_CORE_NAME="teensy"
+       pw_arduino_build_PACKAGE_NAME = "teensy/avr"
+       pw_arduino_build_BOARD="teensy40"
        pw_arduino_use_test_server=false'
    ```
 

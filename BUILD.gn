@@ -61,7 +61,7 @@ group("arduino") {
   # core is available for building.
   #
   # For example:
-  #   pw_arduino_build_CORE_PATH="//third_party/pigweed/third_party/arduino"
+  #   pw_arduino_build_CORE_PATH="//third_party/pigweed/third_party/arduino/cores"
 
   if (pw_arduino_build_CORE_PATH != "") {
     deps = [
