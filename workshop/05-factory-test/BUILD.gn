@@ -75,8 +75,10 @@ pw_source_set("remoticon_service_nanopb") {
 pw_python_script("factory_test_script") {
   sources = [ "factory_test.py" ]
   python_deps = [
+    "$dir_pw_cli/py",
     "$dir_pw_hdlc/py",
     "$dir_pw_rpc/py",
+    "$dir_pw_tokenizer/py",
   ]
   pylintrc = "$dir_pigweed/.pylintrc"
 }
