@@ -87,8 +87,10 @@ group("stm32f429i_disc1") {
 pw_python_group("python") {
   # This depends on the 'tools' target in //tools/BUILD.gn
   python_deps = [
-    "tools(//targets/host:host_debug)",
-    "workshop/05-factory-test:factory_test_script(//targets/host:host_debug)",
+    "tools",
+    "workshop/05-factory-test:factory_test_script",
+    "//third_party/pigweed/pw_env_setup:python",
+    "//third_party/pigweed/pw_env_setup:target_support_packages",
   ]
 }
 
