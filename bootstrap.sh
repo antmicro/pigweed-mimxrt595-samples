@@ -128,9 +128,12 @@ else
   pw_finalize activate "$SETUP_SH"
 fi
 
+if [ "$_PW_ENV_SETUP_STATUS" -eq 0 ]; then
 # This is where any additional checks about the environment should go.
 ######### BEGIN PROJECT-SPECIFIC CODE #########
+  echo -n
 ########## END PROJECT-SPECIFIC CODE ##########
+fi
 
 unset _pw_sourced
 unset _BOOTSTRAP_PATH
