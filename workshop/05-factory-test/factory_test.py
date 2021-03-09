@@ -29,7 +29,7 @@ from pw_tokenizer.detokenize import AutoUpdatingDetokenizer, detokenize_base64
 
 # Point the script to the .proto file with our RPC services.
 PROTOS = (
-    Path(os.environ['PW_ROOT'], 'pw_rpc', 'pw_rpc_protos', 'echo.proto'),
+    Path(os.environ['PW_ROOT'], 'pw_rpc', 'echo.proto'),
     Path(os.environ['PW_PROJECT_ROOT'], 'workshop', '03-rpc',
          'remoticon_proto', 'remoticon.proto'),
 )

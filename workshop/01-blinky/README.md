@@ -63,7 +63,7 @@ Instructions for building with a `teensy40` board.
    '
    ```
 
-1. Run the compile with `pw watch out` or `ninja -C out`.
+1. Run the compile with `pw watch` or `ninja -C out`.
 
 1. Flash `blinky.elf`.
 
@@ -104,7 +104,7 @@ python -m serial.tools.miniterm --raw - 115200
 1. Start the rpc_console that saves log output to a file.
 
    ```sh
-   python -m pw_hdlc_lite.rpc_console -o logfile.txt -d /dev/ttyACM0 third_party/pigweed/pw_rpc/pw_rpc_protos/echo.proto
+   python -m pw_hdlc.rpc_console -o logfile.txt -d /dev/ttyACM0 ./third_party/pigweed/pw_rpc/echo.proto
    ```
 
 1. Tail the log output.

@@ -48,14 +48,14 @@
 Instructions are the same as flashing [blinky](/workshop/01-blinky/README.md)
 but passing in a different `.elf`.
 
-1. Run the compile with `pw watch out` or `ninja -C out`.
+1. Run the compile with `pw watch` or `ninja -C out`.
 
 1. Flash `factory-test.elf`.
 
    **Teensy**
 
    ```sh
-   arduino_unit_test_runner --config out/arduino_debug/gen/arduino_builder_config.json --upload-tool teensyloader --verbose --flash-only out/arduino_debug/obj/workshop/05-factory-test/bin/factory-test.elf
+   arduino_unit_test_runner --config out/arduino_debug/gen/arduino_builder_config.json --upload-tool teensyloader --verbose --flash-only out/arduino_debug/obj/workshop/05-factory-test/bin/factory_test.elf
    ```
 
    **stm32f429i_disc1**
@@ -76,7 +76,7 @@ but passing in a different `.elf`.
 1. Start the rpc_console that saves log output to a file.
 
    ```sh
-   python -m pw_hdlc_lite.rpc_console -o logfile.txt -d /dev/ttyACM0 third_party/pigweed/pw_rpc/pw_rpc_protos/echo.proto
+   python -m pw_hdlc.rpc_console -o logfile.txt -d /dev/ttyACM0 ./third_party/pigweed/pw_rpc/echo.proto
    ```
 
 1. Tail the log output.
@@ -91,5 +91,5 @@ but passing in a different `.elf`.
    script.
 
    ```sh
-   python workshop/05-factory-test/factory_test.py --device /dev/ttyACM0 --baudrate 115200
+   python workshop/05-factory-test/factory_test.py --device /dev/ttyACM0 --baud 115200
    ```

@@ -47,7 +47,7 @@
 Instructions are the same as flashing [blinky](/workshop/01-blinky/README.md)
 but passing in a different `.elf`.
 
-1. Run the compile with `pw watch out` or `ninja -C out`.
+1. Run the compile with `pw watch` or `ninja -C out`.
 
 1. Flash `rpc.elf`.
 
@@ -75,7 +75,7 @@ but passing in a different `.elf`.
 1. Start the rpc_console that saves log output to a file.
 
    ```sh
-   python -m pw_hdlc_lite.rpc_console -o logfile.txt -d /dev/ttyACM0 third_party/pigweed/pw_rpc/pw_rpc_protos/echo.proto workshop/03-rpc/remoticon_proto/remoticon.proto
+   python -m pw_hdlc.rpc_console -o logfile.txt -d /dev/ttyACM0 ./third_party/pigweed/pw_rpc/echo.proto workshop/03-rpc/remoticon_proto/remoticon.proto
    ```
 
    This will launch an interactive `ipython` console where you can send

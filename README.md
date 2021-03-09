@@ -217,10 +217,10 @@ test server. Then in a second window start the `pw watch` command.
     arduino_test_server --verbose --config-file ./out/arduino_debug/gen/arduino_builder_config.json
     ```
 
-1.  Start `pw watch out` in a separate terminal.
+1.  Start `pw watch` in a separate terminal.
 
     ```sh
-    pw watch out
+    pw watch
     ```
 
 For additional details check the Pigweed `arduino_builder` documentation in:
