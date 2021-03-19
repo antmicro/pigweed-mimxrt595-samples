@@ -122,7 +122,7 @@ void ParseByteFromUartAndHandleRpcs() {
     // We ignore frames that are for unknown addresses, but you could put
     // some code here if you wanted to stream custom data from PC --> device.
     PW_LOG_WARN("Got packet with no destination; address: %d",
-                hdlc_frame.address());
+                static_cast<unsigned>(hdlc_frame.address()));
     return;
   }
 
