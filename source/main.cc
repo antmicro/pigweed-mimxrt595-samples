@@ -16,7 +16,7 @@
 #include <span>
 #include <string_view>
 
-#include "pw_assert/assert.h"
+#include "pw_assert/check.h"
 #include "pw_hdlc/encoder.h"
 #include "pw_hdlc/rpc_channel.h"
 #include "pw_hdlc/rpc_packets.h"
