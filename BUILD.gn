@@ -75,7 +75,7 @@ group("arduino") {
 
 # stm32f429i_disc1 specific targets
 group("stm32f429i_disc1") {
-  _default_toolchain = "//targets/stm32f429i-disc1:stm32f429i_disc1_debug"
+  _default_toolchain = "//targets/stm32f429i_disc1:stm32f429i_disc1_debug"
   _testing_toolchain = "${_default_toolchain}_tests"
   deps = [
     ":app(${_default_toolchain})",
@@ -132,12 +132,12 @@ group("workshop") {
 
   # STMicroelectronics STM32F429I-DISC1 workshop steps.
   deps += [
-    ":workshop_tests(//targets/stm32f429i-disc1:stm32f429i_disc1_debug_tests)",
-    "//workshop/01-blinky:blinky(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)",
-    "//workshop/02-string-functions:all(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)",
-    "//workshop/03-rpc:all(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)",
-    "//workshop/04-kvs:all(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)",
-    "//workshop/05-factory-test:all(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)",
+    ":workshop_tests(//targets/stm32f429i_disc1:stm32f429i_disc1_debug_tests)",
+    "//workshop/01-blinky:blinky(//targets/stm32f429i_disc1:stm32f429i_disc1_debug)",
+    "//workshop/02-string-functions:all(//targets/stm32f429i_disc1:stm32f429i_disc1_debug)",
+    "//workshop/03-rpc:all(//targets/stm32f429i_disc1:stm32f429i_disc1_debug)",
+    "//workshop/04-kvs:all(//targets/stm32f429i_disc1:stm32f429i_disc1_debug)",
+    "//workshop/05-factory-test:all(//targets/stm32f429i_disc1:stm32f429i_disc1_debug)",
   ]
 
   # Host workshop steps.

@@ -290,7 +290,7 @@ ninja -C out
 
   **stm32f429i_disc1**
   ```sh
-  gn desc out "//workshop/01-blinky:blinky(//targets/stm32f429i-disc1:stm32f429i_disc1_debug)" --tree
+  gn desc out "//workshop/01-blinky:blinky(//targets/stm32f429i_disc1:stm32f429i_disc1_debug)" --tree
   ```
 
   **Host**
