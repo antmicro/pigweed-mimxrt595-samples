@@ -6,7 +6,7 @@ This repository outlines the recommended way of using Pigweed in a new or
 existing project. Feel free to fork this repository, or read it as a reference.
 
 For more information see the [Pigweed Getting started
-guide](https://pigweed.googlesource.com/pigweed/pigweed/+/refs/heads/master/docs/getting_started.md)
+guide](https://pigweed.dev/docs/getting_started.html).
 
 Check back for more complex examples and features coming soon!
 
