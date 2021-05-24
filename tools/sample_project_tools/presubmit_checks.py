@@ -29,6 +29,7 @@ except ImportError:
     sys.exit(2)
 
 import pw_presubmit
+import pw_presubmit.inclusive_language
 from pw_presubmit import build, cli, environment, format_code, git_repo
 from pw_presubmit import python_checks, filter_paths, PresubmitContext
 from pw_presubmit.install_hook import install_hook
@@ -115,15 +116,23 @@ def pragma_once(ctx: PresubmitContext):
     pw_presubmit.pragma_once(ctx)
 
 
+@filter_paths(exclude=PATH_EXCLUSIONS)
+def inclusive_language(ctx: PresubmitContext):
+    pw_presubmit.inclusive_language.inclusive_language(ctx)
+
+
 #
 # Presubmit check programs
 #
+OTHER_CHECKS = (inclusive_language, )
+
 QUICK = (
     # List some presubmit checks to run
     default_build,
     # Use the upstream formatting checks, with custom path filters applied.
     format_code.presubmit_checks(exclude=PATH_EXCLUSIONS),
 )
+
 FULL = (
     # Initialize an environment for running presubmit checks.
     init_cipd,
@@ -133,7 +142,12 @@ FULL = (
     # Use the upstream Python checks, with custom path filters applied.
     python_checks.all_checks(exclude=PATH_EXCLUSIONS),
 )
-PROGRAMS = pw_presubmit.Programs(quick=QUICK, full=FULL)
+
+PROGRAMS = pw_presubmit.Programs(
+    quick=QUICK,
+    full=FULL,
+    other_checks=OTHER_CHECKS,
+)
 
 
 def run(install: bool, **presubmit_args) -> int:
