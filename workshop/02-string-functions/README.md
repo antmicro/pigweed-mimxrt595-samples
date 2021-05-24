@@ -100,10 +100,10 @@ It can be added to
 
 *** promo
 - Refer to the [gTest string comparison
-  documentation](https://github.com/google/googletest/blob/master/googletest/docs/primer.md#string-comparison)
+  documentation](https://github.com/google/googletest/blob/HEAD/docs/primer.md#string-comparison)
   for how to check the contents of strings.
 - Note that [gMock
-  matchers](https://github.com/google/googletest/blob/master/googletest/docs/advanced.md#more-string-assertions)
+  matchers](https://github.com/google/googletest/blob/HEAD/docs/advanced.md#more-string-assertions)
   are not supported in Pigweed yet.
 ***
 

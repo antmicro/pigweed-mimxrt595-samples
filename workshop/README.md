@@ -326,5 +326,5 @@ gn gen out --export-compile-commands
 
 ### Further Reading
 
-- [GN Quick Start Guide](https://gn.googlesource.com/gn/+/master/docs/quick_start.md)
-- [GN Reference](https://gn.googlesource.com/gn/+/master/docs/reference.md)
+- [GN Quick Start Guide](https://gn.googlesource.com/gn/+/main/docs/quick_start.md)
+- [GN Reference](https://gn.googlesource.com/gn/+/main/docs/reference.md)
