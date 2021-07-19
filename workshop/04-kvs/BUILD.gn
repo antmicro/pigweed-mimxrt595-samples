@@ -45,7 +45,7 @@ pw_executable("kvs") {
   #     (pw_arduino_build_BOARD == "teensy40" || pw_arduino_build_BOARD == "teensy41")) {
   #   deps += [ "//source/teensy_flash:teensy_flash_test_partition" ]
   # } else {
-  deps += [ "$dir_pw_kvs:fake_flash_small_partition" ]
+  deps += [ "$dir_pw_kvs:fake_flash_1_aligned_partition" ]
 
   # }
 }
