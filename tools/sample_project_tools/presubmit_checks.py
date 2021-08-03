@@ -112,9 +112,17 @@ QUICK = (
     format_code.presubmit_checks(exclude=PATH_EXCLUSIONS),
 )
 
-FULL = (
+LINTFORMAT = (
+    # Use the upstream formatting checks, with custom path filters applied.
+    format_code.presubmit_checks(exclude=PATH_EXCLUSIONS),
     pragma_once,
+    python_checks.pylint,
+    python_checks.mypy,
+)
+
+FULL = (
     QUICK,  # Add all checks from the 'quick' program
+    LINTFORMAT,
     # Use the upstream Python checks, with custom path filters applied.
     python_checks.all_checks(exclude=PATH_EXCLUSIONS),
 )
@@ -122,6 +130,7 @@ FULL = (
 PROGRAMS = pw_presubmit.Programs(
     quick=QUICK,
     full=FULL,
+    lintformat=LINTFORMAT,
     other_checks=OTHER_CHECKS,
 )
 
