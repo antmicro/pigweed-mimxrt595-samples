@@ -97,6 +97,7 @@ def pragma_once(ctx: PresubmitContext):
 
 @filter_paths(exclude=PATH_EXCLUSIONS)
 def inclusive_language(ctx: PresubmitContext):
+    """Check for non-inclusive language."""
     pw_presubmit.inclusive_language.inclusive_language(ctx)
 
 
@@ -116,8 +117,7 @@ LINTFORMAT = (
     # Use the upstream formatting checks, with custom path filters applied.
     format_code.presubmit_checks(exclude=PATH_EXCLUSIONS),
     pragma_once,
-    python_checks.pylint,
-    python_checks.mypy,
+    python_checks.lint_checks(exclude=PATH_EXCLUSIONS),
 )
 
 FULL = (
