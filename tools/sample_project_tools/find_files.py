@@ -26,7 +26,7 @@ import pw_cli.log
 _LOG = logging.getLogger(__name__)
 
 
-def error_unknown_arg(unknown_arg):
+def _error_unknown_arg(unknown_arg):
     _LOG.error('Unrecognized argument: %s', unknown_arg)
     _LOG.info('')
     _LOG.info('Did you mean to pass this argument to the exec command?')
@@ -48,9 +48,9 @@ def build_argument_parser():
     def log_level(arg: str) -> int:
         try:
             return getattr(logging, arg.upper())
-        except AttributeError:
+        except AttributeError as exc:
             raise argparse.ArgumentTypeError(
-                f'{arg.upper()} is not a valid log level')
+                f'{arg.upper()} is not a valid log level') from exc
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('-l',
@@ -94,7 +94,7 @@ def main() -> int:
     args, unused_extra_args = parser.parse_known_args()
     pw_cli.log.install(args.loglevel)
     if unused_extra_args:
-        error_unknown_arg(unused_extra_args[0])
+        _error_unknown_arg(unused_extra_args[0])
         return 1
 
     starting_dir = os.path.realpath(
@@ -117,7 +117,7 @@ def main() -> int:
     exec_args = []
     if args.exec_args:
         if args.exec_args[0] != '--':
-            error_unknown_arg(args.exec_args[0])
+            _error_unknown_arg(args.exec_args[0])
             return 1
         exec_args = args.exec_args[1:]
 
@@ -128,7 +128,7 @@ def main() -> int:
         if exec_args:
             command = [file_name if arg == "%f" else arg for arg in exec_args]
             _LOG.debug("Running: %s", " ".join(command))
-            subprocess.run(command)
+            subprocess.run(command, check=False)
     return 0
 
 
