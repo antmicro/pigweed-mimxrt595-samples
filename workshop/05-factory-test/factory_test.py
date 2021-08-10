@@ -49,7 +49,7 @@ _detokenizer = AutoUpdatingDetokenizer(
     Path(__file__).parent / 'tokenizer_database.csv')
 
 
-def detokenize_and_print(data: bytes):
+def _detokenize_and_print(data: bytes):
     print(detokenize_base64(_detokenizer, data).decode(errors='replace'))
 
 
@@ -78,6 +78,7 @@ class TestContext:
             _LOG.info('%s: FAILED - %s', test.__name__, failure)
 
     def log_results(self):
+        """Write results to the log."""
         total = len(self.passed) + len(self.failed)
 
         _LOG.info('%d/%d tests passed', len(self.passed), total)
@@ -125,14 +126,14 @@ def test_led(ctx: TestContext) -> None:
 
     result = input('Did the LED turn on? (Y/N) ').lower()
 
-    _ = ctx.rpcs  # TODO FOR WORKSHOP: call the RPC to turn on the LED
+    _ = ctx.rpcs  # WORKSHOP TASK: call the RPC to turn on the LED
 
     if result not in ('y', 'yes', 'yup'):
         raise TestFailure('LED did not turn on')
 
     result = input('Did the LED turn off? (Y/N) ').lower()
 
-    _ = ctx.rpcs  # TODO FOR WORKSHOP: call the RPC to turn off the LED
+    _ = ctx.rpcs  # WORKSHOP TASK: call the RPC to turn off the LED
 
     if result not in ('y', 'yes', 'yup'):
         raise TestFailure('LED did not turn off')
@@ -146,7 +147,7 @@ def run_tests(device: str, baud: int) -> FailedTests:
     hdlc_client = HdlcRpcClient(lambda: ser.read(4096),
                                 PROTOS,
                                 default_channels(ser.write),
-                                output=detokenize_and_print)
+                                output=_detokenize_and_print)
 
     _LOG.info('Starting factory tests!')
 
@@ -156,7 +157,7 @@ def run_tests(device: str, baud: int) -> FailedTests:
     tester.run(test_counter)
     tester.run(test_led)
 
-    # TODO FOR WORKSHOP: Add a new test.
+    # WORKSHOP TASK: Add a new test.
 
     _LOG.info('Factory tests completed.')
     tester.log_results()
