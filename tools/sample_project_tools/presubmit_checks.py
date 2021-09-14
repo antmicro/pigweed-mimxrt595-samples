@@ -117,14 +117,14 @@ LINTFORMAT = (
     # Use the upstream formatting checks, with custom path filters applied.
     format_code.presubmit_checks(exclude=PATH_EXCLUSIONS),
     pragma_once,
-    python_checks.lint_checks(exclude=PATH_EXCLUSIONS),
+    python_checks.gn_python_lint.with_filter(exclude=PATH_EXCLUSIONS),
 )
 
 FULL = (
     QUICK,  # Add all checks from the 'quick' program
     LINTFORMAT,
     # Use the upstream Python checks, with custom path filters applied.
-    python_checks.all_checks(exclude=PATH_EXCLUSIONS),
+    python_checks.gn_python_check.with_filter(exclude=PATH_EXCLUSIONS),
 )
 
 PROGRAMS = pw_presubmit.Programs(
