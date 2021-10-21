@@ -96,7 +96,7 @@ PATH_EXCLUSIONS = (
 #
 # Presubmit check programs
 #
-OTHER_CHECKS = ()
+OTHER_CHECKS = (build.gn_gen_check, )
 
 QUICK = (
     # List some presubmit checks to run
