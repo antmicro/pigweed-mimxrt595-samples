@@ -6,3 +6,7 @@
 	path = third_party/nanopb
 	url = https://pigweed.googlesource.com/third_party/github/nanopb/nanopb
 	branch = main
+[submodule "infra/config"]
+	path = infra/config
+	url = https://pigweed.googlesource.com/infra/config
+	branch = main
