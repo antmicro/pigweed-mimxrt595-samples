@@ -15,19 +15,4 @@
 
 import setuptools  # type: ignore
 
-setuptools.setup(name='sample_project_tools',
-                 version='0.0.1',
-                 author='Pigweed Authors',
-                 author_email='pigweed-developers@googlegroups.com',
-                 description=__doc__,
-                 packages=setuptools.find_packages(),
-                 package_data={'sample_project_tools': ['py.typed']},
-                 zip_safe=False,
-                 entry_points={
-                     'console_scripts': [
-                         'find-files = sample_project_tools.find_files:main',
-                     ]
-                 },
-                 install_requires=[
-                     'pw_cli',
-                 ])
+setuptools.setup()  # Package definition in setup.cfg

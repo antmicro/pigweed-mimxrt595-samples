@@ -16,6 +16,7 @@ import("//build_overrides/pigweed.gni")
 
 import("$dir_pw_arduino_build/arduino.gni")
 import("$dir_pw_build/python.gni")
+import("$dir_pw_build/python_dist.gni")
 import("$dir_pw_tokenizer/database.gni")
 import("$dir_pw_unit_test/test.gni")
 
@@ -87,11 +88,15 @@ group("stm32f429i_disc1") {
 pw_python_group("python") {
   # This depends on the 'tools' target in //tools/BUILD.gn
   python_deps = [
-    "tools",
+    ":pip_install_sample_project_tools",
     "workshop/05-factory-test:factory_test_script",
     "//third_party/pigweed/pw_env_setup:python",
     "//third_party/pigweed/pw_env_setup:target_support_packages",
   ]
+}
+
+pw_internal_pip_install("pip_install_sample_project_tools") {
+  packages = [ "//tools:tools" ]
 }
 
 # This 'pw_tokenizer_database' target will update the tokenizer_database.csv
