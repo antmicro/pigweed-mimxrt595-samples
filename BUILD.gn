@@ -180,7 +180,7 @@ foreach(test_group,
       deps += [ ":tests" ]
     } else {
       # With a test runner, build and run tests.
-      deps += [ ":tests_run" ]
+      deps += [ ":tests.run" ]
     }
   }
 }
