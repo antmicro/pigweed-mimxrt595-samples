@@ -33,12 +33,11 @@ class TeensyFlashMemory : public pw::kvs::FlashMemory {
   pw::Status Erase(Address address, size_t num_sectors) override;
 
   // Reads bytes from flash into buffer.
-  pw::StatusWithSize Read(Address address,
-                          std::span<std::byte> output) override;
+  pw::StatusWithSize Read(Address address, pw::span<std::byte> output) override;
 
   // Writes bytes to flash.
   pw::StatusWithSize Write(Address address,
-                           std::span<const std::byte> data) override;
+                           pw::span<const std::byte> data) override;
 
   std::byte* FlashAddressToMcuAddress(Address address) const override {
     return (std::byte*)address;

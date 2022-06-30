@@ -52,15 +52,15 @@ pw::Status TeensyFlashMemory::Erase(Address address, size_t num_sectors) {
 
 // Reads bytes from flash into buffer.
 pw::StatusWithSize TeensyFlashMemory::Read(Address address,
-                                           std::span<std::byte> output) {
+                                           pw::span<std::byte> output) {
   memcpy(output.data(), (void*)((size_t)address), output.size_bytes());
   return pw::StatusWithSize(output.size_bytes());
 }
 
 // Writes bytes to flash.
 pw::StatusWithSize TeensyFlashMemory::Write(Address address,
-                                            std::span<const std::byte> data) {
-  std::span<const std::byte> write_data = data;
+                                            pw::span<const std::byte> data) {
+  pw::span<const std::byte> write_data = data;
 
   // Writing using flash_write is done by upto page size chunks. Each call to
   // flash_write needs to fit in a page.
