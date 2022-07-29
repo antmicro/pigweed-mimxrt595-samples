@@ -102,22 +102,22 @@ QUICK = (
     # List some presubmit checks to run
     default_build,
     # Use the upstream formatting checks, with custom path filters applied.
-    format_code.presubmit_checks(exclude=PATH_EXCLUSIONS),
+    format_code.presubmit_checks(),
 )
 
 LINTFORMAT = (
     # Use the upstream formatting checks, with custom path filters applied.
-    format_code.presubmit_checks(exclude=PATH_EXCLUSIONS),
-    cpp_checks.pragma_once.with_filter(exclude=PATH_EXCLUSIONS),
-    inclusive_language.inclusive_language.with_filter(exclude=PATH_EXCLUSIONS),
-    python_checks.gn_python_lint.with_filter(exclude=PATH_EXCLUSIONS),
+    format_code.presubmit_checks(),
+    cpp_checks.pragma_once,
+    inclusive_language.inclusive_language,
+    python_checks.gn_python_lint,
 )
 
 FULL = (
     QUICK,  # Add all checks from the 'quick' program
     LINTFORMAT,
     # Use the upstream Python checks, with custom path filters applied.
-    python_checks.gn_python_check.with_filter(exclude=PATH_EXCLUSIONS),
+    python_checks.gn_python_check,
 )
 
 PROGRAMS = pw_presubmit.Programs(
@@ -128,7 +128,7 @@ PROGRAMS = pw_presubmit.Programs(
 )
 
 
-def run(install: bool, **presubmit_args) -> int:
+def run(install: bool, exclude: list, **presubmit_args) -> int:
     """Process the --install argument then invoke pw_presubmit."""
 
     # Install the presubmit Git pre-push hook, if requested.
@@ -136,6 +136,8 @@ def run(install: bool, **presubmit_args) -> int:
         install_hook.install_hook(__file__, 'pre-push', ['--base', 'HEAD~'],
                                   git_repo.root())
         return 0
+
+    exclude.extend(PATH_EXCLUSIONS)
 
     return cli.run(root=PROJECT_ROOT, **presubmit_args)
 
