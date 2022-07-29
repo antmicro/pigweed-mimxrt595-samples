@@ -139,7 +139,7 @@ def run(install: bool, exclude: list, **presubmit_args) -> int:
 
     exclude.extend(PATH_EXCLUSIONS)
 
-    return cli.run(root=PROJECT_ROOT, **presubmit_args)
+    return cli.run(root=PROJECT_ROOT, exclude=exclude, **presubmit_args)
 
 
 def main() -> int:
