@@ -58,7 +58,7 @@ void CreateAndRunRpcServerWithEchoService() {
   std::array<std::byte, kMaxTransmissionUnit> input_buffer;
 
   pw::hdlc::ReadAndProcessPackets(
-      server, hdlc_channel_output, input_buffer, pw::hdlc::kDefaultRpcAddress);
+      server, input_buffer, pw::hdlc::kDefaultRpcAddress);
 }
 
 int main() {
