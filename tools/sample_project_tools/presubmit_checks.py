@@ -54,11 +54,6 @@ except KeyError:
     sys.exit(2)
 
 PIGWEED_ROOT = PROJECT_ROOT / 'third_party' / 'pigweed'
-REPOS = (
-    PROJECT_ROOT,
-    PIGWEED_ROOT,
-    PROJECT_ROOT / 'third_party' / 'nanopb',
-)
 
 # Rerun the build if files with these extensions change.
 _BUILD_EXTENSIONS = frozenset(
@@ -74,9 +69,9 @@ def default_build(ctx: PresubmitContext):
     build.ninja(ctx)
 
 
-def check_for_git_changes(_: PresubmitContext):
-    """Checks that repositories have all changes commited."""
-    checked_repos = (PIGWEED_ROOT, *REPOS)
+def check_for_git_changes(ctx: PresubmitContext):
+    """Checks that repositories have all changes committed."""
+    checked_repos = (PIGWEED_ROOT, *ctx.repos)
     changes = [r for r in checked_repos if git_repo.has_uncommitted_changes(r)]
     for repo in changes:
         _LOG.error('There are uncommitted changes in the %s repo!', repo.name)
@@ -148,8 +143,11 @@ def run(install: bool, exclude: list, **presubmit_args) -> int:
         return 0
 
     exclude.extend(PATH_EXCLUSIONS)
-
-    return cli.run(root=PROJECT_ROOT, exclude=exclude, **presubmit_args)
+    repos = git_repo.discover_submodules(superproject_dir=PROJECT_ROOT)
+    return cli.run(root=PROJECT_ROOT,
+                   repositories=repos,
+                   exclude=exclude,
+                   **presubmit_args)
 
 
 def main() -> int:
