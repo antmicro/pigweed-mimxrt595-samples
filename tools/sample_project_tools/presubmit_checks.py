@@ -105,8 +105,8 @@ LINTFORMAT = (
     # keep-sorted: start
     cpp_checks.pragma_once,
     format_code.presubmit_checks(),
-    inclusive_language.inclusive_language,
-    keep_sorted.keep_sorted,
+    inclusive_language.presubmit_check,
+    keep_sorted.presubmit_check,
     python_checks.gn_python_lint,
     # keep-sorted: end
 )
