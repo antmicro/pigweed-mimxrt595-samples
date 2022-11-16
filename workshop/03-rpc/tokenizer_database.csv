@@ -30,6 +30,7 @@
 5b94e6f3,          ,"■msg♦Received SERVER_STREAM for RPC without a server stream■module♦PW_RPC■file♦third_party/pigweed/pw_rpc/client.cc"
 5d1647a3,          ,"■msg♦          The total heap size is %u bytes.■module♦■file♦third_party/pigweed/pw_allocator/freelist_heap.cc"
 5e5393fd,          ,"■msg♦Nanopb failed to encode response packet for channel %u, status %u■module♦■file♦third_party/pigweed/pw_rpc/nanopb/method.cc"
+61d3d6f1,          ,"■msg♦Received malformed pw_rpc packet■module♦PW_RPC■file♦third_party/pigweed/pw_rpc/packet_meta.cc"
 6271ad9a,          ,"Got complete packet!"
 70e95f2a,          ,"■msg♦Unable to handle packet of type %u■module♦■file♦third_party/pigweed/pw_rpc/server.cc"
 729983b7,          ,"RPC client received a malformed packet"

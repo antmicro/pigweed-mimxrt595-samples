@@ -79,6 +79,7 @@
 5d1647a3,          ,"■msg♦          The total heap size is %u bytes.■module♦■file♦third_party/pigweed/pw_allocator/freelist_heap.cc"
 5e5393fd,          ,"■msg♦Nanopb failed to encode response packet for channel %u, status %u■module♦■file♦third_party/pigweed/pw_rpc/nanopb/method.cc"
 6009e587,          ,"KVS       #     hash        version    address   address (hex)"
+61d3d6f1,          ,"■msg♦Received malformed pw_rpc packet■module♦PW_RPC■file♦third_party/pigweed/pw_rpc/packet_meta.cc"
 63022f9e,          ,"KVS KVS init: Corruption detected and fully repaired"
 67323f8b,          ,"KVS Key descriptors: count %u"
 6aef4241,          ,"KVS     Doing GC on sector with no reclaimable bytes!"
