@@ -24,8 +24,10 @@ import sys
 try:
     import pw_cli.log
 except ImportError:
-    print('ERROR: Activate the environment before running presubmits!',
-          file=sys.stderr)
+    print(
+        'ERROR: Activate the environment before running presubmits!',
+        file=sys.stderr,
+    )
     sys.exit(2)
 
 import pw_presubmit
@@ -51,14 +53,16 @@ except KeyError:
     print(
         'ERROR: The presubmit checks must be run in the sample project\'s root'
         ' directory',
-        file=sys.stderr)
+        file=sys.stderr,
+    )
     sys.exit(2)
 
 PIGWEED_ROOT = PROJECT_ROOT / 'third_party' / 'pigweed'
 
 # Rerun the build if files with these extensions change.
 _BUILD_EXTENSIONS = frozenset(
-    ['.rst', '.gn', '.gni', *format_code.C_FORMAT.extensions])
+    ['.rst', '.gn', '.gni', *format_code.C_FORMAT.extensions]
+)
 
 
 #
@@ -78,7 +82,8 @@ def check_for_git_changes(ctx: PresubmitContext):
         _LOG.error('There are uncommitted changes in the %s repo!', repo.name)
     if changes:
         _LOG.warning(
-            'Commit or stash pending changes before running the presubmit.')
+            'Commit or stash pending changes before running the presubmit.'
+        )
         raise pw_presubmit.PresubmitFailure
 
 
@@ -92,13 +97,13 @@ PATH_EXCLUSIONS = (
 #
 # Presubmit check programs
 #
-OTHER_CHECKS = (build.gn_gen_check, )
+OTHER_CHECKS = (build.gn_gen_check,)
 
 QUICK = (
-    # List some presubmit checks to run
     default_build,
-    # Use the upstream formatting checks, with custom path filters applied.
-    format_code.presubmit_checks(),
+    format_code.presubmit_checks(
+        code_formats=format_code.CODE_FORMATS_WITH_BLACK
+    ),
 )
 
 LINTFORMAT = (
@@ -149,10 +154,9 @@ def run(install: bool, exclude: list, **presubmit_args) -> int:
 
     exclude.extend(PATH_EXCLUSIONS)
     repos = git_repo.discover_submodules(superproject_dir=PROJECT_ROOT)
-    return cli.run(root=PROJECT_ROOT,
-                   repositories=repos,
-                   exclude=exclude,
-                   **presubmit_args)
+    return cli.run(
+        root=PROJECT_ROOT, repositories=repos, exclude=exclude, **presubmit_args
+    )
 
 
 def main() -> int:
@@ -164,7 +168,8 @@ def main() -> int:
     parser.add_argument(
         '--install',
         action='store_true',
-        help='Install the presubmit as a Git pre-push hook and exit.')
+        help='Install the presubmit as a Git pre-push hook and exit.',
+    )
 
     return run(**vars(parser.parse_args()))
 

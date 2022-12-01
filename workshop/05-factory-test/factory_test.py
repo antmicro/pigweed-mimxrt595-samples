@@ -30,8 +30,13 @@ from pw_tokenizer.detokenize import AutoUpdatingDetokenizer, detokenize_base64
 # Point the script to the .proto file with our RPC services.
 PROTOS = (
     Path(os.environ['PW_ROOT'], 'pw_rpc', 'echo.proto'),
-    Path(os.environ['PW_PROJECT_ROOT'], 'workshop', '03-rpc',
-         'remoticon_proto', 'remoticon.proto'),
+    Path(
+        os.environ['PW_PROJECT_ROOT'],
+        'workshop',
+        '03-rpc',
+        'remoticon_proto',
+        'remoticon.proto',
+    ),
 )
 
 _LOG = logging.getLogger('factory_test_example')
@@ -46,7 +51,8 @@ FailedTests = List[Tuple[TestFunction, TestFailure]]
 
 # Set up a detokenizer so logs can be printed in plain text.
 _detokenizer = AutoUpdatingDetokenizer(
-    Path(__file__).parent / 'tokenizer_database.csv')
+    Path(__file__).parent / 'tokenizer_database.csv'
+)
 
 
 def _detokenize_and_print(data: bytes):
@@ -55,6 +61,7 @@ def _detokenize_and_print(data: bytes):
 
 class TestContext:
     """Used to track the state of ongoing tests."""
+
     def __init__(self, client: HdlcRpcClient):
         self.client = client
         self.passed: List[TestFunction] = []
@@ -118,7 +125,8 @@ def test_counter(ctx: TestContext) -> None:
     if stats_1.loop_iterations >= stats_2.loop_iterations:
         raise TestFailure(
             'Super loop counter is not incrementing! '
-            f'{stats_1.loop_iterations} >= {stats_2.loop_iterations}')
+            f'{stats_1.loop_iterations} >= {stats_2.loop_iterations}'
+        )
 
 
 def test_led(ctx: TestContext) -> None:
@@ -144,10 +152,12 @@ def run_tests(device: str, baud: int) -> FailedTests:
 
     # Set up a pw_rpc client that uses HDLC.
     ser = serial.Serial(device, baud, timeout=0.01)
-    hdlc_client = HdlcRpcClient(lambda: ser.read(4096),
-                                PROTOS,
-                                default_channels(ser.write),
-                                output=_detokenize_and_print)
+    hdlc_client = HdlcRpcClient(
+        lambda: ser.read(4096),
+        PROTOS,
+        default_channels(ser.write),
+        output=_detokenize_and_print,
+    )
 
     _LOG.info('Starting factory tests!')
 
@@ -169,16 +179,18 @@ def main() -> int:
     """Parses the command line args and runs the tests."""
     parser = argparse.ArgumentParser(
         description=__doc__,
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--device',
-                        '-d',
-                        default='/dev/ttyACM0',
-                        help='serial device to use')
-    parser.add_argument('--baud',
-                        '-b',
-                        type=int,
-                        default=115200,
-                        help='baud rate for the serial device')
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument(
+        '--device', '-d', default='/dev/ttyACM0', help='serial device to use'
+    )
+    parser.add_argument(
+        '--baud',
+        '-b',
+        type=int,
+        default=115200,
+        help='baud rate for the serial device',
+    )
 
     return 1 if run_tests(**vars(parser.parse_args())) else 0
 

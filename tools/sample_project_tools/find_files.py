@@ -45,45 +45,56 @@ def _error_unknown_arg(unknown_arg):
 
 def build_argument_parser():
     """Setup find-files argparse."""
+
     def log_level(arg: str) -> int:
         try:
             return getattr(logging, arg.upper())
         except AttributeError as exc:
             raise argparse.ArgumentTypeError(
-                f'{arg.upper()} is not a valid log level') from exc
+                f'{arg.upper()} is not a valid log level'
+            ) from exc
 
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-l',
-                        '--loglevel',
-                        type=log_level,
-                        default=logging.INFO,
-                        help='Set the log level '
-                        '(debug, info, warning, error, critical)')
-    parser.add_argument("-s",
-                        "--starting-dir",
-                        default=os.getcwd(),
-                        help="The starting directory to run a find. "
-                        "Default: {}".format(os.getcwd()))
-    parser.add_argument("--type",
-                        dest="file_type",
-                        choices=["d", "f"],
-                        help="Limit results to directories 'd' or files 'f'.")
-    parser.add_argument("-p",
-                        "--pattern",
-                        metavar="PATTERN",
-                        dest="patterns",
-                        action="append",
-                        required=True,
-                        help="Glob patterns to search with. Wildcard is '*'. "
-                        "The '**' pattern means 'this directory and all "
-                        "subdirectories, recursively'. Multiple patterns can "
-                        "be used and are combined with a logical or.")
-    parser.add_argument('exec_args',
-                        metavar="-- EXEC_ARGS",
-                        nargs=argparse.REMAINDER,
-                        help="Run a command on each file. The command should "
-                        "be specified at the end after a '--'. Any args "
-                        "matching '%%f' will be replaced with the file name.")
+    parser.add_argument(
+        '-l',
+        '--loglevel',
+        type=log_level,
+        default=logging.INFO,
+        help='Set the log level ' '(debug, info, warning, error, critical)',
+    )
+    parser.add_argument(
+        "-s",
+        "--starting-dir",
+        default=os.getcwd(),
+        help="The starting directory to run a find. "
+        "Default: {}".format(os.getcwd()),
+    )
+    parser.add_argument(
+        "--type",
+        dest="file_type",
+        choices=["d", "f"],
+        help="Limit results to directories 'd' or files 'f'.",
+    )
+    parser.add_argument(
+        "-p",
+        "--pattern",
+        metavar="PATTERN",
+        dest="patterns",
+        action="append",
+        required=True,
+        help="Glob patterns to search with. Wildcard is '*'. "
+        "The '**' pattern means 'this directory and all "
+        "subdirectories, recursively'. Multiple patterns can "
+        "be used and are combined with a logical or.",
+    )
+    parser.add_argument(
+        'exec_args',
+        metavar="-- EXEC_ARGS",
+        nargs=argparse.REMAINDER,
+        help="Run a command on each file. The command should "
+        "be specified at the end after a '--'. Any args "
+        "matching '%%f' will be replaced with the file name.",
+    )
     return parser
 
 
@@ -98,7 +109,8 @@ def main() -> int:
         return 1
 
     starting_dir = os.path.realpath(
-        os.path.expanduser(os.path.expandvars(args.starting_dir)))
+        os.path.expanduser(os.path.expandvars(args.starting_dir))
+    )
     if not os.path.exists(starting_dir):
         _LOG.error("Starting directory '%s' not found.", args.starting_dir)
         return 1
@@ -121,9 +133,7 @@ def main() -> int:
             return 1
         exec_args = args.exec_args[1:]
 
-    for file_name in [
-            str(p.relative_to(os.getcwd())) for p in sorted(results)
-    ]:
+    for file_name in [str(p.relative_to(os.getcwd())) for p in sorted(results)]:
         print(file_name)
         if exec_args:
             command = [file_name if arg == "%f" else arg for arg in exec_args]
