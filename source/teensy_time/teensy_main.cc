@@ -19,7 +19,6 @@
 
 #include "pw_hex_dump/hex_dump.h"
 #include "pw_log/log.h"
-#include "pw_span/internal/span.h"
 #include "pw_span/span.h"
 #include "pw_string/format.h"
 #include "pw_string/string_builder.h"
