@@ -1,5 +1,29 @@
 {
   "pw": {
+    "pw_cli": {
+      "plugins": {
+        "presubmit": {
+          "module": "sample_project_tools.presubmit_checks",
+          "function": "main"
+        },
+        "heap-viewer": {
+          "module": "pw_allocator.heap_viewer",
+          "function": "main"
+        },
+        "rpc": {
+          "module": "pw_system.console",
+          "function": "main"
+        },
+        "find-files": {
+          "module": "sample_project_tools.find_files",
+          "function": "main"
+        },
+        "package": {
+          "module": "pw_package.pigweed_packages",
+          "function": "main"
+        }
+      }
+    },
     "pw_presubmit": {
       "format": {
         "python_formatter": "black"
