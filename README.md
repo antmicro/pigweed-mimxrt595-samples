@@ -67,6 +67,15 @@ Make the project yours with your own banner! Edit `banner.txt` as desired `:-D`.
 Generate the build files with `gn gen out` once, unless the build configuration
 has changed. Then, use ninja to build everything with `ninja -C out`.
 
+> **WARNING**: Unless your build directory (the `out` in `gn gen out`) is
+> exactly one directory away from the project root directory (the
+> `sample_project` repo root in this case), there will be issues finding source
+> files while debugging and while generating coverage reports. This is due an
+> issue in upstream LLVM reordering debug and coverage path mappings (tracked by
+> [`b/278898014`](https://issuetracker.google.com/278898014) and
+> [`b/278906020`](https://issuetracker.google.com/278906020>)). **We recommend
+> sticking to simple, single directory build directories for the time being.**
+
 The sample project examples have dependencies, each with some required build
 arguments. See the [Arduino](#arduino-example), and [RPC](#rpc-example) sections
 for more setup information. The build arguments can be set with `gn args out`.
