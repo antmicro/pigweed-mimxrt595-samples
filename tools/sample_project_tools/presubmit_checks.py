@@ -32,7 +32,6 @@ except ImportError:
 
 import pw_presubmit
 from pw_presubmit import (
-    PresubmitContext,
     build,
     cli,
     cpp_checks,
@@ -43,6 +42,7 @@ from pw_presubmit import (
     keep_sorted,
     python_checks,
 )
+from pw_presubmit.presubmit_context import PresubmitContext, PresubmitFailure
 
 _LOG = logging.getLogger(__name__)
 
@@ -84,7 +84,7 @@ def check_for_git_changes(ctx: PresubmitContext):
         _LOG.warning(
             'Commit or stash pending changes before running the presubmit.'
         )
-        raise pw_presubmit.PresubmitFailure
+        raise PresubmitFailure
 
 
 # Avoid running some checks on certain paths.
