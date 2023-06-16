@@ -128,8 +128,7 @@ pw_python_venv("sample_project_build_venv") {
 # This template collects all python packages and their dependencies into a
 # single super Python package for installation into the bootstrapped virtual
 # environment.
-pw_create_python_source_tree(
-    "generate_sample_project_tools_python_distribution") {
+pw_python_distribution("generate_sample_project_tools_python_distribution") {
   packages = _all_python_packages
   generate_setup_cfg = {
     name = "sample-project-tools"
