@@ -69,8 +69,10 @@ PW_PROJECT_ROOT="$SAMPLE_PROJECT_ROOT"
 PW_ROOT="$SAMPLE_PROJECT_ROOT/third_party/pigweed"
 
 # Set your project's banner and color.
-export PW_BRANDING_BANNER="$SAMPLE_PROJECT_ROOT/banner.txt"
-export PW_BRANDING_BANNER_COLOR=magenta
+PW_BRANDING_BANNER="$SAMPLE_PROJECT_ROOT/banner.txt"
+export PW_BRANDING_BANNER
+PW_BRANDING_BANNER_COLOR=magenta
+export PW_BRANDING_BANNER_COLOR
 
 sample_project_banner() {
   cat "$PW_BRANDING_BANNER"
