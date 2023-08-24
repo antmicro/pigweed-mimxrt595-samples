@@ -1,0 +1,89 @@
+# Copyright 2020 The Pigweed Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not
+# use this file except in compliance with the License. You may obtain a copy of
+# the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
+
+import("//build_overrides/pigweed.gni")
+
+import("$dir_pw_build/python.gni")
+import("$dir_pw_build/target_types.gni")
+import("$dir_pw_docgen/docs.gni")
+import("$dir_pw_protobuf_compiler/proto.gni")
+import("$dir_pw_third_party/nanopb/nanopb.gni")
+import("$dir_pw_tokenizer/database.gni")
+import("$dir_pw_unit_test/test.gni")
+
+pw_doc_group("docs") {
+  sources = [ "docs.rst" ]
+}
+
+config("default_config") {
+  include_dirs = [ "public" ]
+}
+
+group("all") {
+  deps = [ ":factory_test" ]
+
+  # Build tokenizer_database for elf binaries only
+  if (host_os == "linux" || current_toolchain != "//targets/host:host_debug") {
+    deps += [ ":tokenizer_database" ]
+  }
+}
+
+pw_executable("factory_test") {
+  sources = [ "main.cc" ]
+  deps = [
+    "//source/pw_board_led",
+    "//source/pw_spin_delay",
+    dir_pw_log,
+
+    # RPC related dependencies.
+    "$dir_pw_hdlc:pw_rpc",
+    "$dir_pw_hdlc:rpc_channel_output",
+    "$dir_pw_rpc:server",
+    "$dir_pw_stream:sys_io_stream",
+    dir_pw_hdlc,
+
+    # This is the service we are implementing!
+    ":remoticon_service_nanopb",
+
+    # This is an example service that just responds with that it was sent.
+    "$dir_pw_rpc/nanopb:echo_service",
+  ]
+}
+
+pw_tokenizer_database("tokenizer_database") {
+  database = "tokenizer_database.csv"
+  targets = [ ":factory_test" ]
+}
+
+################################################################################
+# Service
+
+pw_source_set("remoticon_service_nanopb") {
+  public_configs = [ ":default_config" ]
+  public_deps = [ "//examples/03-rpc:remoticon_proto.nanopb_rpc" ]
+  public = [ "public/remoticon/remoticon_service_nanopb.h" ]
+  deps = [ "//examples/03-rpc:remoticon_proto.nanopb_rpc" ]
+  sources = [ "remoticon_service_nanopb.cc" ]
+}
+
+pw_python_script("factory_test_script") {
+  sources = [ "factory_test.py" ]
+  python_deps = [
+    "$dir_pw_cli/py",
+    "$dir_pw_hdlc/py",
+    "$dir_pw_rpc/py",
+    "$dir_pw_tokenizer/py",
+  ]
+  pylintrc = "$dir_pigweed/.pylintrc"
+}

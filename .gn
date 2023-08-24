@@ -23,4 +23,6 @@ default_args = {
 
   # Default gn build virtualenv target.
   pw_build_PYTHON_BUILD_VENV = "//:sample_project_build_venv"
+
+  pw_build_PIP_REQUIREMENTS = [ "//docs/requirements.txt" ]
 }

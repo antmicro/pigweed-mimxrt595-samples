@@ -15,8 +15,13 @@
 import("//build_overrides/pigweed.gni")
 
 import("$dir_pw_build/target_types.gni")
+import("$dir_pw_docgen/docs.gni")
 import("$dir_pw_tokenizer/database.gni")
 import("$dir_pw_unit_test/test.gni")
+
+pw_doc_group("docs") {
+  sources = [ "docs.rst" ]
+}
 
 group("all") {
   deps = [ ":string_demo" ]

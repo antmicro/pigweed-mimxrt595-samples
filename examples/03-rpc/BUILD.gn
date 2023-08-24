@@ -14,19 +14,22 @@
 
 import("//build_overrides/pigweed.gni")
 
-import("$dir_pw_build/python.gni")
 import("$dir_pw_build/target_types.gni")
+import("$dir_pw_docgen/docs.gni")
 import("$dir_pw_protobuf_compiler/proto.gni")
 import("$dir_pw_third_party/nanopb/nanopb.gni")
 import("$dir_pw_tokenizer/database.gni")
-import("$dir_pw_unit_test/test.gni")
+
+pw_doc_group("docs") {
+  sources = [ "docs.rst" ]
+}
 
 config("default_config") {
   include_dirs = [ "public" ]
 }
 
 group("all") {
-  deps = [ ":factory_test" ]
+  deps = [ ":rpc" ]
 
   # Build tokenizer_database for elf binaries only
   if (host_os == "linux" || current_toolchain != "//targets/host:host_debug") {
@@ -34,7 +37,7 @@ group("all") {
   }
 }
 
-pw_executable("factory_test") {
+pw_executable("rpc") {
   sources = [ "main.cc" ]
   deps = [
     "//source/pw_board_led",
@@ -58,27 +61,20 @@ pw_executable("factory_test") {
 
 pw_tokenizer_database("tokenizer_database") {
   database = "tokenizer_database.csv"
-  targets = [ ":factory_test" ]
+  targets = [ ":rpc" ]
 }
 
 ################################################################################
 # Service
 
-pw_source_set("remoticon_service_nanopb") {
-  public_configs = [ ":default_config" ]
-  public_deps = [ "//workshop/03-rpc:remoticon_proto.nanopb_rpc" ]
-  public = [ "public/remoticon/remoticon_service_nanopb.h" ]
-  deps = [ "//workshop/03-rpc:remoticon_proto.nanopb_rpc" ]
-  sources = [ "remoticon_service_nanopb.cc" ]
+pw_proto_library("remoticon_proto") {
+  sources = [ "remoticon_proto/remoticon.proto" ]
 }
 
-pw_python_script("factory_test_script") {
-  sources = [ "factory_test.py" ]
-  python_deps = [
-    "$dir_pw_cli/py",
-    "$dir_pw_hdlc/py",
-    "$dir_pw_rpc/py",
-    "$dir_pw_tokenizer/py",
-  ]
-  pylintrc = "$dir_pigweed/.pylintrc"
+pw_source_set("remoticon_service_nanopb") {
+  public_configs = [ ":default_config" ]
+  public_deps = [ ":remoticon_proto.nanopb_rpc" ]
+  public = [ "public/remoticon/remoticon_service_nanopb.h" ]
+  deps = [ ":remoticon_proto.nanopb_rpc" ]
+  sources = [ "remoticon_service_nanopb.cc" ]
 }

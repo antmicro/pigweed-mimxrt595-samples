@@ -3,6 +3,7 @@
 0f8381fa,          ,"■msg♦          The cumulative allocated heap memory is %u bytes.■module♦■file♦third_party/pigweed/pw_allocator/freelist_heap.cc"
 1ea870fb,          ,"Blink Low!"
 2bc3cb0f,          ,"          The current allocated heap memory is %u bytes."
+36816d4e,          ,"■msg♦%s■module♦■file♦examples/02-string-functions/string_demo.cc"
 36c4d845,          ,"■msg♦          The cumulative freed heap memory is %u bytes.■module♦■file♦third_party/pigweed/pw_allocator/freelist_heap.cc"
 38c60010,          ,"%s"
 3eb9d410,          ,"■msg♦%s■module♦■file♦workshop/02-string-functions/string_demo.cc"

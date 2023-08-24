@@ -31,12 +31,17 @@ import("$dir_pw_unit_test/test.gni")
 group("default") {
   deps = [
     ":arduino",
+    ":docs",
+    ":examples",
     ":host",
     ":python.lint",
     ":python.tests",
     ":tokenizer_database",
-    ":workshop",
   ]
+}
+
+group("docs") {
+  deps = [ "//docs($dir_pigweed/targets/docs)" ]
 }
 
 # Hello world group, this will be built using multiple toolchains.
@@ -91,7 +96,7 @@ pw_python_group("python") {
   python_deps = [
     # Generate and pip install _all_python_packages
     ":pip_install_sample_project_tools",
-    "workshop/05-factory-test:factory_test_script",
+    "examples/05-factory-test:factory_test_script",
   ]
 }
 
@@ -164,37 +169,37 @@ pw_tokenizer_database("tokenizer_database") {
   }
 }
 
-# Workshop Exercises
-group("workshop") {
+# Example Exercises
+group("examples") {
   deps = []
 
-  # Teensy 3.0/4.0 workshop steps.
+  # Teensy 3.0/4.0 examples steps.
   if (pw_arduino_build_CORE_PATH != "") {
     deps += [
-      ":workshop_tests(//targets/arduino:arduino_debug_tests)",
-      "//workshop/01-blinky:all(//targets/arduino:arduino_debug)",
-      "//workshop/02-string-functions:all(//targets/arduino:arduino_debug)",
-      "//workshop/03-rpc:all(//targets/arduino:arduino_debug)",
-      "//workshop/04-kvs:all(//targets/arduino:arduino_debug)",
-      "//workshop/05-factory-test:all(//targets/arduino:arduino_debug)",
+      ":examples_tests(//targets/arduino:arduino_debug_tests)",
+      "//examples/01-blinky:all(//targets/arduino:arduino_debug)",
+      "//examples/02-string-functions:all(//targets/arduino:arduino_debug)",
+      "//examples/03-rpc:all(//targets/arduino:arduino_debug)",
+      "//examples/04-kvs:all(//targets/arduino:arduino_debug)",
+      "//examples/05-factory-test:all(//targets/arduino:arduino_debug)",
     ]
   }
 
-  # STMicroelectronics STM32F429I-DISC1 workshop steps.
+  # STMicroelectronics STM32F429I-DISC1 examples steps.
   deps += [
-    ":workshop_tests(//targets/stm32f429i_disc1:stm32f429i_disc1_debug_tests)",
-    "//workshop/01-blinky:blinky(//targets/stm32f429i_disc1:stm32f429i_disc1_debug)",
-    "//workshop/02-string-functions:all(//targets/stm32f429i_disc1:stm32f429i_disc1_debug)",
-    "//workshop/03-rpc:all(//targets/stm32f429i_disc1:stm32f429i_disc1_debug)",
-    "//workshop/04-kvs:all(//targets/stm32f429i_disc1:stm32f429i_disc1_debug)",
-    "//workshop/05-factory-test:all(//targets/stm32f429i_disc1:stm32f429i_disc1_debug)",
+    ":examples_tests(//targets/stm32f429i_disc1:stm32f429i_disc1_debug_tests)",
+    "//examples/01-blinky:blinky(//targets/stm32f429i_disc1:stm32f429i_disc1_debug)",
+    "//examples/02-string-functions:all(//targets/stm32f429i_disc1:stm32f429i_disc1_debug)",
+    "//examples/03-rpc:all(//targets/stm32f429i_disc1:stm32f429i_disc1_debug)",
+    "//examples/04-kvs:all(//targets/stm32f429i_disc1:stm32f429i_disc1_debug)",
+    "//examples/05-factory-test:all(//targets/stm32f429i_disc1:stm32f429i_disc1_debug)",
   ]
 
-  # Host workshop steps.
+  # Host examples steps.
   deps += [
-    ":workshop_tests(//targets/host:host_debug_tests)",
-    "//workshop/01-blinky:all(//targets/host:host_debug)",
-    "//workshop/02-string-functions:all(//targets/host:host_debug)",
+    ":examples_tests(//targets/host:host_debug_tests)",
+    "//examples/01-blinky:all(//targets/host:host_debug)",
+    "//examples/02-string-functions:all(//targets/host:host_debug)",
   ]
 }
 
@@ -207,7 +212,7 @@ pw_test_group("tests") {
     # To enable: uncomment this and modify eeprom.c to remove static from
     # flash_write() and flash_erase_sector()
     # "//source/teensy_flash:tests",
-    "//workshop/02-string-functions:tests",
+    "//examples/02-string-functions:tests",
   ]
 }
 
@@ -216,7 +221,7 @@ foreach(test_group,
         [
           "arduino",
           "host",
-          "workshop",
+          "examples",
         ]) {
   group("${test_group}_tests") {
     deps = []
