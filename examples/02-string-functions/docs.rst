@@ -14,7 +14,7 @@ Instructions are the same as flashing
 
    .. code:: sh
 
-      arduino_unit_test_runner --config out/arduino_debug/gen/arduino_builder_config.json --upload-tool teensyloader --verbose --flash-only out/arduino_debug/obj/workshop/02-string-functions/bin/string_demo.elf
+      arduino_unit_test_runner --config out/arduino_debug/gen/arduino_builder_config.json --upload-tool teensyloader --verbose --flash-only out/arduino_debug/obj/examples/02-string-functions/bin/string_demo.elf
 
 3. Tail the output with ``miniterm``, (use ``Ctrl-]`` to quit).
 
@@ -79,13 +79,13 @@ output.
 
 .. code:: sh
 
-   arduino_unit_test_runner --config out/arduino_debug_tests/gen/arduino_builder_config.json --upload-tool teensyloader --verbose out/arduino_debug_tests/obj/workshop/02-string-functions/test/system_status_test.elf
+   arduino_unit_test_runner --config out/arduino_debug_tests/gen/arduino_builder_config.json --upload-tool teensyloader --verbose out/arduino_debug_tests/obj/examples/02-string-functions/test/system_status_test.elf
 
 **stm32f429i_disc1**
 
 .. code:: sh
 
-   stm32f429i_disc1_unit_test_runner --verbose out/stm32f429i_disc1_debug/obj/workshop/02-string-functions/test/system_status_test.elf
+   stm32f429i_disc1_unit_test_runner --verbose out/stm32f429i_disc1_debug/obj/examples/02-string-functions/test/system_status_test.elf
 
 Using the Test Server.
 ~~~~~~~~~~~~~~~~~~~~~~

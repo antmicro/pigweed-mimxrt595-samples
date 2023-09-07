@@ -33,13 +33,13 @@ Instructions for building with a ``teensy40`` board.
 
    .. code:: sh
 
-      arduino_unit_test_runner --verbose --config out/arduino_debug/gen/arduino_builder_config.json --upload-tool teensyloader --flash-only out/arduino_debug/obj/workshop/01-blinky/bin/blinky.elf
+      arduino_unit_test_runner --verbose --config out/arduino_debug/gen/arduino_builder_config.json --upload-tool teensyloader --flash-only out/arduino_debug/obj/examples/01-blinky/bin/blinky.elf
 
    **stm32f429i_disc1**
 
    .. code:: sh
 
-      openocd -s ${PW_PIGWEED_CIPD_INSTALL_DIR}/share/openocd/scripts -f ${PW_ROOT}/targets/stm32f429i_disc1/py/stm32f429i_disc1_utils/openocd_stm32f4xx.cfg -c "program out/stm32f429i_disc1_debug/obj/workshop/01-blinky/bin/blinky.elf reset exit"
+      openocd -s ${PW_PIGWEED_CIPD_INSTALL_DIR}/share/openocd/scripts -f ${PW_ROOT}/targets/stm32f429i_disc1/py/stm32f429i_disc1_utils/openocd_stm32f4xx.cfg -c "program out/stm32f429i_disc1_debug/obj/examples/01-blinky/bin/blinky.elf reset exit"
 
 View Plain Text Log Output
 --------------------------
@@ -63,7 +63,7 @@ View HDLC Encoded Log Output
 
    .. code:: sh
 
-      python -m pw_tokenizer.database create --force --database workshop/01-blinky/tokenizer_database.csv out/arduino_debug/obj/workshop/01-blinky/bin/blinky.elf
+      python -m pw_tokenizer.database create --force --database workshop/01-blinky/tokenizer_database.csv out/arduino_debug/obj/examples/01-blinky/bin/blinky.elf
 
 2. Start the rpc_console that saves log output to a file.
 
