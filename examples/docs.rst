@@ -1,3 +1,5 @@
+.. _examples-root:
+
 =============================
 Give Pigweed a Whirl Workshop
 =============================
