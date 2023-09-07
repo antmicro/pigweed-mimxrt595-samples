@@ -69,21 +69,13 @@ source activate.sh
 All of these commands must be run from inside an activated developer
 environment. See [Environment setup](#environment-setup)
 
-#### First time
-The first time you build, you'll need to use `gn gen` to create the build
-directory. You won't need to do this again unless you delete the `out`
-directory.
-
-```sh
-gn gen out
-```
 #### One-shot build
 
 To build the project, documentation, and tests, run the following command in
 an activated environment:
 
 ```sh
-ninja -C out
+pw build
 ```
 
 #### Automatically build on file save
@@ -109,7 +101,7 @@ source activate.sh
 
 and rebuild with:
 ```sh
-ninja -C out
+pw build
 ```
 
 ## More info and Examples

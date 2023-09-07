@@ -2,6 +2,14 @@
   "pw": {
     "pw_cli": {
       "plugins": {
+        "build": {
+          "module": "sample_project_tools.build_project",
+          "function": "build_project"
+        },
+        "watch": {
+          "module": "sample_project_tools.build_project",
+          "function": "watch_project"
+        },
         "presubmit": {
           "module": "sample_project_tools.presubmit_checks",
           "function": "main"

@@ -88,16 +88,6 @@ Building
 All of these commands must be run from inside an activated developer
 environment. See `Environment setup <#environment-setup>`__
 
-First time
-----------
-The first time you build, you'll need to use ``gn gen`` to create the build
-directory. You won't need to do this again unless you delete the ``out``
-directory.
-
-.. code-block:: bash
-
-   gn gen out
-
 One-shot build
 --------------
 To build the project, documentation, and tests, run the following command in
@@ -105,7 +95,7 @@ an activated environment:
 
 .. code-block:: bash
 
-   ninja -C out
+   pw build
 
 Automatically build on file save
 --------------------------------
@@ -135,7 +125,7 @@ and rebuild with:
 
 .. code-block:: bash
 
-   ninja -C out
+   pw build
 
 ----------------------
 More info and Examples
