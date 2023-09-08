@@ -45,6 +45,10 @@
           ":python.install"
         ]
       },
+      "optional_submodules": [
+        "third_party/FreeRTOS/portable/ThirdParty/Community-Supported-Ports",
+        "third_party/FreeRTOS/portable/ThirdParty/Partner-Supported-Ports"
+      ],
       "gni_file": "build_overrides/pigweed_environment.gni"
     }
   }

@@ -10,3 +10,15 @@
 	path = infra/config
 	url = https://pigweed.googlesource.com/infra/config
 	branch = main
+[submodule "third_party/stm32cube_f4/hal_driver"]
+	path = third_party/stm32cube_f4/hal_driver
+	url = https://github.com/STMicroelectronics/stm32f4xx_hal_driver.git
+[submodule "third_party/stm32cube_f4/cmsis_device"]
+	path = third_party/stm32cube_f4/cmsis_device
+	url = https://github.com/STMicroelectronics/cmsis_device_f4.git
+[submodule "third_party/stm32cube_f4/cmsis_core"]
+	path = third_party/stm32cube_f4/cmsis_core
+	url = https://github.com/STMicroelectronics/cmsis_core.git
+[submodule "third_party/FreeRTOS"]
+	path = third_party/FreeRTOS
+	url = https://github.com/FreeRTOS/FreeRTOS-Kernel
