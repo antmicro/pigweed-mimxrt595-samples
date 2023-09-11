@@ -1,8 +1,8 @@
 .. _examples-01-blinky:
 
-===================
-Blinky with logging
-===================
+========================
+01 - Blinky with logging
+========================
 Blinky introduces the basics of building, flashing and checking log
 output. The instructions here will be the same for each exercise and
 binary to be flashed.

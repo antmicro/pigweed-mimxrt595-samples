@@ -36,7 +36,7 @@ pw_doc_gen("docs") {
     ":static_assets",
     "//examples:docs",
     "//examples/01-blinky:docs",
-    "//examples/02-string-functions:docs",
+    "//examples/02-unit-testing:docs",
     "//examples/03-rpc:docs",
     "//examples/04-kvs:docs",
     "//examples/05-factory-test:docs",

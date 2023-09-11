@@ -1,4 +1,4 @@
-// Copyright 2020 The Pigweed Authors
+// Copyright 2023 The Pigweed Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not
 // use this file except in compliance with the License. You may obtain a copy of
@@ -11,10 +11,17 @@
 // WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 // License for the specific language governing permissions and limitations under
 // the License.
-#pragma once
+#define PW_LOG_MODULE_NAME "user_init"
 
-namespace system_status {
+#include "pw_system/rpc_server.h"
+#include "pw_unit_test/unit_test_service.h"
 
-const char* GetStatusString(unsigned led_state);
+namespace pw::system {
 
-}  // namespace system_status
+pw::unit_test::UnitTestService unit_test_service;
+
+// This will run once after pw::system::Init() completes. This callback must
+// return or it will block the work queue.
+void UserAppInit() { GetRpcServer().RegisterService(unit_test_service); }
+
+}  // namespace pw::system

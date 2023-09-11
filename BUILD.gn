@@ -59,7 +59,7 @@ group("app") {
 group("host") {
   deps = [
     ":app(//targets/host:host_debug)",
-    ":host_tests(//targets/host:host_debug_tests)",
+    ":run_tests(//targets/host:host_debug_tests)",
   ]
 }
 
@@ -74,7 +74,7 @@ group("arduino") {
   if (pw_arduino_build_CORE_PATH != "") {
     deps = [
       ":app(//targets/arduino:arduino_debug)",
-      ":arduino_tests(//targets/arduino:arduino_debug_tests)",
+      ":run_tests(//targets/arduino:arduino_debug_tests)",
       "//source/arduino_example:blink(//targets/arduino:arduino_debug)",
       "//source/teensy_time:all(//targets/arduino:arduino_debug)",
     ]
@@ -87,7 +87,7 @@ group("stm32f429i_disc1") {
   _testing_toolchain = "${_default_toolchain}_tests"
   deps = [
     ":app(${_default_toolchain})",
-    ":tests(${_testing_toolchain})",
+    ":run_tests(${_testing_toolchain})",
   ]
 }
 
@@ -174,13 +174,19 @@ group("examples") {
   deps = []
 
   # STMicroelectronics STM32F429I-DISC1 examples.
-  deps += [ "//examples/01-blinky:blinky(//targets/stm32f429i_disc1:stm32f429i_disc1_stm32cube.size_optimized)" ]
+  deps += [
+    "//examples/01-blinky:blinky(//targets/stm32f429i_disc1:stm32f429i_disc1_stm32cube.size_optimized)",
+    "//examples/02-unit-testing:test_runner_app(//targets/stm32f429i_disc1:stm32f429i_disc1_stm32cube.size_optimized)",
+  ]
 
   # TODO: b/297277142 - This will work when There's a SocketStream equivalent
   # for Windows.
   if (host_os != "win") {
     # Host examples.
-    deps += [ "//examples/01-blinky:blinky(//targets/host:host_device_simulator.speed_optimized)" ]
+    deps += [
+      "//examples/01-blinky:blinky(//targets/host:host_device_simulator.speed_optimized)",
+      "//examples/02-unit-testing:test_runner_app(//targets/host:host_device_simulator.speed_optimized)",
+    ]
   }
 }
 
@@ -191,8 +197,6 @@ group("legacy_examples") {
   # Teensy 3.0/4.0 examples steps.
   if (pw_arduino_build_CORE_PATH != "") {
     deps += [
-      ":examples_tests(//targets/arduino:arduino_debug_tests)",
-      "//examples/02-string-functions:all(//targets/arduino:arduino_debug)",
       "//examples/03-rpc:all(//targets/arduino:arduino_debug)",
       "//examples/04-kvs:all(//targets/arduino:arduino_debug)",
       "//examples/05-factory-test:all(//targets/arduino:arduino_debug)",
@@ -201,48 +205,31 @@ group("legacy_examples") {
 
   # STMicroelectronics STM32F429I-DISC1 examples steps.
   deps += [
-    ":examples_tests(//targets/stm32f429i_disc1:stm32f429i_disc1_debug_tests)",
-    "//examples/02-string-functions:all(//targets/stm32f429i_disc1:stm32f429i_disc1_debug)",
     "//examples/03-rpc:all(//targets/stm32f429i_disc1:stm32f429i_disc1_debug)",
     "//examples/04-kvs:all(//targets/stm32f429i_disc1:stm32f429i_disc1_debug)",
     "//examples/05-factory-test:all(//targets/stm32f429i_disc1:stm32f429i_disc1_debug)",
   ]
-
-  # Host examples steps.
-  deps += [
-    ":examples_tests(//targets/host:host_debug_tests)",
-    "//examples/02-string-functions:all(//targets/host:host_debug)",
-  ]
 }
 
-# Group the different modules tests together.
+# All the tests that should run as part of the build.
 pw_test_group("tests") {
   group_deps = [
+    # Uncomment this to automatically run the example unit test.
+    # "//examples/02-unit-testing:tests",
     "//source/simple_counter:tests",
-
     # Disable teensy flash tests until the patcher is available.
     # To enable: uncomment this and modify eeprom.c to remove static from
     # flash_write() and flash_erase_sector()
     # "//source/teensy_flash:tests",
-    "//examples/02-string-functions:tests",
   ]
 }
 
-# Test groups for each platform that will build and optionally run the tests.
-foreach(test_group,
-        [
-          "arduino",
-          "host",
-          "examples",
-        ]) {
-  group("${test_group}_tests") {
-    deps = []
-    if (pw_unit_test_AUTOMATIC_RUNNER == "") {
-      # Without a test runner defined, build the tests but don't run them.
-      deps += [ ":tests" ]
-    } else {
-      # With a test runner, build and run tests.
-      deps += [ ":tests.run" ]
-    }
+group("run_tests") {
+  if (pw_unit_test_AUTOMATIC_RUNNER == "") {
+    # Without a test runner defined, build the tests but don't run them.
+    deps = [ ":tests" ]
+  } else {
+    # With a test runner, build and run tests.
+    deps = [ ":tests.run" ]
   }
 }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Pigweed Authors
+// Copyright 2023 The Pigweed Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not
 // use this file except in compliance with the License. You may obtain a copy of
@@ -11,17 +11,11 @@
 // WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 // License for the specific language governing permissions and limitations under
 // the License.
+#pragma once
 
-#include "system_status.h"
+namespace bitops {
 
-#include "gtest/gtest.h"
-#include "pw_string/string_builder.h"
+// Counts the number of ones in the binary representation of `val`.
+int CountOnes(int val);
 
-namespace system_status {
-
-TEST(GetStatusString, LEDState) {
-  // TODO: Add test here!
-  EXPECT_TRUE(true);
-}
-
-}  // namespace system_status
+}  // namespace bitops
