@@ -10,6 +10,10 @@
           "module": "sample_project_tools.build_project",
           "function": "watch_project"
         },
+        "flash": {
+          "module": "sample_project_tools.flash_device",
+          "function": "main"
+        },
         "presubmit": {
           "module": "sample_project_tools.presubmit_checks",
           "function": "main"
