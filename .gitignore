@@ -48,3 +48,4 @@ __pycache__/
 
 # Other
 logfile.txt
+pw_console-*logs.txt

@@ -1,78 +1,43 @@
-Blinky with Logging
+.. _examples-01-blinky:
+
 ===================
-
-Goal
-----
-
+Blinky with logging
+===================
 Blinky introduces the basics of building, flashing and checking log
 output. The instructions here will be the same for each exercise and
 binary to be flashed.
 
-Build and Flash
+Rather than sitting in a blocking loop to blink an LED, this implementation uses
+timers to allow the device to do other work in between blinks.
+
+---------------
+Build and flash
 ---------------
 
-Instructions for building with a ``teensy40`` board.
+1. Build the firmware with ``pw build`` or ``pw watch``.
 
-1. Create the ``out`` build directory if needed.
-
-   .. code:: sh
-
-      gn gen out --export-compile-commands --args='
-          pw_arduino_build_CORE_PATH="//third_party/pigweed/third_party/arduino/cores"
-          pw_arduino_build_CORE_NAME="teensy"
-          pw_arduino_build_PACKAGE_NAME = "teensy/avr"
-          pw_arduino_build_BOARD="teensy40"
-          pw_arduino_use_test_server=false
-      '
-
-2. Run the compile with ``pw watch`` or ``ninja -C out``.
-
-3. Flash ``blinky.elf``.
-
-   **Teensy**
-
-   .. code:: sh
-
-      arduino_unit_test_runner --verbose --config out/arduino_debug/gen/arduino_builder_config.json --upload-tool teensyloader --flash-only out/arduino_debug/obj/examples/01-blinky/bin/blinky.elf
+2. Flash ``blinky.elf``.
 
    **stm32f429i_disc1**
 
    .. code:: sh
 
-      openocd -s ${PW_PIGWEED_CIPD_INSTALL_DIR}/share/openocd/scripts -f ${PW_ROOT}/targets/stm32f429i_disc1/py/stm32f429i_disc1_utils/openocd_stm32f4xx.cfg -c "program out/stm32f429i_disc1_debug/obj/examples/01-blinky/bin/blinky.elf reset exit"
+      pw flash --device STM32-Discovery out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/01-blinky/bin/blinky.elf
 
-View Plain Text Log Output
---------------------------
+---------
+View logs
+---------
+Logs are `tokenized <https://pigweed.dev/pw_tokenizer/>`_ and transmitted using
+`pw_rpc <https://pigweed.dev/pw_rpc/>`_. If you try to view the UART output
+using a serial terminal like ``minicom`` or ``screen``, the device's output
+will not be human-readable because the device is sending machine-readable binary
+data.
 
-\**\* note **Note:** This will only work when
-``pw_log_BACKEND = "$dir_pw_log_basic"`` is set in
-``//targets/common_backends.gni``. The default is set to use tokenized
-logging over HDLC as shown below. \**\*
+`pw_console <https://pigweed.dev/pw_console/>`_ can take this binary data and
+turn it into human-readable logs and bidirectional RPC commands.
 
-Tail the output with ``miniterm``, (use ``Ctrl-]`` to quit).
+You can view the logs from your attached device with the following command:
 
 .. code:: sh
 
-   python -m serial.tools.miniterm --raw - 115200
-
-View HDLC Encoded Log Output
-----------------------------
-
-1. **Optional:** Create / update the log token database. This will be
-   automatically updated when compiling.
-
-   .. code:: sh
-
-      python -m pw_tokenizer.database create --force --database workshop/01-blinky/tokenizer_database.csv out/arduino_debug/obj/examples/01-blinky/bin/blinky.elf
-
-2. Start the rpc_console that saves log output to a file.
-
-   .. code:: sh
-
-      python -m pw_hdlc.rpc_console -o logfile.txt -d /dev/ttyACM0 ./third_party/pigweed/pw_rpc/echo.proto
-
-3. Tail the log output.
-
-   .. code:: sh
-
-      python -m pw_tokenizer.detokenize base64 workshop/01-blinky/tokenizer_database.csv -i logfile.txt --follow
+   pw-system-console -d /dev/ttyACM0 -b 115200 --token-databases out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/01-blinky/bin/blinky.elf

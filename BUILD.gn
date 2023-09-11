@@ -34,6 +34,7 @@ group("default") {
     ":docs",
     ":examples",
     ":host",
+    ":legacy_examples",
     ":python.lint",
     ":python.tests",
     ":tokenizer_database",
@@ -169,15 +170,28 @@ pw_tokenizer_database("tokenizer_database") {
   }
 }
 
-# Example Exercises
 group("examples") {
+  deps = []
+
+  # STMicroelectronics STM32F429I-DISC1 examples.
+  deps += [ "//examples/01-blinky:blinky(//targets/stm32f429i_disc1:stm32f429i_disc1_stm32cube.size_optimized)" ]
+
+  # TODO: b/297277142 - This will work when There's a SocketStream equivalent
+  # for Windows.
+  if (host_os != "win") {
+    # Host examples.
+    deps += [ "//examples/01-blinky:blinky(//targets/host:host_device_simulator.speed_optimized)" ]
+  }
+}
+
+# Legacy examples.
+group("legacy_examples") {
   deps = []
 
   # Teensy 3.0/4.0 examples steps.
   if (pw_arduino_build_CORE_PATH != "") {
     deps += [
       ":examples_tests(//targets/arduino:arduino_debug_tests)",
-      "//examples/01-blinky:all(//targets/arduino:arduino_debug)",
       "//examples/02-string-functions:all(//targets/arduino:arduino_debug)",
       "//examples/03-rpc:all(//targets/arduino:arduino_debug)",
       "//examples/04-kvs:all(//targets/arduino:arduino_debug)",
@@ -188,7 +202,6 @@ group("examples") {
   # STMicroelectronics STM32F429I-DISC1 examples steps.
   deps += [
     ":examples_tests(//targets/stm32f429i_disc1:stm32f429i_disc1_debug_tests)",
-    "//examples/01-blinky:blinky(//targets/stm32f429i_disc1:stm32f429i_disc1_debug)",
     "//examples/02-string-functions:all(//targets/stm32f429i_disc1:stm32f429i_disc1_debug)",
     "//examples/03-rpc:all(//targets/stm32f429i_disc1:stm32f429i_disc1_debug)",
     "//examples/04-kvs:all(//targets/stm32f429i_disc1:stm32f429i_disc1_debug)",
@@ -198,7 +211,6 @@ group("examples") {
   # Host examples steps.
   deps += [
     ":examples_tests(//targets/host:host_debug_tests)",
-    "//examples/01-blinky:all(//targets/host:host_debug)",
     "//examples/02-string-functions:all(//targets/host:host_debug)",
   ]
 }
