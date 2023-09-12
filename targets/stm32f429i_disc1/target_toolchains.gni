@@ -34,8 +34,8 @@ _toolchain_args = {
     "$dir_pw_log:impl",
   ]
 
-  pw_board_led_BACKEND = "//source/pw_board_led_stm32f429i_disc1"
-  pw_spin_delay_BACKEND = "//source/pw_spin_delay_stm32f429i_disc1"
+  pw_board_led_BACKEND = "//libraries/pw_board_led_stm32f429i_disc1"
+  pw_spin_delay_BACKEND = "//libraries/pw_spin_delay_stm32f429i_disc1"
 }
 
 target_toolchain_stm32f429i_disc1 = {

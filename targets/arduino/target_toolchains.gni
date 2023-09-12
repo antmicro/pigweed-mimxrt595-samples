@@ -48,8 +48,8 @@ target_toolchain_arduino = {
     defaults = {
       forward_variables_from(_toolchain_base.defaults, "*")
       forward_variables_from(toolchain_overrides, "*")
-      pw_board_led_BACKEND = "//source/pw_board_led_teensy"
-      pw_spin_delay_BACKEND = "//source/pw_spin_delay_arduino"
+      pw_board_led_BACKEND = "//libraries/pw_board_led_teensy"
+      pw_spin_delay_BACKEND = "//libraries/pw_spin_delay_arduino"
     }
   }
 

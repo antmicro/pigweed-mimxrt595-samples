@@ -23,7 +23,7 @@ pw_system_target("host_device_simulator") {
   scheduler = PW_SYSTEM_SCHEDULER.NATIVE
   link_deps = [ "$dir_pigweed/targets/host_device_simulator:boot" ]
   build_args = {
-    pw_board_led_BACKEND = "//source/pw_board_led_host"
+    pw_board_led_BACKEND = "//libraries/pw_board_led_host"
   }
 }
 

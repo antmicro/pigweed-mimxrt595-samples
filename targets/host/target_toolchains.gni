@@ -64,8 +64,8 @@ target_toolchain_host = {
 
       # Configure backend for pw_sys_io facade.
       pw_sys_io_BACKEND = dir_pw_sys_io_stdio
-      pw_board_led_BACKEND = "//source/pw_board_led_host"
-      pw_spin_delay_BACKEND = "//source/pw_spin_delay_host"
+      pw_board_led_BACKEND = "//libraries/pw_board_led_host"
+      pw_spin_delay_BACKEND = "//libraries/pw_spin_delay_host"
     }
   }
 

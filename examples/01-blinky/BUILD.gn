@@ -39,7 +39,7 @@ pw_executable("blinky") {
     "$dir_pw_log:pw_log",
     "$dir_pw_system:pw_system",
     "$dir_pw_system:work_queue",
-    "//source/pw_board_led:pw_board_led",
+    "//libraries/pw_board_led:pw_board_led",
   ]
 }
 

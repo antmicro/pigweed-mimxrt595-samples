@@ -40,8 +40,8 @@ group("all") {
 pw_executable("rpc") {
   sources = [ "main.cc" ]
   deps = [
-    "//source/pw_board_led",
-    "//source/pw_spin_delay",
+    "//libraries/pw_board_led",
+    "//libraries/pw_spin_delay",
     dir_pw_log,
 
     # RPC related dependencies.
