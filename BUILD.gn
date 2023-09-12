@@ -64,7 +64,8 @@ group("arduino") {
 
 # stm32f429i_disc1 specific targets
 group("stm32f429i_disc1") {
-  _default_toolchain = "//targets/stm32f429i_disc1:stm32f429i_disc1_debug"
+  _default_toolchain =
+      "//targets/stm32f429i_disc1_stm32cube:stm32f429i_disc1_debug"
   _testing_toolchain = "${_default_toolchain}_tests"
   deps = [ ":run_tests(${_testing_toolchain})" ]
 }
@@ -133,8 +134,8 @@ group("examples") {
 
   # STMicroelectronics STM32F429I-DISC1 examples.
   deps += [
-    "//examples/01-blinky:blinky(//targets/stm32f429i_disc1:stm32f429i_disc1_stm32cube.size_optimized)",
-    "//examples/02-unit-testing:test_runner_app(//targets/stm32f429i_disc1:stm32f429i_disc1_stm32cube.size_optimized)",
+    "//examples/01-blinky:blinky(//targets/stm32f429i_disc1_stm32cube:stm32f429i_disc1_stm32cube.size_optimized)",
+    "//examples/02-unit-testing:test_runner_app(//targets/stm32f429i_disc1_stm32cube:stm32f429i_disc1_stm32cube.size_optimized)",
   ]
 
   # TODO: b/297277142 - This will work when There's a SocketStream equivalent
@@ -163,9 +164,9 @@ group("legacy_examples") {
 
   # STMicroelectronics STM32F429I-DISC1 examples steps.
   deps += [
-    "//examples/03-rpc:all(//targets/stm32f429i_disc1:stm32f429i_disc1_debug)",
-    "//examples/04-kvs:all(//targets/stm32f429i_disc1:stm32f429i_disc1_debug)",
-    "//examples/05-factory-test:all(//targets/stm32f429i_disc1:stm32f429i_disc1_debug)",
+    "//examples/03-rpc:all(//targets/stm32f429i_disc1_stm32cube:stm32f429i_disc1_debug)",
+    "//examples/04-kvs:all(//targets/stm32f429i_disc1_stm32cube:stm32f429i_disc1_debug)",
+    "//examples/05-factory-test:all(//targets/stm32f429i_disc1_stm32cube:stm32f429i_disc1_debug)",
   ]
 }
 
