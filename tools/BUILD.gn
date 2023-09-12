@@ -20,7 +20,6 @@ pw_python_package("tools") {
   setup = [
     "pyproject.toml",
     "setup.cfg",
-    "setup.py",
   ]
   sources = [
     "sample_project_tools/__init__.py",

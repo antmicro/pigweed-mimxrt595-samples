@@ -37,7 +37,6 @@ group("default") {
     ":legacy_examples",
     ":python.lint",
     ":python.tests",
-    ":tokenizer_database",
   ]
 }
 
@@ -45,22 +44,9 @@ group("docs") {
   deps = [ "//docs($dir_pigweed/targets/docs)" ]
 }
 
-# Hello world group, this will be built using multiple toolchains.
-group("app") {
-  deps = []
-
-  # pw_rpc codegen is broken on Windows, so it won't be built for host yet.
-  if (current_toolchain != default_toolchain && current_os != "win") {
-    deps = [ "//source:hello_world" ]
-  }
-}
-
 # Group all targets that run on host only, e.g. tests, utils.
 group("host") {
-  deps = [
-    ":app(//targets/host:host_debug)",
-    ":run_tests(//targets/host:host_debug_tests)",
-  ]
+  deps = [ ":run_tests(//targets/host:host_debug_tests)" ]
 }
 
 # Arduino specific targets.
@@ -72,12 +58,7 @@ group("arduino") {
   #   pw_arduino_build_CORE_PATH="//third_party/pigweed/third_party/arduino/cores"
 
   if (pw_arduino_build_CORE_PATH != "") {
-    deps = [
-      ":app(//targets/arduino:arduino_debug)",
-      ":run_tests(//targets/arduino:arduino_debug_tests)",
-      "//source/arduino_example:blink(//targets/arduino:arduino_debug)",
-      "//source/teensy_time:all(//targets/arduino:arduino_debug)",
-    ]
+    deps = [ ":run_tests(//targets/arduino:arduino_debug_tests)" ]
   }
 }
 
@@ -85,10 +66,7 @@ group("arduino") {
 group("stm32f429i_disc1") {
   _default_toolchain = "//targets/stm32f429i_disc1:stm32f429i_disc1_debug"
   _testing_toolchain = "${_default_toolchain}_tests"
-  deps = [
-    ":app(${_default_toolchain})",
-    ":run_tests(${_testing_toolchain})",
-  ]
+  deps = [ ":run_tests(${_testing_toolchain})" ]
 }
 
 # This group is built during bootstrap to setup the interactive Python
@@ -134,7 +112,7 @@ pw_python_venv("sample_project_build_venv") {
 # This template collects all python packages and their dependencies into a
 # single super Python package for installation into the bootstrapped virtual
 # environment.
-pw_python_distribution("generate_sample_project_tools_python_distribution") {
+pw_python_distribution("sample_project_python_distribution") {
   packages = _all_python_packages
   generate_setup_cfg = {
     name = "sample-project-tools"
@@ -146,28 +124,8 @@ pw_python_distribution("generate_sample_project_tools_python_distribution") {
 
 # Install the sample-project-tools super Python package into the bootstrapped
 # Python venv.
-pw_internal_pip_install("pip_install_sample_project_tools") {
-  packages = [ ":generate_sample_project_tools_python_distribution" ]
-}
-
-# This 'pw_tokenizer_database' target will update the tokenizer_database.csv
-# file for all dependencies listed in 'targets'.
-pw_tokenizer_database("tokenizer_database") {
-  database = "//source/tokenizer_database.csv"
-
-  # Tokenizer databases can only be created for elf binaries
-  if (host_os == "linux") {
-    targets = [ ":app(//targets/host:host_debug)" ]
-  } else {
-    targets = []
-  }
-
-  if (pw_arduino_build_CORE_PATH != "") {
-    targets += [
-      ":app(//targets/arduino:arduino_debug)",
-      "//source/arduino_example:blink(//targets/arduino:arduino_debug)",
-    ]
-  }
+pw_python_pip_install("pip_install_sample_project_tools") {
+  packages = [ ":sample_project_python_distribution" ]
 }
 
 group("examples") {
@@ -216,11 +174,6 @@ pw_test_group("tests") {
   group_deps = [
     # Uncomment this to automatically run the example unit test.
     # "//examples/02-unit-testing:tests",
-    "//source/simple_counter:tests",
-    # Disable teensy flash tests until the patcher is available.
-    # To enable: uncomment this and modify eeprom.c to remove static from
-    # flash_write() and flash_erase_sector()
-    # "//source/teensy_flash:tests",
   ]
 }
 
