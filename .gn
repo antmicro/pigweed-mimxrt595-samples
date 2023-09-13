@@ -28,4 +28,5 @@ default_args = {
 
   dir_pw_third_party_freertos = "//third_party/FreeRTOS"
   dir_pw_third_party_stm32cube_f4 = "//third_party/stm32cube_f4"
+  PICO_SRC_DIR = "//third_party/pico_sdk"
 }

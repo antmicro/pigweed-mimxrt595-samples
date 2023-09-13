@@ -22,3 +22,6 @@
 [submodule "third_party/FreeRTOS"]
 	path = third_party/FreeRTOS
 	url = https://github.com/FreeRTOS/FreeRTOS-Kernel
+[submodule "third_party/pico_sdk"]
+	path = third_party/pico_sdk
+	url = https://pigweed.googlesource.com/third_party/github/raspberrypi/pico-sdk
