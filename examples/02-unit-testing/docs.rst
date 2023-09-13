@@ -30,7 +30,7 @@ Running the test
 
    .. code::
 
-      ./out/gn/host_device_simulator.speed_optimized/obj/examples/01-blinky/bin/blinky
+      ./out/gn/host_device_simulator.speed_optimized/obj/examples/02-unit-testing/bin/test_runner_app
 
 3. Open `pw_console <https://pigweed.dev/pw_console/>`_.
 
