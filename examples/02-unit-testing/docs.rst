@@ -17,22 +17,40 @@ Running the test
 
 2. Flash ``test_runner_app.elf``.
 
-   **stm32f429i_disc1**
+   **STM32F429I_DISC1**
 
    .. code:: sh
 
       pw flash --device STM32-Discovery out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/02-unit-testing/bin/test_runner_app.elf
 
+   **Simulated device (Linux/macOS)**
+
+   Start the simulated device in a separate terminal window with the following
+   command:
+
+   .. code::
+
+      ./out/gn/host_device_simulator.speed_optimized/obj/examples/01-blinky/bin/blinky
+
 3. Open `pw_console <https://pigweed.dev/pw_console/>`_.
+
+   **Device**
 
    .. code:: sh
 
-      pw-system-console -d /dev/ttyACM0 -b 115200 --token-databases out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/02-unit-testing/bin/test_runner_app.elf
+      pw console -d /dev/ttyACM0 -b 115200 --token-databases out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/02-unit-testing/bin/test_runner_app.elf
 
-      .. tip::
+   .. tip::
 
-         On macOS, your device will look like ``/dev/cu.usbmodem2141403``, but
-         will most likely end with a different number.
+      On macOS, your device will look like ``/dev/cu.usbmodem2141403``, but
+      will most likely end with a different number.
+
+   **Simulated device (Linux/macOS)**
+
+   .. code:: sh
+
+     pw console -s default
+
 
 4. In the ``Python Repl`` pane, run the tests.
 

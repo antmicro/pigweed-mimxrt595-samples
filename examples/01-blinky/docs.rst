@@ -18,11 +18,21 @@ Build and flash
 
 2. Flash ``blinky.elf``.
 
-   **stm32f429i_disc1**
+   **STM32F429I_DISC1**
 
    .. code:: sh
 
       pw flash --device STM32-Discovery out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/01-blinky/bin/blinky.elf
+
+   **Simulated device (Linux/macOS)**
+
+   Rather than blinking an LED, this will just emit logs to mimic LED state.
+   You can see the logs by attaching the console. Start the simulated device
+   in a separate terminal window with the following command:
+
+   .. code::
+
+      ./out/gn/host_device_simulator.speed_optimized/obj/examples/01-blinky/bin/blinky
 
 ---------
 View logs
@@ -38,6 +48,19 @@ turn it into human-readable logs and bidirectional RPC commands.
 
 You can view the logs from your attached device with the following command:
 
+**Device**
+
 .. code:: sh
 
-   pw-system-console -d /dev/ttyACM0 -b 115200 --token-databases out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/01-blinky/bin/blinky.elf
+   pw console -d /dev/ttyACM0 -b 115200 --token-databases out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/01-blinky/bin/blinky.elf
+
+.. tip::
+
+   On macOS, your device will look like ``/dev/cu.usbmodem2141403``, but
+   will most likely end with a different number.
+
+**Simulated device (Linux/macOS)**
+
+.. code:: sh
+
+  pw console -s default
