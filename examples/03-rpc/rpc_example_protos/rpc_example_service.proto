@@ -13,25 +13,26 @@
 // the License.
 syntax = "proto3";
 
-package remoticon;
+import "pw_protobuf_protos/common.proto";
 
-// -------- A simple example RPC service ----
-message StatsRequest {}
+package rpc_example;
 
-message StatsResponse {
-  uint32 loop_iterations = 1;
+message DeviceUuid {
+  bytes uuid = 1;
 }
 
-// For interacting with the system superloop.
-service Superloop {
-  rpc GetStats(StatsRequest) returns (StatsResponse) {}
+service DeviceInfo {
+  rpc SetUuid(DeviceUuid) returns (pw.protobuf.Empty) {}
+  rpc GetUuid(pw.protobuf.Empty) returns (DeviceUuid) {}
 }
 
 // ------------------------------------------
-// TODO FOR WORKSHOP:
+// Try creating a service with the following RPCs:
 //
-//   Turn the LED on
-//   Turn the LED off
-//   Change blink time
+//   Turn the LED on.
+//   Turn the LED off.
+//   Start blinking the LED.
+//   Change the LED blink speed.
+//   Return the number of times the LED has blinked.
 //
 // service LedService { ... }

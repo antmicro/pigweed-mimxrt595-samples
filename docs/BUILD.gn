@@ -39,7 +39,6 @@ pw_doc_gen("docs") {
     "//examples/02-unit-testing:docs",
     "//examples/03-rpc:docs",
     "//examples/04-kvs:docs",
-    "//examples/05-factory-test:docs",
   ]
 
   # Required to set the PYTHONPATH so automodule, autoclass or autofunction RST

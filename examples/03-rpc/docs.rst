@@ -1,51 +1,77 @@
-RPC
-===
+.. _examples-03-rpc:
 
-Build and Flash
----------------
+========
+03 - RPC
+========
+This example illustrates how to create and call RPCs using
+`pw_rpc <https://pigweed.dev/pw_rpc/>`_ and
+`pw_console <https://pigweed.dev/pw_console/>`_.
 
-Instructions are the same as flashing
-`blinky </workshop/01-blinky/README.md>`__ but passing in a different
-``.elf``.
+--------------------------
+Trying out the RPC example
+--------------------------
 
-1. Run the compile with ``pw watch`` or ``ninja -C out``.
+1. Build the test with ``pw build`` or ``pw watch``.
 
-2. Flash ``rpc.elf``.
-
-   **Teensy**
-
-   .. code:: sh
-
-      arduino_unit_test_runner --config out/arduino_debug/gen/arduino_builder_config.json --upload-tool teensyloader --verbose --flash-only out/arduino_debug/obj/examples/03-rpc/bin/rpc.elf
+2. Flash ``test_runner_app.elf``.
 
    **stm32f429i_disc1**
 
    .. code:: sh
 
-      openocd -s ${PW_PIGWEED_CIPD_INSTALL_DIR}/share/openocd/scripts -f ${PW_ROOT}/targets/stm32f429i_disc1/py/stm32f429i_disc1_utils/openocd_stm32f4xx.cfg -c "program out/arduino_debug/obj/examples/03-rpc/bin/rpc.elf reset exit"
+      pw flash --device STM32-Discovery out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/03-rpc/bin/rpc_main.elf
 
-View HDLC Encoded Log Output
-----------------------------
-
-1. **Optional:** Create / update the log token database. This will be
-   automatically updated when compiling.
+3. Open `pw_console <https://pigweed.dev/pw_console/>`_.
 
    .. code:: sh
 
-      python -m pw_tokenizer.database create --force --database workshop/03-rpc/tokenizer_database.csv out/arduino_debug/obj/examples/03-rpc/bin/rpc.elf
+      pw console -d /dev/ttyACM0 -b 115200 --token-databases out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/03-rpc/bin/rpc_main.elf
 
-2. Start the rpc_console that saves log output to a file.
+      .. tip::
 
-   .. code:: sh
+         On macOS, your device will look like ``/dev/cu.usbmodem2141403``, but
+         will most likely end with a different number.
 
-      python -m pw_hdlc.rpc_console -o logfile.txt -d /dev/ttyACM0 ./third_party/pigweed/pw_rpc/echo.proto workshop/03-rpc/remoticon_proto/remoticon.proto
+4. In the ``Python Repl`` pane, use an RPC to request the device's UUID.
 
-   This will launch an interactive ``ipython`` console where you can
-   send RPCs. Try ``rpcs.pw.rpc.EchoService.Echo(msg="hello!")``.
-   IPython provides nice tab completion for the RPC interfaces as well.
+   .. code:: py
 
-3. Tail the log output.
+      device.rpcs.rpc_example.DeviceInfo.GetUuid()
 
-   .. code:: sh
+   You should see it fail because the device does not yet have a UUID set:
 
-      python -m pw_tokenizer.detokenize base64 workshop/03-rpc/tokenizer_database.csv -i logfile.txt --follow
+   .. code::
+
+      (Status.NOT_FOUND, rpc_example.DeviceUuid())
+
+   In the ``Device Logs`` pane, you'll see a lot message like the following:
+
+   .. code::
+
+      UUID request received, but this device has no UUID yet
+
+5. In the ``Python Repl`` pane, set the device's UUID.
+
+   .. code:: py
+
+      device.rpcs.rpc_example.DeviceInfo.SetUuid(uuid=b'\xab\xcd\ef\x01\x23\x45\x67\x89')
+
+   It should succeed with the following response:
+
+   .. code::
+
+      (Status.OK, pw.protobuf.Empty())
+
+6. In the ``Python Repl`` pane, use an RPC to request the device's UUID again.
+
+   This time, the device should respond with the UUID you set using the
+   previous command:
+
+   .. code::
+
+      (Status.OK, rpc_example.DeviceUuid(uuid=b'\xAB\xCD\xEF\x01\x23\x45\x67\x89'))
+
+7. Try setting the UUID to a much longer string of bytes and see what happens!
+
+8. When you're finished, you can type ``quit`` in the ``Python Repl`` pane to
+   exit.

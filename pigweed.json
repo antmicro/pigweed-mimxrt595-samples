@@ -6,6 +6,10 @@
           "module": "sample_project_tools.build_project",
           "function": "build_project"
         },
+        "console": {
+          "module": "sample_project_tools.console",
+          "function": "main"
+        },
         "watch": {
           "module": "sample_project_tools.build_project",
           "function": "watch_project"

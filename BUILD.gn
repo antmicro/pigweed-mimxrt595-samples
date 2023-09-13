@@ -76,7 +76,6 @@ pw_python_group("python") {
   python_deps = [
     # Generate and pip install _all_python_packages
     ":pip_install_sample_project_tools",
-    "examples/05-factory-test:factory_test_script",
   ]
 }
 
@@ -136,6 +135,7 @@ group("examples") {
   deps += [
     "//examples/01-blinky:blinky(//targets/stm32f429i_disc1_stm32cube:stm32f429i_disc1_stm32cube.size_optimized)",
     "//examples/02-unit-testing:test_runner_app(//targets/stm32f429i_disc1_stm32cube:stm32f429i_disc1_stm32cube.size_optimized)",
+    "//examples/03-rpc:rpc_main(//targets/stm32f429i_disc1_stm32cube:stm32f429i_disc1_stm32cube.size_optimized)",
   ]
 
   # TODO: b/297277142 - This will work when There's a SocketStream equivalent
@@ -145,6 +145,7 @@ group("examples") {
     deps += [
       "//examples/01-blinky:blinky(//targets/host:host_device_simulator.speed_optimized)",
       "//examples/02-unit-testing:test_runner_app(//targets/host:host_device_simulator.speed_optimized)",
+      "//examples/03-rpc:rpc_main(//targets/host:host_device_simulator.speed_optimized)",
     ]
   }
 }
@@ -155,19 +156,11 @@ group("legacy_examples") {
 
   # Teensy 3.0/4.0 examples steps.
   if (pw_arduino_build_CORE_PATH != "") {
-    deps += [
-      "//examples/03-rpc:all(//targets/arduino:arduino_debug)",
-      "//examples/04-kvs:all(//targets/arduino:arduino_debug)",
-      "//examples/05-factory-test:all(//targets/arduino:arduino_debug)",
-    ]
+    deps += [ "//examples/04-kvs:all(//targets/arduino:arduino_debug)" ]
   }
 
   # STMicroelectronics STM32F429I-DISC1 examples steps.
-  deps += [
-    "//examples/03-rpc:all(//targets/stm32f429i_disc1_stm32cube:stm32f429i_disc1_debug)",
-    "//examples/04-kvs:all(//targets/stm32f429i_disc1_stm32cube:stm32f429i_disc1_debug)",
-    "//examples/05-factory-test:all(//targets/stm32f429i_disc1_stm32cube:stm32f429i_disc1_debug)",
-  ]
+  deps += [ "//examples/04-kvs:all(//targets/stm32f429i_disc1_stm32cube:stm32f429i_disc1_debug)" ]
 }
 
 # All the tests that should run as part of the build.
