@@ -23,7 +23,10 @@ pw_system_target("stm32f429i_disc1_stm32cube") {
   cpu = PW_SYSTEM_CPU.CORTEX_M4F
   scheduler = PW_SYSTEM_SCHEDULER.FREERTOS
 
-  link_deps = [ "$dir_pigweed/targets/stm32f429i_disc1_stm32cube:pre_init" ]
+  link_deps = [
+    "$dir_pigweed/targets/stm32f429i_disc1_stm32cube:pre_init",
+    "$dir_pw_toolchain/arm_gcc:arm_none_eabi_gcc_support",
+  ]
   build_args = {
     pw_log_BACKEND = dir_pw_log_tokenized
     pw_log_tokenized_HANDLER_BACKEND = "$dir_pw_system:log_backend.impl"
