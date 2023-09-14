@@ -34,7 +34,6 @@ group("default") {
     ":docs",
     ":examples",
     ":host",
-    ":legacy_examples",
     ":python.lint",
     ":python.tests",
   ]
@@ -154,19 +153,6 @@ group("examples") {
       "//examples/03-rpc:rpc_main(//targets/host:host_device_simulator.speed_optimized)",
     ]
   }
-}
-
-# Legacy examples.
-group("legacy_examples") {
-  deps = []
-
-  # Teensy 3.0/4.0 examples steps.
-  if (pw_arduino_build_CORE_PATH != "") {
-    deps += [ "//examples/04-kvs:all(//targets/arduino:arduino_debug)" ]
-  }
-
-  # STMicroelectronics STM32F429I-DISC1 examples steps.
-  deps += [ "//examples/04-kvs:all(//targets/stm32f429i_disc1_stm32cube:stm32f429i_disc1_debug)" ]
 }
 
 # All the tests that should run as part of the build.
