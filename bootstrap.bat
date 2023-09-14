@@ -34,12 +34,16 @@ set "PW_BRANDING_BANNER=%PW_PROJECT_ROOT%\banner.txt"
 set "PW_BRANDING_BANNER_COLOR=cyan"
 
 if not exist "%_pw_bootstrap_script%" (
-  echo Error: "%_pw_bootstrap_script%" not found.
-  echo Did you forget to initialize the git submodules?
-  echo To setup the git submodules run:
-  echo   git submodule init
-  echo   git submodule update
-  goto finish
+  echo Updating git submodules
+  git submodule update --init
+)
+
+set "_tinyusb_license=%~dp0.\third_party\pico_sdk\lib\tinyusb\LICENSE"
+if not exist "%_tinyusb_license%" (
+  cd third_party\pico_sdk
+  git submodule update --init lib\tinyusb
+  cd ..
+  cd ..
 )
 
 call "%_pw_bootstrap_script%"
