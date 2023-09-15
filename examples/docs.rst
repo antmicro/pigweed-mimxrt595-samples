@@ -59,20 +59,13 @@ Open a Terminal (``cmd.exe`` on Windows) and clone this repo with:
 
 .. code:: sh
 
-   git clone --recursive https://pigweed.googlesource.com/pigweed/sample_project
-
-\**\* note No worries if you missed ``--recursive``! Run this to pull
-``third_party/nanopb`` and ``third_party/pigweed``.
-
-.. code:: sh
-
-   git submodule update --init
+   git clone https://pigweed.googlesource.com/pigweed/sample_project
 
 If you want to pull new changes run:
 
 .. code:: sh
 
-   git pull --recurse-submodules
+   git pull && git submodule update --init
 
 
 3. Run ``bootstrap``

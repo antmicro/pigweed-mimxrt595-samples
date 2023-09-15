@@ -18,11 +18,8 @@ Once that is done, you can clone this project and all required git submodules
 with the following command:
 
 ```sh
-git clone --recursive https://pigweed.googlesource.com/pigweed/sample_project
+git clone https://pigweed.googlesource.com/pigweed/sample_project
 ```
-
-If you already cloned but forgot to include `--recursive`, run
-`git submodule update --init` to pull all submodules.
 
 ### Environment setup
 
