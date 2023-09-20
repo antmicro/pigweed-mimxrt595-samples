@@ -155,20 +155,25 @@ group("examples") {
   }
 }
 
-# All the tests that should run as part of the build.
-pw_test_group("tests") {
-  group_deps = [
-    # Uncomment this to automatically run the example unit test.
-    # "//examples/02-unit-testing:tests",
-  ]
-}
+# TODO: b/301306292 - Removing this causes a duplicate toolchain to be
+# generated if any tests are present in the test group. Figure out why, and set
+# up a more scalable solution.
+if (current_toolchain != default_toolchain) {
+  # All the tests that should run as part of the build.
+  pw_test_group("tests") {
+    group_deps = [
+      # Uncomment this to automatically run the example unit test.
+      # "//examples/02-unit-testing:tests",
+    ]
+  }
 
-group("run_tests") {
-  if (pw_unit_test_AUTOMATIC_RUNNER == "") {
-    # Without a test runner defined, build the tests but don't run them.
-    deps = [ ":tests" ]
-  } else {
-    # With a test runner, build and run tests.
-    deps = [ ":tests.run" ]
+  group("run_tests") {
+    if (pw_unit_test_AUTOMATIC_RUNNER == "") {
+      # Without a test runner defined, build the tests but don't run them.
+      deps = [ ":tests" ]
+    } else {
+      # With a test runner, build and run tests.
+      deps = [ ":tests.run" ]
+    }
   }
 }
