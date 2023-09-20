@@ -14,8 +14,7 @@ Check back for more complex examples and features coming soon!
 
 Make sure you've set up [Pigweed's
 prerequisites](https://pigweed.dev/docs/getting_started.html#prerequisites).
-Once that is done, you can clone this project and all required git submodules
-with the following command:
+Once that is done, you can clone this project with the following command:
 
 ```sh
 git clone https://pigweed.googlesource.com/pigweed/sample_project
@@ -40,7 +39,7 @@ bootstrap.bat
 **Linux & Mac**
 
 ```sh
-source bootstrap.sh
+source ./bootstrap.sh
 ```
 
 After tooling updates, you might need to run bootstrap again to ensure the
@@ -58,7 +57,7 @@ activate.bat
 **Linux & Mac**
 
 ```sh
-source activate.sh
+source ./activate.sh
 ```
 
 ### Building
@@ -88,12 +87,12 @@ pw watch
 
 When you pull latest repository changes, run bootstrap:
 ```sh
-source bootstrap.sh
+source ./bootstrap.sh
 ```
 
 If you're just launching a new shell session, you can activate instead:
 ```sh
-source activate.sh
+source ./activate.sh
 ```
 
 and rebuild with:

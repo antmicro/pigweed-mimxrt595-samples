@@ -31,15 +31,11 @@ Getting started
 ---------------
 Make sure you've set up `Pigweed's
 prerequisites <https://pigweed.dev/docs/getting_started.html#prerequisites>`__.
-Once that is done, you can clone this project and all required git submodules
-with the following command:
+Once that is done, you can clone this project with the following command:
 
 .. code-block:: bash
 
-   git clone --recursive https://pigweed.googlesource.com/pigweed/sample_project
-
-If you already cloned but forgot to include ``--recursive``, run
-``git submodule update --init`` to pull all submodules.
+   git clone https://pigweed.googlesource.com/pigweed/sample_project
 
 Environment setup
 =================
@@ -61,7 +57,7 @@ command for your operating system:
 
 .. code-block:: bash
 
-   source bootstrap.sh
+   source ./bootstrap.sh
 
 After tooling updates, you might need to run bootstrap again to ensure the
 latest tools.
@@ -79,7 +75,7 @@ configure the current shell for development without doing a full update.
 
 .. code-block:: bash
 
-   source activate.sh
+   source ./activate.sh
 
 .. _docs-building:
 
@@ -113,13 +109,13 @@ When you pull latest repository changes, run bootstrap:
 
 .. code-block:: bash
 
-   source bootstrap.sh
+   source ./bootstrap.sh
 
 If you're just launching a new shell session, you can activate instead:
 
 .. code-block:: bash
 
-   source activate.sh
+   source ./activate.sh
 
 and rebuild with:
 
