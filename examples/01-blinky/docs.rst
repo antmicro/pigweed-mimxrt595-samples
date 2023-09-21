@@ -20,7 +20,7 @@ Build and flash
 
    **STM32F429I_DISC1**
 
-   .. code:: sh
+   .. code-block:: sh
 
       pw flash --device STM32-Discovery out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/01-blinky/bin/blinky.elf
 
@@ -30,7 +30,7 @@ Build and flash
    You can see the logs by attaching the console. Start the simulated device
    in a separate terminal window with the following command:
 
-   .. code::
+   .. code-block::
 
       ./out/gn/host_device_simulator.speed_optimized/obj/examples/01-blinky/bin/blinky
 
@@ -50,7 +50,7 @@ You can view the logs from your attached device with the following command:
 
 **Device**
 
-.. code:: sh
+.. code-block:: sh
 
    pw console -d /dev/ttyACM0 -b 115200 --token-databases out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/01-blinky/bin/blinky.elf
 
@@ -61,6 +61,6 @@ You can view the logs from your attached device with the following command:
 
 **Simulated device (Linux/macOS)**
 
-.. code:: sh
+.. code-block:: sh
 
   pw console -s default

@@ -19,7 +19,7 @@ Running the test
 
    **STM32F429I_DISC1**
 
-   .. code:: sh
+   .. code-block:: sh
 
       pw flash --device STM32-Discovery out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/02-unit-testing/bin/test_runner_app.elf
 
@@ -28,7 +28,7 @@ Running the test
    Start the simulated device in a separate terminal window with the following
    command:
 
-   .. code::
+   .. code-block::
 
       ./out/gn/host_device_simulator.speed_optimized/obj/examples/02-unit-testing/bin/test_runner_app
 
@@ -36,7 +36,7 @@ Running the test
 
    **Device**
 
-   .. code:: sh
+   .. code-block:: sh
 
       pw console -d /dev/ttyACM0 -b 115200 --token-databases out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/02-unit-testing/bin/test_runner_app.elf
 
@@ -47,14 +47,14 @@ Running the test
 
    **Simulated device (Linux/macOS)**
 
-   .. code:: sh
+   .. code-block:: sh
 
      pw console -s default
 
 
 4. In the ``Python Repl`` pane, run the tests.
 
-   .. code:: sh
+   .. code-block:: sh
 
       device.run_tests()
 
@@ -67,7 +67,7 @@ Fixing the broken test
 To make debugging the test faster, add the failing test to the root
 build file at ``//BUILD.gn``:
 
-.. code::
+.. code-block::
 
    # All the tests that should run as part of the build.
    pw_test_group("tests") {
@@ -80,7 +80,7 @@ build file at ``//BUILD.gn``:
 You'll notice that if you run ``pw build`` again, this time the test failure
 will appear as part of the build:
 
-.. code::
+.. code-block::
 
    $ pw build
        ╱╱╱╱  █▀█ █ █▀▀ █░█░█ █▀▀ █▀▀ █▀▄

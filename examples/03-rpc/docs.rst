@@ -17,7 +17,7 @@ Trying out the RPC example
 
    **STM32F429I_DISC1**
 
-   .. code:: sh
+   .. code-block:: sh
 
       pw flash --device STM32-Discovery out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/03-rpc/bin/rpc_main.elf
 
@@ -26,7 +26,7 @@ Trying out the RPC example
    Start the simulated device in a separate terminal window with the following
    command:
 
-   .. code::
+   .. code-block::
 
       ./out/gn/host_device_simulator.speed_optimized/obj/examples/03-rpc/bin/rpc_main
 
@@ -34,7 +34,7 @@ Trying out the RPC example
 
    **Device**
 
-   .. code:: sh
+   .. code-block:: sh
 
       pw console -d /dev/ttyACM0 -b 115200 --token-databases out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/03-rpc/bin/rpc_main.elf
 
@@ -45,37 +45,37 @@ Trying out the RPC example
 
    **Simulated device (Linux/macOS)**
 
-   .. code:: sh
+   .. code-block:: sh
 
      pw console -s default
 
 4. In the ``Python Repl`` pane, use an RPC to request the device's UUID.
 
-   .. code:: py
+   .. code-block:: py
 
       device.rpcs.rpc_example.DeviceInfo.GetUuid()
 
    You should see it fail because the device does not yet have a UUID set:
 
-   .. code::
+   .. code-block::
 
       (Status.NOT_FOUND, rpc_example.DeviceUuid())
 
    In the ``Device Logs`` pane, you'll see a lot message like the following:
 
-   .. code::
+   .. code-block::
 
       UUID request received, but this device has no UUID yet
 
 5. In the ``Python Repl`` pane, set the device's UUID.
 
-   .. code:: py
+   .. code-block:: py
 
       device.rpcs.rpc_example.DeviceInfo.SetUuid(uuid=b'\xab\xcd\ef\x01\x23\x45\x67\x89')
 
    It should succeed with the following response:
 
-   .. code::
+   .. code-block::
 
       (Status.OK, pw.protobuf.Empty())
 
@@ -84,7 +84,7 @@ Trying out the RPC example
    This time, the device should respond with the UUID you set using the
    previous command:
 
-   .. code::
+   .. code-block::
 
       (Status.OK, rpc_example.DeviceUuid(uuid=b'\xAB\xCD\xEF\x01\x23\x45\x67\x89'))
 
