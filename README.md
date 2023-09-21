@@ -103,4 +103,4 @@ pw build
 ## More info and Examples
 
 Extended documentation and examples are built along code changes. You can view
-them at `out/docs/gen/docs/html/index.html`.
+them at `out/gn/docs/gen/docs/html/index.html`.
