@@ -97,6 +97,9 @@ IF %ERRORLEVEL% NEQ 0 GOTO abort
 CALL :ensure_git_symlinks %mode%
 IF %ERRORLEVEL% NEQ 0 GOTO abort
 
+CALL :ensure_long_filenames %mode%
+IF %ERRORLEVEL% NEQ 0 GOTO abort
+
 echo | SET /p=%_COLORED_TEXT_DONE%
 
 :: Workaround until winget properly updates PATH after installations.
@@ -507,6 +510,25 @@ del desired_git_setting.txt >NUL 2>&1
 
 EXIT /B %retval%
 
+:ensure_long_filenames
+echo | SET /p="Checking if long paths are enabled.........."
+reg query HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem /v LongPathsEnabled | find "0x1" >NUL 2>&1
+SET /a "retval=%ERRORLEVEL%" >NUL 2>&1
+
+:: Print error and exit early if we're in check mode.
+IF "%~1"=="CHECK" CALL :pretty_print_failure %retval%, "The registry value `LongPathsEnabled` at  HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem is set to 0, which will cause failures in deeply nested directories."
+IF "%~1"=="CHECK" CALL :pretty_print_ok %retval%
+IF "%~1"=="CHECK" EXIT /B %retval%
+
+:: Otherwise, enable long paths as admin.
+IF %retval% NEQ 0 CALL :run_as_admin "reg", "add HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem /v LongPathsEnabled  /t REG_DWORD /d 1 /f"
+CALL :pretty_print_failure %ERRORLEVEL%, "Failed to enable long paths."
+IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+
+
+echo %_COLORED_TEXT_OK%
+EXIT /B 0
+
 :: Checks if a functional system Python is present, installing one if it is not.
 ::
 :: Arguments:
@@ -563,4 +585,8 @@ IF %~1 NEQ 0 (
 	echo | SET /p "=%~2"
 	echo:
 )
+EXIT /B %~1
+
+:pretty_print_ok
+IF %~1 EQU 0 echo %_COLORED_TEXT_OK%
 EXIT /B %~1
