@@ -15,13 +15,18 @@ Trying out the RPC example
 
 2. Flash ``test_runner_app.elf``.
 
-   **STM32F429I_DISC1**
+   **STM32F429I_DISC1 (Linux/macOS)**
 
    .. code-block:: sh
 
       pw flash --device STM32-Discovery out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/03-rpc/bin/rpc_main.elf
 
-   **Simulated device (Linux/macOS)**
+   .. note::
+
+      We don't yet have OpenOCD for Windows. See
+      `b/300986008 <https://issues.pigweed.dev/300986008>`_ for updates.
+
+   **Simulated device (all platforms)**
 
    Start the simulated device in a separate terminal window with the following
    command:

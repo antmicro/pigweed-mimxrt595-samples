@@ -143,16 +143,12 @@ group("examples") {
     "//examples/02-unit-testing:test_runner_app(//targets/rp2040:rp2040.size_optimized)",
   ]
 
-  # TODO: b/297277142 - This will work when There's a SocketStream equivalent
-  # for Windows.
-  if (host_os != "win") {
-    # Host examples.
-    deps += [
-      "//examples/01-blinky:blinky(//targets/host:host_device_simulator.speed_optimized)",
-      "//examples/02-unit-testing:test_runner_app(//targets/host:host_device_simulator.speed_optimized)",
-      "//examples/03-rpc:rpc_main(//targets/host:host_device_simulator.speed_optimized)",
-    ]
-  }
+  # Host examples.
+  deps += [
+    "//examples/01-blinky:blinky(//targets/host:host_device_simulator.speed_optimized)",
+    "//examples/02-unit-testing:test_runner_app(//targets/host:host_device_simulator.speed_optimized)",
+    "//examples/03-rpc:rpc_main(//targets/host:host_device_simulator.speed_optimized)",
+  ]
 }
 
 # TODO: b/301306292 - Removing this causes a duplicate toolchain to be

@@ -18,13 +18,18 @@ Build and flash
 
 2. Flash ``blinky.elf``.
 
-   **STM32F429I_DISC1**
+   **STM32F429I_DISC1 (Linux/macOS)**
 
    .. code-block:: sh
 
       pw flash --device STM32-Discovery out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/01-blinky/bin/blinky.elf
 
-   **Simulated device (Linux/macOS)**
+   .. note::
+
+      We don't yet have OpenOCD for Windows. See
+      `b/300986008 <https://issues.pigweed.dev/300986008>`_ for updates.
+
+   **Simulated device (all platforms)**
 
    Rather than blinking an LED, this will just emit logs to mimic LED state.
    You can see the logs by attaching the console. Start the simulated device
