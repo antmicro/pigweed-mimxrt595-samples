@@ -14,6 +14,23 @@ Check back for more complex examples and features coming soon!
 
 Make sure you've set up [Pigweed's
 prerequisites](https://pigweed.dev/docs/getting_started.html#prerequisites).
+
+**If you're on Windows**, you can automate the initial setup by downloading the
+first-time setup script **from cmd.exe**:
+
+```bat
+curl https://pigweed.googlesource.com/pigweed/sample_project/+/main/tools/setup_windows_prequisites.bat?format=TEXT > setup_pigweed_prerequisites.b64 && certutil -decode setup_pigweed_prerequisites.b64 setup_pigweed_prerequisites.bat && del setup_pigweed_prerequisites.b64
+```
+
+Then you can run the script with the following command **in cmd.exe**:
+
+```bat
+setup_pigweed_prerequisites.bat
+```
+
+Note: You may see a few UAC prompts as the script installs Git, Python, and
+enables developer mode.
+
 Once that is done, you can clone this project with the following command:
 
 ```sh
