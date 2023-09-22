@@ -13,16 +13,18 @@
 # the License.
 """Wraps pw_system's console to inject additional RPC protos."""
 
+import argparse
 import sys
+from typing import Optional
 
 from pw_protobuf_protos import common_pb2
 import pw_system.console
 from rpc_example_protos import rpc_example_service_pb2
 
 
-def main() -> int:
+def main(args: Optional[argparse.Namespace] = None) -> int:
     compiled_protos = [common_pb2, rpc_example_service_pb2]
-    return pw_system.console.main_with_compiled_protos(compiled_protos)
+    return pw_system.console.main_with_compiled_protos(compiled_protos, args)
 
 
 if __name__ == '__main__':
