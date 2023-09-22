@@ -19,7 +19,7 @@ prerequisites](https://pigweed.dev/docs/getting_started.html#prerequisites).
 first-time setup script **from cmd.exe**:
 
 ```bat
-curl https://pigweed.googlesource.com/pigweed/sample_project/+/main/tools/setup_windows_prequisites.bat?format=TEXT > setup_pigweed_prerequisites.b64 && certutil -decode setup_pigweed_prerequisites.b64 setup_pigweed_prerequisites.bat && del setup_pigweed_prerequisites.b64
+curl https://pigweed.googlesource.com/pigweed/sample_project/+/main/tools/setup_windows_prerequisites.bat?format=TEXT > setup_pigweed_prerequisites.b64 && certutil -decode -f setup_pigweed_prerequisites.b64 setup_pigweed_prerequisites.bat && del setup_pigweed_prerequisites.b64
 ```
 
 Then you can run the script with the following command **in cmd.exe**:
