@@ -66,6 +66,7 @@ SET _COLORED_TEXT_INSTALL_SUCCEEDED=[92mInstall succeeded![0m
 SET _COLORED_TEXT_INSTALL_FAILED=[91mInstall failed![0m
 
 SET _COLORED_TEXT_DONE="[92mDONE![0m "
+SET _COLORED_TEXT_NOTE="[93mNOTE:[0m "
 SET _COLORED_TEXT_ERROR="[91mERROR:[0m "
 
 SET "_DEV_MODE_PATH=Settings->Update & Security->For developers->Developer Mode"
@@ -109,6 +110,8 @@ echo | SET /p=%_COLORED_TEXT_DONE%
 SET "local_path=%PATH%"
 IF "%mode%"=="SETUP" (
 	echo Everything is ready to go!
+	echo.
+	echo %_COLORED_TEXT_NOTE% We advise opening a fresh shell before running bootstrap.bat!
 	endlocal & set "PATH=%local_path%"
 )
 
