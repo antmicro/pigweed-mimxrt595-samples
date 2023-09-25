@@ -9,13 +9,13 @@ many ways you can integrate Pigweed's
 provide easy, automated unit testing. This example uses a test runner that sends
 tests results over `pw_rpc <https://pigweed.dev/pw_rpc/>`_.
 
-----------------
-Running the test
-----------------
+----------------------------
+Running the test on a device
+----------------------------
 
-1. Build the test with ``pw build`` or ``pw watch``.
+#. Build the test with ``pw build`` or ``pw watch``.
 
-2. Flash ``test_runner_app.elf``.
+#. Flash ``test_runner_app.elf``.
 
    **STM32F429I_DISC1 (Linux/macOS)**
 
@@ -28,16 +28,7 @@ Running the test
       We don't yet have OpenOCD for Windows. See
       `b/300986008 <https://issues.pigweed.dev/300986008>`_ for updates.
 
-   **Simulated device (all platforms)**
-
-   Start the simulated device in a separate terminal window with the following
-   command:
-
-   .. code-block::
-
-      ./out/gn/host_device_simulator.speed_optimized/obj/examples/02-unit-testing/bin/test_runner_app
-
-3. Open `pw_console <https://pigweed.dev/pw_console/>`_.
+#. Open `pw_console <https://pigweed.dev/pw_console/>`_.
 
    **Device**
 
@@ -50,20 +41,34 @@ Running the test
       On macOS, your device will look like ``/dev/cu.usbmodem2141403``, but
       will most likely end with a different number.
 
-   **Simulated device (Linux/macOS)**
-
-   .. code-block:: sh
-
-     pw console -s default
-
-
-4. In the ``Python Repl`` pane, run the tests.
+#. In the ``Python Repl`` pane, run the tests.
 
    .. code-block:: sh
 
       device.run_tests()
 
-5. When you're finished, you can type ``quit`` in the ``Python Repl`` pane to
+#. When you're finished, you can type ``quit`` in the ``Python Repl`` pane to
+   exit.
+
+--------------------------------------
+Running the test in a simulated device
+--------------------------------------
+
+#. Build the test with ``pw build`` or ``pw watch``.
+
+#. Launch ``test_runner_app`` using the ``pw device-sim`` helper.
+
+   .. code-block::
+
+      pw device-sim ./out/gn/host_device_simulator.speed_optimized/obj/examples/02-unit-testing/bin/test_runner_app
+
+#. In the ``Python Repl`` pane, run the tests.
+
+   .. code-block:: sh
+
+      device.run_tests()
+
+#. When you're finished, you can type ``quit`` in the ``Python Repl`` pane to
    exit.
 
 ----------------------

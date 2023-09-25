@@ -10,6 +10,10 @@
           "module": "sample_project_tools.console",
           "function": "main"
         },
+        "device-sim": {
+          "module": "sample_project_tools.device_sim",
+          "function": "main"
+        },
         "watch": {
           "module": "sample_project_tools.build_project",
           "function": "watch_project"

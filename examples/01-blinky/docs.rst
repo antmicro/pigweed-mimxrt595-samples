@@ -14,9 +14,9 @@ timers to allow the device to do other work in between blinks.
 Build and flash
 ---------------
 
-1. Build the firmware with ``pw build`` or ``pw watch``.
+#. Build the firmware with ``pw build`` or ``pw watch``.
 
-2. Flash ``blinky.elf``.
+#. Flash ``blinky.elf``.
 
    **STM32F429I_DISC1 (Linux/macOS)**
 
@@ -28,16 +28,6 @@ Build and flash
 
       We don't yet have OpenOCD for Windows. See
       `b/300986008 <https://issues.pigweed.dev/300986008>`_ for updates.
-
-   **Simulated device (all platforms)**
-
-   Rather than blinking an LED, this will just emit logs to mimic LED state.
-   You can see the logs by attaching the console. Start the simulated device
-   in a separate terminal window with the following command:
-
-   .. code-block::
-
-      ./out/gn/host_device_simulator.speed_optimized/obj/examples/01-blinky/bin/blinky
 
 ---------
 View logs
@@ -64,8 +54,31 @@ You can view the logs from your attached device with the following command:
    On macOS, your device will look like ``/dev/cu.usbmodem2141403``, but
    will most likely end with a different number.
 
-**Simulated device (Linux/macOS)**
+----------------
+Simulated device
+----------------
+The simulated device configures the porting layers (threading, communication,
+timers, etc.) used by this project to rely on native implementations. This
+allows you to run applications designed to run on embedded devices natively on
+your computer.
 
-.. code-block:: sh
+In this example, the LED porting layer is set up to just emit a log message
+rather than blink a physical LED.
 
-  pw console -s default
+When you launch a simulated device binary, it normally sits and waits for you
+to attach `pw_console <https://pigweed.dev/pw_console/>`_ over a socket. From
+the console, you'll then be able to see logs and issue commands.
+``pw device-sim`` simplifies this by launching the simulated device as a
+background process and then immediately launching a console session that
+attaches to the simulated device.
+
+#. Build the firmware with ``pw build`` or ``pw watch``.
+
+#. Launch ``blinky`` using the ``pw device-sim`` helper.
+
+   .. code-block::
+
+      pw device-sim ./out/gn/host_device_simulator.speed_optimized/obj/examples/01-blinky/bin/blinky
+
+#. When you're finished, you can type ``quit`` in the ``Python Repl`` pane to
+   exit.
