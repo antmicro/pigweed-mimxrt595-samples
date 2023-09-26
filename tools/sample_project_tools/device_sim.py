@@ -17,6 +17,7 @@ import argparse
 from pathlib import Path
 import subprocess
 import sys
+import time
 
 from pw_system.console import get_parser
 from sample_project_tools import console
@@ -41,6 +42,10 @@ def launch_sim(sim_binary: Path) -> int:
         stdout=subprocess.DEVNULL,
         stderr=subprocess.STDOUT,
     )
+
+    # Give the sim a second to warm up and open the socket, otherwise the
+    # console will fail to connect and then abort.
+    time.sleep(0.5)
 
     try:
         retval = console.main(get_parser().parse_args(['-s', 'default']))
