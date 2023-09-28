@@ -178,9 +178,16 @@ EXIT /B 0
 ::   0 if winget is properly set up.
 :bootstrap_winget
 echo | SET /p="Bootstrapping winget.........."
-powershell -command "Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe" >NUL 2>&1
-CALL :pretty_print_failure %ERRORLEVEL%, "Failed to bootstrap winget."
-IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+
+echo Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe>%TEMP%\install_winget.ps1 2>&1
+SET /a "retval=!%ERRORLEVEL%" >NUL 2>&1
+CALL :pretty_print_failure %retval%, "Failed to create winget install script."
+IF %retval% NEQ 0 EXIT /B %retval%
+powershell -command "Start -Verb RunAs -Wait powershell.exe %TEMP%\install_winget.ps1" 2>&1
+SET /a "retval=!%ERRORLEVEL%" >NUL 2>&1
+CALL :pretty_print_failure %retval%, "Failed to bootstrap winget."
+del %TEMP%\install_winget.ps1
+IF %retval% NEQ 0 EXIT /B %retval%
 
 CALL :run_as_admin "winget", "source reset --force"
 CALL :pretty_print_failure %ERRORLEVEL%, "Failed to refresh winget sources."
