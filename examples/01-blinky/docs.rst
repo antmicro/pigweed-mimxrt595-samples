@@ -82,3 +82,19 @@ attaches to the simulated device.
 
 #. When you're finished, you can type ``quit`` in the ``Python Repl`` pane to
    exit.
+
+-------------------
+Building with Bazel
+-------------------
+In general, the sample project doesn't support Bazel yet. But you can build this
+specific example with Bazel, via
+
+.. code-block:: sh
+
+   bazel build --config=stm32 //examples/01-blinky:blinky
+
+and then flash it via,
+
+.. code-block:: sh
+
+   pw flash --device STM32-Discovery bazel-bin/examples/01-blinky/blinky
