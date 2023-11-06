@@ -12,6 +12,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+load("//targets:transition.bzl", "stm32_binary")
+
 cc_binary(
     name = "blinky",
     srcs = ["main.cc"],
@@ -41,4 +43,16 @@ cc_binary(
             "@pigweed//targets/host_device_simulator:boot",
         ],
     }),
+)
+
+stm32_binary(
+    name = "blinky.elf",
+    binary = ":blinky",
+    # Visible to the flasher.
+    visibility = ["//tools:__pkg__"],
+)
+
+alias(
+    name = "flash_stm32",
+    actual = "//tools:flash_01_blinky_stm32",
 )

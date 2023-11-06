@@ -86,15 +86,20 @@ attaches to the simulated device.
 -------------------
 Building with Bazel
 -------------------
-In general, the sample project doesn't support Bazel yet. But you can build this
-specific example with Bazel, via
+In general, the sample project doesn't support Bazel yet. But this example does!
+
+To build and flash the firmware to the device run,
 
 .. code-block:: sh
 
-   bazel build --config=stm32 //examples/01-blinky:blinky
+   bazel run //examples/01-blinky:flash_stm32
 
-and then flash it via,
+Bazel knows that the flasher depends on the firmware, and will build the
+firmware image before flashing it. It will also track any changes to the
+firmware source and rebuild it before flashing if necessary.
+
+If you do want to produce the `.elf` file but not flash it, run,
 
 .. code-block:: sh
 
-   pw flash --device STM32-Discovery bazel-bin/examples/01-blinky/blinky
+   bazel build //examples/01-blinky:blinky.elf

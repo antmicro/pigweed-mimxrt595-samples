@@ -11,14 +11,6 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
-#
-# Do not attempt to configure an autodetected (local) toolchain. We vendor all
-# our toolchains, and CI VMs may not have any local toolchain to detect.
-common --repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
 
-# Ignore all warnings in third-party code.
-common --per_file_copt=external/.*@-w
-common --host_per_file_copt=external/.*@-w
-
-# Required for new toolchain resolution API.
-build --incompatible_enable_cc_toolchain_resolution
+# Empty BUILD.bazel file, needed because "Every .bzl file must have a
+# corresponding package".
