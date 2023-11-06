@@ -12,6 +12,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+load("@bazel_skylib//rules:native_binary.bzl", "native_binary")
 load("//targets:transition.bzl", "stm32_binary")
 
 cc_binary(
@@ -52,7 +53,19 @@ stm32_binary(
     visibility = ["//tools:__pkg__"],
 )
 
-alias(
+native_binary(
     name = "flash_stm32",
-    actual = "//tools:flash_01_blinky_stm32",
+    src = "//tools:flash_device",
+    # TODO: https://github.com/bazelbuild/bazel-skylib/issues/399 - out should
+    # be optional.
+    #
+    # We use the .exe extension for the symlink because it's required on Windows
+    # and tolerated on other platforms.
+    out = "flash_stm32.exe",
+    args = [
+        "--device",
+        "STM32-Discovery",
+        "$(rootpath //examples/01-blinky:blinky.elf)",
+    ],
+    data = [":blinky.elf"],
 )

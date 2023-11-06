@@ -17,13 +17,6 @@ load("@rules_python//python:defs.bzl", "py_binary")
 package(default_visibility = ["//visibility:public"])
 
 py_binary(
-    name = "flash_01_blinky_stm32",
+    name = "flash_device",
     srcs = ["sample_project_tools/flash_device.py"],
-    args = [
-        "--device",
-        "STM32-Discovery",
-        "$(rootpath //examples/01-blinky:blinky.elf)",
-    ],
-    data = ["//examples/01-blinky:blinky.elf"],
-    main = "sample_project_tools/flash_device.py",
 )
