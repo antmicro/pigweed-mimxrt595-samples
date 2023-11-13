@@ -146,6 +146,11 @@ python_register_toolchains(
     python_version = "3.10",
 )
 
+python_register_toolchains(
+    name = "python3",
+    python_version = "3.11",
+)
+
 http_archive(
     name = "freertos",
     build_file = "@pigweed//:third_party/freertos/BUILD.bazel",
