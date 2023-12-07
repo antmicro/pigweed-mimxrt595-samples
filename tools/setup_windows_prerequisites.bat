@@ -98,7 +98,7 @@ IF %ERRORLEVEL% NEQ 0 GOTO abort
 CALL :ensure_git_symlinks %mode%
 IF %ERRORLEVEL% NEQ 0 GOTO abort
 
-CALL :ensure_long_filenames %mode%
+CALL :ensure_long_paths %mode%
 IF %ERRORLEVEL% NEQ 0 GOTO abort
 
 echo | SET /p=%_COLORED_TEXT_DONE%
@@ -520,21 +520,60 @@ del desired_git_setting.txt >NUL 2>&1
 
 EXIT /B %retval%
 
-:ensure_long_filenames
+
+:: Checks if long file path handling is enabled, and tries to enable it.
+::
+:: Arguments:
+::   %~1: "CHECK" or "SETUP"
+::
+:: Returns:
+::   0 if long path support is enabled.
+:ensure_long_paths
+:: First call is to see if we need to enable  long path support.
+CALL :check_long_paths %~1
+IF %ERRORLEVEL% EQU 0 EXIT /B 0
+
+:: If CHECK mode, return here.
+IF "%~1"=="CHECK" EXIT /B %ERRORLEVEL%
+
+:: Long path check failed, try to enable.
+echo %_COLORED_TEXT_MISSING%
+CALL :enable_long_paths
+IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+
+EXIT /B %ERRORLEVEL%
+
+
+:: Checks if long file path support is enabled.
+::
+:: Arguments:
+::   %~1: "CHECK" or "SETUP", controls soft vs hard failures.
+::
+:: Returns:
+::   0 if long paths are enabled.
+:check_long_paths
 echo | SET /p="Checking if long paths are enabled.........."
 reg query HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem /v LongPathsEnabled | find "0x1" >NUL 2>&1
 SET /a "retval=%ERRORLEVEL%" >NUL 2>&1
 
-:: Print error and exit early if we're in check mode.
 IF "%~1"=="CHECK" CALL :pretty_print_failure %retval%, "The registry value `LongPathsEnabled` at  HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem is set to 0, which will cause failures in deeply nested directories."
-IF "%~1"=="CHECK" CALL :pretty_print_ok %retval%
-IF "%~1"=="CHECK" EXIT /B %retval%
+IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
 
-:: Otherwise, enable long paths as admin.
+echo %_COLORED_TEXT_OK%
+EXIT /B 0
+
+
+:: Enables long path support.
+::
+:: Arguments:
+::   %~1: "CHECK" or "SETUP", controls soft vs hard failures.
+::
+:: Returns:
+::   0 if succesful.
+:enable_long_paths
 IF %retval% NEQ 0 CALL :run_as_admin "reg", "add HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem /v LongPathsEnabled  /t REG_DWORD /d 1 /f"
 CALL :pretty_print_failure %ERRORLEVEL%, "Failed to enable long paths."
 IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-
 
 echo %_COLORED_TEXT_OK%
 EXIT /B 0
