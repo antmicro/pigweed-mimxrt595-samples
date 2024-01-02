@@ -66,17 +66,28 @@ are temporarily added to the PATH of the current shell session.
 To make sure the latest tooling has been fetched and set up, run the bootstrap
 command for your operating system:
 
-**Windows**
+.. tab-set::
 
-.. code-block:: batch
+   .. tab-item:: Linux
+      :sync: linux
 
-   bootstrap.bat
+      .. code-block:: bash
 
-**Linux & Mac**
+         source ./bootstrap.sh
 
-.. code-block:: bash
+   .. tab-item:: macOS
+      :sync: macos
 
-   source ./bootstrap.sh
+      .. code-block:: bash
+
+         source ./bootstrap.sh
+
+   .. tab-item:: Windows
+      :sync: windows
+
+      .. code-block:: batch
+
+         bootstrap.bat
 
 After tooling updates, you might need to run bootstrap again to ensure the
 latest tools.
@@ -84,17 +95,28 @@ latest tools.
 After the initial bootstrap, you can use use the ``activate`` scripts to
 configure the current shell for development without doing a full update.
 
-**Windows**
+.. tab-set::
 
-.. code-block:: bash
+   .. tab-item:: Linux
+      :sync: linux
 
-   activate.bat
+      .. code-block:: bash
 
-**Linux & Mac**
+         source ./activate.sh
 
-.. code-block:: bash
+   .. tab-item:: macOS
+      :sync: macos
 
-   source ./activate.sh
+      .. code-block:: bash
+
+         source ./activate.sh
+
+   .. tab-item:: Windows
+      :sync: windows
+
+      .. code-block:: batch
+
+         activate.bat
 
 .. _docs-building:
 
@@ -126,15 +148,53 @@ Typical workflow
 ----------------
 When you pull latest repository changes, run bootstrap:
 
-.. code-block:: bash
+.. tab-set::
 
-   source ./bootstrap.sh
+   .. tab-item:: Linux
+      :sync: linux
+
+      .. code-block:: bash
+
+         source ./bootstrap.sh
+
+   .. tab-item:: macOS
+      :sync: macos
+
+      .. code-block:: bash
+
+         source ./bootstrap.sh
+
+   .. tab-item:: Windows
+      :sync: windows
+
+      .. code-block:: batch
+
+         bootstrap.bat
 
 If you're just launching a new shell session, you can activate instead:
 
-.. code-block:: bash
+.. tab-set::
 
-   source ./activate.sh
+   .. tab-item:: Linux
+      :sync: linux
+
+      .. code-block:: bash
+
+         source ./activate.sh
+
+   .. tab-item:: macOS
+      :sync: macos
+
+      .. code-block:: bash
+
+         source ./activate.sh
+
+   .. tab-item:: Windows
+      :sync: windows
+
+      .. code-block:: batch
+
+         activate.bat
 
 and rebuild with:
 
