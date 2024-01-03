@@ -68,6 +68,13 @@ def build_project(force_pw_watch: bool = False) -> int:
                     build_system_command='ninja',
                     targets=['default'],
                 ),
+                # Update the Python tooling in the activated environment as a
+                # serialized second step. Running this in parallel with other
+                # Python tasks can cause Python flakes.
+                BuildCommand(
+                    build_system_command='ninja',
+                    targets=['pip_install_sample_project_tools.install'],
+                ),
             ],
         ),
     ]
