@@ -59,7 +59,7 @@
       "virtualenv": {
         "gn_root": ".",
         "gn_targets": [
-          ":python.install"
+          ":pip_install_sample_project_tools.install"
         ]
       },
       "required_submodules": [

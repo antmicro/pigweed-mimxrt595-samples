@@ -69,17 +69,13 @@ group("stm32f429i_disc1") {
   deps = [ ":run_tests(${_testing_toolchain})" ]
 }
 
-# This group is built during bootstrap to setup the interactive Python
-# environment.
-pw_python_group("python") {
-  python_deps = [
-    # Generate and pip install _all_python_packages
-    ":pip_install_sample_project_tools",
-  ]
-}
-
 # In-tree Python packages
 _sample_project_python_packages = [ "//tools:tools" ]
+
+# This group contains all the python packages that should be tested and linted.
+pw_python_group("python") {
+  python_deps = _sample_project_python_packages
+}
 
 # Pigweed Python packages to include
 _pigweed_python_packages = [
