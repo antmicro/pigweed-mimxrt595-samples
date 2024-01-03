@@ -43,9 +43,9 @@ Running the test on a device
 
 #. In the ``Python Repl`` pane, run the tests.
 
-   .. code-block:: sh
+   .. code-block:: pycon
 
-      device.run_tests()
+      >>> device.run_tests()
 
 #. When you're finished, you can type ``quit`` in the ``Python Repl`` pane to
    exit.
@@ -64,9 +64,9 @@ Running the test in a simulated device
 
 #. In the ``Python Repl`` pane, run the tests.
 
-   .. code-block:: sh
+   .. code-block:: pycon
 
-      device.run_tests()
+      >>> device.run_tests()
 
 #. When you're finished, you can type ``quit`` in the ``Python Repl`` pane to
    exit.

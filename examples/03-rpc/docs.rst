@@ -44,37 +44,37 @@ Trying out the RPC example
 
    Start the simulated device with the following command:
 
-   .. code-block::
+   .. code-block:: sh
 
       pw device-sim ./out/gn/host_device_simulator.speed_optimized/obj/examples/03-rpc/bin/rpc_main
 
 #. In the ``Python Repl`` pane, use an RPC to request the device's UUID.
 
-   .. code-block:: py
+   .. code-block:: pycon
 
-      device.rpcs.rpc_example.DeviceInfo.GetUuid()
+      >>> device.rpcs.rpc_example.DeviceInfo.GetUuid()
 
    You should see it fail because the device does not yet have a UUID set:
 
-   .. code-block::
+   .. code-block:: pycon
 
       (Status.NOT_FOUND, rpc_example.DeviceUuid())
 
-   In the ``Device Logs`` pane, you'll see a lot message like the following:
+   In the ``Device Logs`` pane, you'll see a log message like the following:
 
-   .. code-block::
+   .. code-block:: pycon
 
       UUID request received, but this device has no UUID yet
 
 #. In the ``Python Repl`` pane, set the device's UUID.
 
-   .. code-block:: py
+   .. code-block:: pycon
 
-      device.rpcs.rpc_example.DeviceInfo.SetUuid(uuid=b'\xab\xcd\ef\x01\x23\x45\x67\x89')
+      >>> device.rpcs.rpc_example.DeviceInfo.SetUuid(uuid=b'\xab\xcd\ef\x01\x23\x45\x67\x89')
 
    It should succeed with the following response:
 
-   .. code-block::
+   .. code-block:: pycon
 
       (Status.OK, pw.protobuf.Empty())
 
@@ -83,7 +83,7 @@ Trying out the RPC example
    This time, the device should respond with the UUID you set using the
    previous command:
 
-   .. code-block::
+   .. code-block:: pycon
 
       (Status.OK, rpc_example.DeviceUuid(uuid=b'\xAB\xCD\xEF\x01\x23\x45\x67\x89'))
 
