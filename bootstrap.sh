@@ -28,17 +28,17 @@ _bootstrap_abspath () {
 
 # Shell: bash.
 if test -n "$BASH"; then
-  _BOOTSTRAP_PATH="$(_bootstrap_abspath "$BASH_SOURCE")"
+  _PW_BOOTSTRAP_PATH="$(_bootstrap_abspath "$BASH_SOURCE")"
 # Shell: zsh.
 elif test -n "$ZSH_NAME"; then
-  _BOOTSTRAP_PATH="$(_bootstrap_abspath "${(%):-%N}")"
+  _PW_BOOTSTRAP_PATH="$(_bootstrap_abspath "${(%):-%N}")"
 # Shell: dash.
 elif test ${0##*/} = dash; then
-  _BOOTSTRAP_PATH="$(_bootstrap_abspath \
+  _PW_BOOTSTRAP_PATH="$(_bootstrap_abspath \
     "$(lsof -p $$ -Fn0 | tail -1 | sed 's#^[^/]*##;')")"
 # If everything else fails, try $0. It could work.
 else
-  _BOOTSTRAP_PATH="$(_bootstrap_abspath "$0")"
+  _PW_BOOTSTRAP_PATH="$(_bootstrap_abspath "$0")"
 fi
 
 # Check if this file is being executed or sourced.
@@ -63,7 +63,7 @@ fi
 # YOUR_PROJECT_ROOT. Please also set PW_PROJECT_ROOT and PW_ROOT before
 # invoking pw_bootstrap or pw_activate.
 ######### BEGIN PROJECT-SPECIFIC CODE #########
-SAMPLE_PROJECT_ROOT="$(_bootstrap_abspath "$(dirname "$_BOOTSTRAP_PATH")")"
+SAMPLE_PROJECT_ROOT="$(_bootstrap_abspath "$(dirname "$_PW_BOOTSTRAP_PATH")")"
 export SAMPLE_PROJECT_ROOT
 PW_PROJECT_ROOT="$SAMPLE_PROJECT_ROOT"
 PW_ROOT="$SAMPLE_PROJECT_ROOT/third_party/pigweed"
@@ -80,44 +80,46 @@ sample_project_banner() {
 }
 
 PW_BANNER_FUNC="sample_project_banner"
-########## END PROJECT-SPECIFIC CODE ##########
-export PW_BANNER_FUNC
-export PW_PROJECT_ROOT
-export PW_ROOT
 
-_util_sh="$PW_ROOT/pw_env_setup/util.sh"
-
-# Double-check that the Pigweed submodule has been checked out.
-if [ ! -e "$_util_sh" ]; then
+# Double-check that the Pigweed submodule has been checked out. The file
+# checked here is somewhat arbitrary, but should be a file path that is
+# relatively stable.
+if [ ! -e "$PW_ROOT/pw_env_setup/util.sh" ]; then
   echo "Updating git submodules ..."
   # Init without recursion.
-  git submodule update --init
+  git -C "$SAMPLE_PROJECT_ROOT" submodule update --init
 fi
 
+# Check that the Pico SDK has been checked out.
 if [ ! -f "$SAMPLE_PROJECT_ROOT/third_party/pico_sdk/lib/tinyusb/LICENSE" ]; then
     echo "Updating git submodules for 'third_party/pico_sdk' ..."
-    # Init tinyusb only with no recursion.
-    pushd third_party/pico_sdk/
-    git submodule update --init lib/tinyusb
-    popd
+    git -C "$SAMPLE_PROJECT_ROOT/third_party/pico_sdk/" submodule update --init lib/tinyusb
 fi
 
-. "$_util_sh"
+########## END PROJECT-SPECIFIC CODE ##########
+export PW_PROJECT_ROOT
+export PW_ROOT
+if [ -n "$PW_BANNER_FUNC" ]; then
+  export PW_BANNER_FUNC
+fi
 
+. "$PW_ROOT/pw_env_setup/util.sh"
+
+# Check environment properties
 pw_deactivate
-pw_eval_sourced "$_pw_sourced"
-pw_check_root "$PW_ROOT"
+pw_eval_sourced "$_pw_sourced" "$_PW_BOOTSTRAP_PATH"
+if ! pw_check_root "$PW_ROOT"; then
+  return
+fi
+
 _PW_ACTUAL_ENVIRONMENT_ROOT="$(pw_get_env_root)"
 export _PW_ACTUAL_ENVIRONMENT_ROOT
 SETUP_SH="$_PW_ACTUAL_ENVIRONMENT_ROOT/activate.sh"
 
-
 # Run full bootstrap when invoked as bootstrap, or env file is missing/empty.
-if [ "$(basename "$_BOOTSTRAP_PATH")" = "bootstrap.sh" ] || \
+if [ "$(basename "$_PW_BOOTSTRAP_PATH")" = "bootstrap.sh" ] || \
   [ ! -f "$SETUP_SH" ] || \
   [ ! -s "$SETUP_SH" ]; then
-# This is where pw_bootstrap is called. Most small projects will include
-# --use-pigweed-defaults.
 ######### BEGIN PROJECT-SPECIFIC CODE #########
   pw_bootstrap --shell-file "$SETUP_SH" --install-dir "$_PW_ACTUAL_ENVIRONMENT_ROOT" --config-file "$PW_PROJECT_ROOT/pigweed.json"
 ########## END PROJECT-SPECIFIC CODE ##########
@@ -135,9 +137,22 @@ if [ "$_PW_ENV_SETUP_STATUS" -eq 0 ]; then
 fi
 
 unset _pw_sourced
-unset _BOOTSTRAP_PATH
+unset _PW_BOOTSTRAP_PATH
 unset SETUP_SH
 unset _bootstrap_abspath
-unset _util_sh
+
+if [[ "$TERM" != dumb ]]; then
+  # Shell completion: bash.
+  if test -n "$BASH"; then
+    . "$PW_ROOT/pw_cli/py/pw_cli/shell_completion/pw.bash"
+    . "$PW_ROOT/pw_cli/py/pw_cli/shell_completion/pw_build.bash"
+  # Shell completion: zsh.
+  elif test -n "$ZSH_NAME"; then
+    . "$PW_ROOT/pw_cli/py/pw_cli/shell_completion/pw.zsh"
+    . "$PW_ROOT/pw_cli/py/pw_cli/shell_completion/pw_build.zsh"
+  fi
+fi
 
 pw_cleanup
+
+git -C "$PW_ROOT" config blame.ignoreRevsFile .git-blame-ignore-revs
