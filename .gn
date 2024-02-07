@@ -18,9 +18,6 @@ default_args = {
   # Set the nanopb directory for protobuf generation.
   dir_pw_third_party_nanopb = "//third_party/nanopb"
 
-  # Use the new Python build and merged 'pigweed' Python package.
-  pw_build_USE_NEW_PYTHON_BUILD = true
-
   # Default gn build virtualenv target.
   pw_build_PYTHON_BUILD_VENV = "//:sample_project_build_venv"
 
