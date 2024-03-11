@@ -35,9 +35,9 @@ pw_doc_gen("docs") {
   deps = [
     ":static_assets",
     "//examples:docs",
-    "//examples/01-blinky:docs",
-    "//examples/02-unit-testing:docs",
-    "//examples/03-rpc:docs",
+    "//examples/01_blinky:docs",
+    "//examples/02_unit_testing:docs",
+    "//examples/03_rpc:docs",
   ]
 
   # Required to set the PYTHONPATH so automodule, autoclass or autofunction RST

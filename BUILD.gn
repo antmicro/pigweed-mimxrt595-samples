@@ -128,24 +128,24 @@ group("examples") {
 
   # STMicroelectronics STM32F429I-DISC1 examples.
   deps += [
-    "//examples/01-blinky:blinky(//targets/stm32f429i_disc1_stm32cube:stm32f429i_disc1_stm32cube.size_optimized)",
-    "//examples/02-unit-testing:test_runner_app(//targets/stm32f429i_disc1_stm32cube:stm32f429i_disc1_stm32cube.size_optimized)",
-    "//examples/03-rpc:rpc_main(//targets/stm32f429i_disc1_stm32cube:stm32f429i_disc1_stm32cube.size_optimized)",
+    "//examples/01_blinky:blinky(//targets/stm32f429i_disc1_stm32cube:stm32f429i_disc1_stm32cube.size_optimized)",
+    "//examples/02_unit_testing:test_runner_app(//targets/stm32f429i_disc1_stm32cube:stm32f429i_disc1_stm32cube.size_optimized)",
+    "//examples/03_rpc:rpc_main(//targets/stm32f429i_disc1_stm32cube:stm32f429i_disc1_stm32cube.size_optimized)",
   ]
 
   # TODO: https://pwbug.dev/325649415 - Replace broken bare metal rp2040
   # examples with pw_system based targets.
   #
   # deps += [
-  #  "//examples/01-blinky:blinky(//targets/rp2040:rp2040.size_optimized)",
-  #  "//examples/02-unit-testing:test_runner_app(//targets/rp2040:rp2040.size_optimized)",
+  #  "//examples/01_blinky:blinky(//targets/rp2040:rp2040.size_optimized)",
+  #  "//examples/02_unit_testing:test_runner_app(//targets/rp2040:rp2040.size_optimized)",
   # ]
 
   # Host examples.
   deps += [
-    "//examples/01-blinky:blinky(//targets/host:host_device_simulator.speed_optimized)",
-    "//examples/02-unit-testing:test_runner_app(//targets/host:host_device_simulator.speed_optimized)",
-    "//examples/03-rpc:rpc_main(//targets/host:host_device_simulator.speed_optimized)",
+    "//examples/01_blinky:blinky(//targets/host:host_device_simulator.speed_optimized)",
+    "//examples/02_unit_testing:test_runner_app(//targets/host:host_device_simulator.speed_optimized)",
+    "//examples/03_rpc:rpc_main(//targets/host:host_device_simulator.speed_optimized)",
   ]
 }
 
@@ -157,7 +157,7 @@ if (current_toolchain != default_toolchain) {
   pw_test_group("tests") {
     group_deps = [
       # Uncomment this to automatically run the example unit test.
-      # "//examples/02-unit-testing:tests",
+      # "//examples/02_unit_testing:tests",
     ]
   }
 

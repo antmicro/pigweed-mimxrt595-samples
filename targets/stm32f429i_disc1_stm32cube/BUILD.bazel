@@ -24,6 +24,7 @@ platform(
         "@freertos//:disable_task_statics",
         "@pigweed//pw_build/constraints/rtos:freertos",
         "@pigweed//pw_interrupt_cortex_m:backend",
+        "@pigweed//pw_malloc_freelist:backend",
         "@pigweed//pw_sys_io_stm32cube:backend",
         "@pigweed//targets/stm32f429i_disc1_stm32cube:freertos_config_cv",
         # For toolchain selection.

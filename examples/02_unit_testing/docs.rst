@@ -21,7 +21,7 @@ Running the test on a device
 
    .. code-block:: sh
 
-      pw flash --device STM32-Discovery out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/02-unit-testing/bin/test_runner_app.elf
+      pw flash --device STM32-Discovery out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/02_unit_testing/bin/test_runner_app.elf
 
    .. note::
 
@@ -34,7 +34,7 @@ Running the test on a device
 
    .. code-block:: sh
 
-      pw console -d /dev/ttyACM0 -b 115200 --token-databases out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/02-unit-testing/bin/test_runner_app.elf
+      pw console -d /dev/ttyACM0 -b 115200 --token-databases out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/02_unit_testing/bin/test_runner_app.elf
 
    .. tip::
 
@@ -60,7 +60,7 @@ Running the test in a simulated device
 
    .. code-block::
 
-      pw device-sim ./out/gn/host_device_simulator.speed_optimized/obj/examples/02-unit-testing/bin/test_runner_app
+      pw device-sim ./out/gn/host_device_simulator.speed_optimized/obj/examples/02_unit_testing/bin/test_runner_app
 
 #. In the ``Python Repl`` pane, run the tests.
 
@@ -82,7 +82,7 @@ build file at ``//BUILD.gn``:
    # All the tests that should run as part of the build.
    pw_test_group("tests") {
      group_deps = [
-       "//examples/02-unit-testing:tests",
+       "//examples/02_unit_testing:tests",
        # ...
      ]
    }
@@ -110,8 +110,8 @@ will appear as part of the build:
    16:38:01 INF [1/1] Run ==> ninja -C out/gn default
    16:38:02 INF
    16:38:02 INF ninja: Entering directory `out/gn'
-   16:38:04 ERR FAILED: host_debug_tests/gen/examples/02-unit-testing/bitops_test._run.pw_pystamp
-   16:38:04 INF python ../../third_party/pigweed/pw_build/py/pw_build/python_runner.py --gn-root ../../ --current-path ../../examples/02-unit-testing --default-toolchain=//third_party/pigweed/pw_toolchain/default:default --current-toolchain=//targets/host:host_debug_tests --touch host_debug_tests/gen/examples/02-unit-testing/bitops_test._run.pw_pystamp --capture-output --module pw_unit_test.test_runner --python-virtualenv-config python/gen/sample_project_build_venv/venv_metadata.json --python-dep-list-files host_debug_tests/gen/examples/02-unit-testing/bitops_test._run_metadata_path_list.txt -- --runner ../../third_party/pigweed/targets/host/run_test --test \<TARGET_FILE\(:bitops_test\)\>
+   16:38:04 ERR FAILED: host_debug_tests/gen/examples/02_unit_testing/bitops_test._run.pw_pystamp
+   16:38:04 INF python ../../third_party/pigweed/pw_build/py/pw_build/python_runner.py --gn-root ../../ --current-path ../../examples/02_unit_testing --default-toolchain=//third_party/pigweed/pw_toolchain/default:default --current-toolchain=//targets/host:host_debug_tests --touch host_debug_tests/gen/examples/02_unit_testing/bitops_test._run.pw_pystamp --capture-output --module pw_unit_test.test_runner --python-virtualenv-config python/gen/sample_project_build_venv/venv_metadata.json --python-dep-list-files host_debug_tests/gen/examples/02_unit_testing/bitops_test._run_metadata_path_list.txt -- --runner ../../third_party/pigweed/targets/host/run_test --test \<TARGET_FILE\(:bitops_test\)\>
    16:38:04 INF ERR ../../third_party/pigweed/targets/host/run_test exited with status 1
    16:38:04 INF OUT [Pid: 16631]
    16:38:04 INF INF  [==========] Running all tests.
@@ -120,7 +120,7 @@ will appear as part of the build:
    16:38:04 INF INF  [ RUN      ] Bitops.MoreOnes
    16:38:04 INF INF  [       OK ] Bitops.MoreOnes
    16:38:04 INF INF  [ RUN      ] Bitops.EvenMoreOnes
-   16:38:04 INF ERR  examples/02-unit-testing/bitops_test.cc:26: Failure
+   16:38:04 INF ERR  examples/02_unit_testing/bitops_test.cc:26: Failure
    16:38:04 INF ERR        Expected: CountOnes(0b11100101) == 5
    16:38:04 INF ERR          Actual: 2 == 5
    16:38:04 INF ERR  [  FAILED  ] Bitops.EvenMoreOnes

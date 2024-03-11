@@ -27,5 +27,16 @@ common --repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
 common --per_file_copt=external/.*@-w
 common --host_per_file_copt=external/.*@-w
 
+common --@freertos//:freertos_config=@pigweed//third_party/freertos:freertos_config
+
 # Required for new toolchain resolution API.
 build --incompatible_enable_cc_toolchain_resolution
+
+# Don't automatically create __init__.py files.
+#
+# This prevents spurious package name collisions at import time, and should be
+# the default (https://github.com/bazelbuild/bazel/issues/7386). It's
+# particularly helpful for Pigweed, because we have many potential package name
+# collisions due to a profusion of stuttering paths like
+# pw_transfer/py/pw_transfer.
+common --incompatible_default_to_explicit_init_py

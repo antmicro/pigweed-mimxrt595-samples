@@ -55,9 +55,9 @@ py_repositories()
 
 http_archive(
     name = "com_google_protobuf",
-    sha256 = "c6003e1d2e7fefa78a3039f19f383b4f3a61e81be8c19356f85b6461998ad3db",
-    strip_prefix = "protobuf-3.17.3",
-    url = "https://github.com/protocolbuffers/protobuf/archive/v3.17.3.tar.gz",
+    sha256 = "616bb3536ac1fff3fb1a141450fa28b875e985712170ea7f1bfe5e5fc41e2cd8",
+    strip_prefix = "protobuf-24.4",
+    url = "https://github.com/protocolbuffers/protobuf/releases/download/v24.4/protobuf-24.4.tar.gz",
 )
 
 load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
@@ -112,14 +112,24 @@ cipd_repository(
 
 # Set up the Python interpreter we'll need.
 python_register_toolchains(
-    name = "python3_10",
-    python_version = "3.10",
-)
-
-python_register_toolchains(
     name = "python3",
     python_version = "3.11",
 )
+
+load("@python3//:defs.bzl", "interpreter")
+load("@rules_python//python:pip.bzl", "pip_parse")
+
+pip_parse(
+    name = "python_packages",
+    python_interpreter_target = interpreter,
+    requirements_darwin = "@pigweed//pw_env_setup/py/pw_env_setup/virtualenv_setup:upstream_requirements_darwin_lock.txt",
+    requirements_linux = "@pigweed//pw_env_setup/py/pw_env_setup/virtualenv_setup:upstream_requirements_linux_lock.txt",
+    requirements_windows = "@pigweed//pw_env_setup/py/pw_env_setup/virtualenv_setup:upstream_requirements_windows_lock.txt",
+)
+
+load("@python_packages//:requirements.bzl", "install_deps")
+
+install_deps()
 
 http_archive(
     name = "freertos",

@@ -38,6 +38,7 @@ cc_binary(
         "@platforms//cpu:armv7e-m": [
             "//targets/stm32f429i_disc1_stm32cube:linker_script",
             "@pigweed//pw_tokenizer:linker_script",
+            "@pigweed//pw_toolchain/arm_gcc:arm_none_eabi_gcc_support",
             "@pigweed//targets/stm32f429i_disc1_stm32cube:pre_init",
         ],
         "//conditions:default": [
@@ -65,7 +66,22 @@ native_binary(
     args = [
         "--device",
         "STM32-Discovery",
-        "$(rootpath //examples/01-blinky:blinky.elf)",
+        "$(rootpath //examples/01_blinky:blinky.elf)",
+    ],
+    data = [":blinky.elf"],
+)
+
+native_binary(
+    name = "console",
+    src = "//tools:console",
+    out = "console.exe",
+    args = [
+        "-d",
+        "/dev/ttyACM0",
+        "-b",
+        "115200",
+        "--token-databases",
+        "$(rootpath //examples/01_blinky:blinky.elf)",
     ],
     data = [":blinky.elf"],
 )

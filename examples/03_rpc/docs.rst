@@ -21,7 +21,7 @@ Trying out the RPC example
 
      .. code-block:: sh
 
-        pw flash --device STM32-Discovery out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/03-rpc/bin/rpc_main.elf
+        pw flash --device STM32-Discovery out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/03_rpc/bin/rpc_main.elf
 
      .. note::
 
@@ -32,7 +32,7 @@ Trying out the RPC example
 
      .. code-block:: sh
 
-        pw console -d /dev/ttyACM0 -b 115200 --token-databases out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/03-rpc/bin/rpc_main.elf
+        pw console -d /dev/ttyACM0 -b 115200 --token-databases out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/03_rpc/bin/rpc_main.elf
 
      .. tip::
 
@@ -46,7 +46,7 @@ Trying out the RPC example
 
    .. code-block:: sh
 
-      pw device-sim ./out/gn/host_device_simulator.speed_optimized/obj/examples/03-rpc/bin/rpc_main
+      pw device-sim ./out/gn/host_device_simulator.speed_optimized/obj/examples/03_rpc/bin/rpc_main
 
 #. In the ``Python Repl`` pane, use an RPC to request the device's UUID.
 

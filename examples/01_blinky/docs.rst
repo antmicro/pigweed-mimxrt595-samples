@@ -22,7 +22,7 @@ Build and flash
 
    .. code-block:: sh
 
-      pw flash --device STM32-Discovery out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/01-blinky/bin/blinky.elf
+      pw flash --device STM32-Discovery out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/01_blinky/bin/blinky.elf
 
    .. note::
 
@@ -47,7 +47,7 @@ You can view the logs from your attached device with the following command:
 
 .. code-block:: sh
 
-   pw console -d /dev/ttyACM0 -b 115200 --token-databases out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/01-blinky/bin/blinky.elf
+   pw console -d /dev/ttyACM0 -b 115200 --token-databases out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/01_blinky/bin/blinky.elf
 
 .. tip::
 
@@ -78,7 +78,7 @@ attaches to the simulated device.
 
    .. code-block::
 
-      pw device-sim ./out/gn/host_device_simulator.speed_optimized/obj/examples/01-blinky/bin/blinky
+      pw device-sim ./out/gn/host_device_simulator.speed_optimized/obj/examples/01_blinky/bin/blinky
 
 #. When you're finished, you can type ``quit`` in the ``Python Repl`` pane to
    exit.
@@ -92,7 +92,7 @@ To build and flash the firmware to the device run,
 
 .. code-block:: sh
 
-   bazel run //examples/01-blinky:flash_stm32
+   bazel run //examples/01_blinky:flash_stm32
 
 Bazel knows that the flasher depends on the firmware, and will build the
 firmware image before flashing it. It will also track any changes to the
@@ -102,4 +102,4 @@ If you do want to produce the `.elf` file but not flash it, run,
 
 .. code-block:: sh
 
-   bazel build //examples/01-blinky:blinky.elf
+   bazel build //examples/01_blinky:blinky.elf
