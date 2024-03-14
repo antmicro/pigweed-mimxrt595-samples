@@ -12,21 +12,15 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-load("@pigweed//pw_build:pigweed.bzl", "host_backend_alias", "pw_cc_facade")
+load("@pigweed//pw_build:pigweed.bzl", "host_backend_alias", "pw_facade")
 
 package(default_visibility = ["//visibility:public"])
 
-pw_cc_facade(
-    name = "pw_board_led_facade",
-    hdrs = ["public/pw_board_led/led.h"],
-    includes = ["public"],
-)
-
-cc_library(
+pw_facade(
     name = "pw_board_led",
     hdrs = ["public/pw_board_led/led.h"],
+    backend = ":pw_board_led_backend",
     includes = ["public"],
-    deps = [":pw_board_led_backend"],
 )
 
 constraint_setting(

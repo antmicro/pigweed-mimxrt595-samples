@@ -24,7 +24,7 @@ cc_library(
     srcs = ["led.cc"],
     target_compatible_with = [":backend_constraint_value"],
     deps = [
-        "//libraries/pw_board_led:pw_board_led_facade",
+        "//libraries/pw_board_led:pw_board_led.facade",
         "@pigweed//pw_log",
     ],
 )

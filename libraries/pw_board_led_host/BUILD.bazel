@@ -23,7 +23,7 @@ cc_library(
     name = "pw_board_led_host",
     srcs = ["led.cc"],
     deps = [
-        "//libraries/pw_board_led:pw_board_led_facade",
+        "//libraries/pw_board_led:pw_board_led.facade",
         "@pigweed//pw_log",
     ],
 )
