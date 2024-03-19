@@ -103,3 +103,4 @@ If you do want to produce the `.elf` file but not flash it, run,
 .. code-block:: sh
 
    bazel build //examples/01_blinky:blinky.elf
+
