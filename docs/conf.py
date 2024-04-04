@@ -11,7 +11,7 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
-"""Pigweed's Sphinx configuration."""
+"""Examples project Sphinx configuration."""
 
 from datetime import date
 import sphinx
@@ -23,7 +23,7 @@ source_suffix = ['.rst']
 master_doc = 'index'
 
 # General information about the project.
-project = 'Pigweed'
+project = 'Pigweed Examples'
 copyright = f'{date.today().year} The Pigweed Authors'  # pylint: disable=redefined-builtin
 
 # The version info for the project you're documenting, acts as replacement for
@@ -71,7 +71,7 @@ html_theme = 'furo'
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-html_title = 'Pigweed'
+html_title = 'Pigweed Examples'
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
@@ -101,14 +101,13 @@ html_static_path = ['docs/_static']
 # These paths are either relative to html_static_path
 # or fully qualified paths (eg. https://...)
 html_css_files = [
-    'css/pigweed.css',
     # Needed for Inconsolata font.
     'https://fonts.googleapis.com/css2?family=Inconsolata&display=swap',
     # FontAwesome for mermaid and sphinx-design
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css",
 ]
 
-html_js_files = ['js/pigweed.js']
+html_js_files = []
 
 # Furo color theme variables based on:
 # https://github.com/pradyunsg/furo/blob/main/src/furo/assets/styles/variables/_colors.scss
