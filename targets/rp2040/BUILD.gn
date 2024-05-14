@@ -21,7 +21,7 @@ pw_system_target("rp2040") {
   cpu = PW_SYSTEM_CPU.CORTEX_M0PLUS
   scheduler = PW_SYSTEM_SCHEDULER.FREERTOS
   use_pw_malloc = false
-  global_configs = [ "$dir_pigweed/targets/rp2040_pw_system:rp2040_hal_config" ]
+  global_configs = [ "$dir_pigweed/targets/rp2040:rp2040_hal_config" ]
 
   build_args = {
     pw_build_EXECUTABLE_TARGET_TYPE = "pico_executable"
@@ -33,16 +33,19 @@ pw_system_target("rp2040") {
     pw_log_tokenized_HANDLER_BACKEND = "$dir_pw_system:log_backend.impl"
 
     pw_third_party_freertos_CONFIG =
-        "$dir_pigweed/targets/rp2040_pw_system:rp2040_freertos_config"
+        "$dir_pigweed/targets/rp2040:rp2040_freertos_config"
     pw_third_party_freertos_PORT = "$dir_pw_third_party/freertos:arm_cm0"
 
-    pw_sys_io_BACKEND = dir_pw_sys_io_stdio
+    pw_sys_io_BACKEND = dir_pw_sys_io_rp2040
     pw_build_LINK_DEPS += [
-      "$dir_pigweed/targets/rp2040_pw_system:pre_init",
+      "$dir_pigweed/targets/rp2040:pre_init",
       "$dir_pw_assert:impl",
       "$dir_pw_log:impl",
     ]
 
-    pw_board_led_BACKEND = "//libraries/pw_board_led_host"
+    pw_sync_COUNTING_SEMAPHORE_BACKEND =
+        "$dir_pw_sync_freertos:counting_semaphore"
+
+    pw_board_led_BACKEND = "//libraries/pw_board_led_rp2040"
   }
 }

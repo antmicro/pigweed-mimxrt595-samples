@@ -18,6 +18,8 @@
 
 #include "pw_preprocessor/compiler.h"
 
+// pw::board_led API implementation for the stm32f429i using direct register
+// manipulation.
 namespace pw::board_led {
 namespace {
 

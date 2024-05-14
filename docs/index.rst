@@ -5,18 +5,18 @@ Pigweed Sample Project
 ======================
 
 .. toctree::
-  :maxdepth: 1
-  :hidden:
+   :maxdepth: 1
+   :hidden:
 
-  Home <self>
-  Examples <examples/docs>
-  Customization <customization>
-  Pigweed Docs <https://pigweed.dev>
-  Mailing List <https://groups.google.com/forum/#!forum/pigweed>
-  Chat Room <https://discord.gg/M9NSeTA>
-  Source Code <https://cs.pigweed.dev/pigweed>
-  Code Reviews <https://pigweed-review.googlesource.com>
-  Issue Tracker <https://issues.pigweed.dev/issues?q=status:open>
+   Home <self>
+   Examples <examples/docs>
+   Customization <customization>
+   Pigweed Docs <https://pigweed.dev>
+   Mailing List <https://groups.google.com/forum/#!forum/pigweed>
+   Chat Room <https://discord.gg/M9NSeTA>
+   Source Code <https://cs.pigweed.dev/pigweed>
+   Code Reviews <https://pigweed-review.googlesource.com>
+   Issue Tracker <https://issues.pigweed.dev/issues?q=status:open>
 
 This repository outlines the recommended way of using Pigweed in a new or
 existing project. Feel free to fork this repository, or read it as a reference.

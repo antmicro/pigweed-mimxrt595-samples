@@ -17,16 +17,28 @@ Running the test on a device
 
 #. Flash ``test_runner_app.elf``.
 
-   **STM32F429I_DISC1 (Linux/macOS)**
+   **STM32F429I_DISC1 (Linux/MacOS)**
 
    .. code-block:: sh
 
       pw flash --device STM32-Discovery out/gn/stm32f429i_disc1_stm32cube.size_optimized/obj/examples/02_unit_testing/bin/test_runner_app.elf
 
    .. note::
-
       We don't yet have OpenOCD for Windows. See
       `b/300986008 <https://issues.pigweed.dev/300986008>`_ for updates.
+
+   **Raspberry Pi Pico (RP2404) (Windows/Linux/MacOS)**
+
+   1. Reboot the Pico into BOOTSEL mode by holding the bootsel button when
+      plugging into USB.
+   2. Copy ``./out/gn/rp2040.size_optimized/obj/examples/02_unit_testing/test_runner_app.uf2``
+      to your Pi Pico.
+
+   .. note::
+      It is also possible to flash a Pico board with `picotool
+      <https://github.com/raspberrypi/picotool>`_. We will be adding support for
+      that in this repo soon. See `b/300321451
+      <https://issues.pigweed.dev/300321451>`_ for updates.
 
 #. Open `pw_console <https://pigweed.dev/pw_console/>`_.
 

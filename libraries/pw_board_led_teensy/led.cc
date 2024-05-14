@@ -18,6 +18,8 @@
 
 #include <cinttypes>
 
+// pw::board_led API implementation for the Teensy 3.x and 4.x using the Arduino
+// digitalWrite function.
 namespace pw::board_led {
 namespace {
 
