@@ -166,8 +166,8 @@ http_archive(
 
 git_repository(
     name = "pico-sdk",
-    commit = "b5c6e7b068c2fedfbb1def3ec4c14e031df1a05f",
-    remote = "https://github.com/armandomontanez/pico-sdk",
+    commit = "f469db237d4d7330088600e412be6bdfe8cb2223",
+    remote = "https://pigweed.googlesource.com/third_party/github/raspberrypi/pico-sdk",
 )
 
 # TODO: Provide tinyusb as a proper Bazel module.
