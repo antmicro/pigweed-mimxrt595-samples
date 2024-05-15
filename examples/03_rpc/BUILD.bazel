@@ -12,11 +12,14 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+load("@bazel_skylib//rules:native_binary.bzl", "native_binary")
 load(
     "@pigweed//pw_protobuf_compiler:pw_proto_library.bzl",
     "pw_proto_filegroup",
+    "pw_proto_library",
 )
 load("@rules_python//python:proto.bzl", "py_proto_library")
+load("//targets:transition.bzl", "rp2040_binary", "stm32_binary")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -33,8 +36,101 @@ proto_library(
     deps = ["@pigweed//pw_protobuf:common_proto"],
 )
 
+pw_proto_library(
+    name = "rpc_example_protos_cc",
+    deps = [":rpc_example_protos"],
+)
+
 py_proto_library(
     name = "rpc_example_protos_py_pb2",
     tags = ["manual"],
     deps = [":rpc_example_protos"],
+)
+
+cc_library(
+    name = "rpc_example_service_nanopb",
+    srcs = ["rpc_example_service_nanopb.cc"],
+    hdrs = ["public/rpc_example/rpc_example_service_nanopb.h"],
+    includes = ["public"],
+    deps = [
+        ":rpc_example_protos_cc.nanopb_rpc",
+        "@pigweed//pw_log",
+        "@pigweed//pw_sync:mutex",
+    ],
+)
+
+cc_binary(
+    name = "rpc_main",
+    srcs = ["main.cc"],
+    malloc = select({
+        "@pico-sdk//bazel/constraint:rp2": "@pigweed//pw_malloc",
+        "@platforms//cpu:armv7e-m": "@pigweed//pw_malloc",
+        "//conditions:default": "@bazel_tools//tools/cpp:malloc",
+    }),
+    deps = [
+        ":rpc_example_service_nanopb",
+        "@pigweed//pw_assert:backend_impl",
+        "@pigweed//pw_log",
+        "@pigweed//pw_log:backend_impl",
+        "@pigweed//pw_system:init",
+        "@pigweed//pw_system:io",
+        "@pigweed//pw_system:rpc_server",
+        "@pigweed//pw_system:target_hooks",
+        "@pigweed//pw_system:work_queue",
+    ] + select({
+        "@pico-sdk//bazel/constraint:rp2": [
+            "@pico-sdk//src/common/pico_stdlib:pico_stdlib",
+            "@pigweed//pw_tokenizer:linker_script",
+            "@pigweed//pw_toolchain/arm_gcc:arm_none_eabi_gcc_support",
+            "@pigweed//targets/rp2040:pre_init",
+        ],
+        "@platforms//cpu:armv7e-m": [
+            "//targets/stm32f429i_disc1_stm32cube:linker_script",
+            "@pigweed//pw_tokenizer:linker_script",
+            "@pigweed//pw_toolchain/arm_gcc:arm_none_eabi_gcc_support",
+            "@pigweed//targets/stm32f429i_disc1_stm32cube:pre_init",
+        ],
+        "//conditions:default": [
+            "@pigweed//targets/host_device_simulator:boot",
+        ],
+    }),
+)
+
+stm32_binary(
+    name = "rpc_main.elf",
+    binary = ":rpc_main",
+    # Visible to the flasher.
+    visibility = ["//tools:__pkg__"],
+)
+
+rp2040_binary(
+    name = "rp2040_rpc_main.elf",
+    binary = ":rpc_main",
+    # Visible to the flasher.
+    visibility = ["//tools:__pkg__"],
+)
+
+native_binary(
+    name = "flash_stm32",
+    src = "//tools:flash_device",
+    args = [
+        "--device",
+        "STM32-Discovery",
+        "$(rootpath //examples/03_rpc:rpc_main.elf)",
+    ],
+    data = [":rpc_main.elf"],
+)
+
+native_binary(
+    name = "console",
+    src = "//tools:console",
+    args = [
+        "-d",
+        "/dev/ttyACM0",
+        "-b",
+        "115200",
+        "--token-databases",
+        "$(rootpath //examples/03_rpc:rpc_main.elf)",
+    ],
+    data = [":rpc_main.elf"],
 )

@@ -132,6 +132,28 @@ load("@python_packages//:requirements.bzl", "install_deps")
 
 install_deps()
 
+# Setup Nanopb protoc plugin.
+# Required by: Pigweed.
+# Used in modules: pw_protobuf.
+http_archive(
+    name = "com_github_nanopb_nanopb",
+    sha256 = "3f78bf63722a810edb6da5ab5f0e76c7db13a961c2aad4ab49296e3095d0d830",
+    strip_prefix = "nanopb-0.4.8",
+    url = "https://github.com/nanopb/nanopb/archive/refs/tags/0.4.8.tar.gz",
+)
+
+load("@com_github_nanopb_nanopb//extra/bazel:nanopb_deps.bzl", "nanopb_deps")
+
+nanopb_deps()
+
+load("@com_github_nanopb_nanopb//extra/bazel:python_deps.bzl", "nanopb_python_deps")
+
+nanopb_python_deps(interpreter)
+
+load("@com_github_nanopb_nanopb//extra/bazel:nanopb_workspace.bzl", "nanopb_workspace")
+
+nanopb_workspace()
+
 http_archive(
     name = "freertos",
     build_file = "@pigweed//third_party/freertos:freertos.BUILD.bazel",
