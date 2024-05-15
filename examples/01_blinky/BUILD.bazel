@@ -71,12 +71,6 @@ rp2040_binary(
 native_binary(
     name = "flash_stm32",
     src = "//tools:flash_device",
-    # TODO: https://github.com/bazelbuild/bazel-skylib/issues/399 - out should
-    # be optional.
-    #
-    # We use the .exe extension for the symlink because it's required on Windows
-    # and tolerated on other platforms.
-    out = "flash_stm32.exe",
     args = [
         "--device",
         "STM32-Discovery",
@@ -88,7 +82,6 @@ native_binary(
 native_binary(
     name = "console",
     src = "//tools:console",
-    out = "console.exe",
     args = [
         "-d",
         "/dev/ttyACM0",

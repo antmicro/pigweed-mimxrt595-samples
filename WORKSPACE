@@ -28,10 +28,10 @@ http_archive(
 )
 
 http_archive(
-    name = "bazel_skylib",  # 2022-09-01
-    sha256 = "4756ab3ec46d94d99e5ed685d2d24aece484015e45af303eb3a11cab3cdc2e71",
-    strip_prefix = "bazel-skylib-1.3.0",
-    urls = ["https://github.com/bazelbuild/bazel-skylib/archive/refs/tags/1.3.0.zip"],
+    name = "bazel_skylib",
+    sha256 = "aede1b60709ac12b3461ee0bb3fa097b58a86fbfdb88ef7e9f90424a69043167",
+    strip_prefix = "bazel-skylib-1.6.1",  # 2024-04-24
+    urls = ["https://github.com/bazelbuild/bazel-skylib/archive/refs/tags/1.6.1.tar.gz"],
 )
 
 http_archive(
