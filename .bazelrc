@@ -40,3 +40,7 @@ build --incompatible_enable_cc_toolchain_resolution
 # collisions due to a profusion of stuttering paths like
 # pw_transfer/py/pw_transfer.
 common --incompatible_default_to_explicit_init_py
+
+# Error output settings.
+common --verbose_failures
+test --test_output=errors

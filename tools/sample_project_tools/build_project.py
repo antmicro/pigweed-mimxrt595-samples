@@ -55,6 +55,8 @@ def build_project(force_pw_watch: bool = False) -> int:
         '--export-compile-commands',
     ]
 
+    default_bazel_targets = ['//...:all']
+
     build_recipes = [
         BuildRecipe(
             build_dir=Path('out/gn'),
@@ -74,6 +76,19 @@ def build_project(force_pw_watch: bool = False) -> int:
                 BuildCommand(
                     build_system_command='ninja',
                     targets=['pip_install_sample_project_tools.install'],
+                ),
+            ],
+        ),
+        BuildRecipe(
+            build_dir=Path('out/bazel'),
+            title='bazel',
+            steps=[
+                BuildCommand(
+                    build_system_command='bazel',
+                    build_system_extra_args=[
+                        'build',
+                    ],
+                    targets=default_bazel_targets,
                 ),
             ],
         ),
