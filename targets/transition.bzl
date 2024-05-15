@@ -25,8 +25,8 @@ def _stm32_transition_impl(settings, attr):
         "//command_line_option:copt": ["-DSTM32CUBE_HEADER=\"stm32f4xx.h\"", "-DSTM32F429xx"],
         "//command_line_option:platforms": "//targets/stm32f429i_disc1_stm32cube:platform",
         "@hal_driver//:hal_config": "@pigweed//targets/stm32f429i_disc1_stm32cube:hal_config",
-        "@pigweed//pw_log:backend_impl": "@pigweed//pw_log_tokenized:impl",
         "@pigweed//pw_log:backend": "@pigweed//pw_log_tokenized",
+        "@pigweed//pw_log:backend_impl": "@pigweed//pw_log_tokenized:impl",
         "@pigweed//pw_log_tokenized:handler_backend": "@pigweed//pw_system:log_backend",
     }
 
@@ -70,8 +70,8 @@ def _rp2040_transition_impl(settings, attr):
 
     return {
         "//command_line_option:platforms": "//targets/rp2040:platform",
-        "@pigweed//pw_log:backend_impl": "@pigweed//pw_log_tokenized:impl",
         "@pigweed//pw_log:backend": "@pigweed//pw_log_tokenized",
+        "@pigweed//pw_log:backend_impl": "@pigweed//pw_log_tokenized:impl",
         "@pigweed//pw_log_tokenized:handler_backend": "@pigweed//pw_system:log_backend",
     }
 
