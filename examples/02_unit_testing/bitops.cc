@@ -20,6 +20,7 @@ namespace bitops {
 
 int CountOnes(int val) {
   int count = 0;
+  // One possible fix to this is multiply sizeof(val) by 8.
   for (size_t i = 0; i < sizeof(val); ++i) {
     int mask = 0x1 << i;
     if ((val & mask) != 0) {

@@ -12,55 +12,35 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-load("@bazel_skylib//rules:native_binary.bzl", "native_binary")
 load(
-    "@pigweed//pw_protobuf_compiler:pw_proto_library.bzl",
-    "pw_proto_filegroup",
-    "pw_proto_library",
+    "@pigweed//pw_build:pigweed.bzl",
+    "pw_cc_test",
 )
-load("@rules_python//python:proto.bzl", "py_proto_library")
 load("//targets:transition.bzl", "rp2040_binary", "stm32_binary")
 
 package(default_visibility = ["//visibility:public"])
 
-pw_proto_filegroup(
-    name = "rpc_example_protos_filegroup",
-    srcs = ["rpc_example_protos/rpc_example_service.proto"],
-    options_files = ["rpc_example_protos/rpc_example_service.options"],
-)
-
-proto_library(
-    name = "rpc_example_protos",
-    srcs = ["rpc_example_protos_filegroup"],
-    strip_import_prefix = "/examples/03_rpc",
-    deps = ["@pigweed//pw_protobuf:common_proto"],
-)
-
-pw_proto_library(
-    name = "rpc_example_protos_cc",
-    deps = [":rpc_example_protos"],
-)
-
-py_proto_library(
-    name = "rpc_example_protos_py_pb2",
-    tags = ["manual"],
-    deps = [":rpc_example_protos"],
-)
-
 cc_library(
-    name = "rpc_example_service_nanopb",
-    srcs = ["rpc_example_service_nanopb.cc"],
-    hdrs = ["public/rpc_example/rpc_example_service_nanopb.h"],
+    name = "bitops",
+    srcs = ["bitops.cc"],
+    hdrs = ["public/bitops.h"],
     includes = ["public"],
-    deps = [
-        ":rpc_example_protos_cc.nanopb_rpc",
-        "@pigweed//pw_log",
-        "@pigweed//pw_sync:mutex",
-    ],
+)
+
+pw_cc_test(
+    name = "bitops_test",
+    srcs = ["bitops_test.cc"],
+    # Remove the manual tag to run this test automatically as part of 'bazel
+    # test' on the host.
+    tags = ["manual"],
+    # Otherwise run:
+    #   bazel test //examples/02_unit_testing:bitops_test
+    deps = [":bitops"],
 )
 
 cc_binary(
-    name = "rpc_main",
+    name = "test_runner_app",
+    testonly = True,
     srcs = ["main.cc"],
     malloc = select({
         "@pico-sdk//bazel/constraint:rp2": "@pigweed//pw_malloc",
@@ -68,8 +48,10 @@ cc_binary(
         "//conditions:default": "@bazel_tools//tools/cpp:malloc",
     }),
     deps = [
-        ":rpc_example_service_nanopb",
+        ":bitops_test.lib",
         "@pigweed//pw_assert:backend_impl",
+        "@pigweed//pw_chrono:system_clock",
+        "@pigweed//pw_chrono:system_timer",
         "@pigweed//pw_log",
         "@pigweed//pw_log:backend_impl",
         "@pigweed//pw_system:init",
@@ -77,6 +59,7 @@ cc_binary(
         "@pigweed//pw_system:rpc_server",
         "@pigweed//pw_system:target_hooks",
         "@pigweed//pw_system:work_queue",
+        "@pigweed//pw_unit_test:rpc_service",
     ] + select({
         "@pico-sdk//bazel/constraint:rp2": [
             "@pico-sdk//src/common/pico_stdlib:pico_stdlib",
@@ -97,36 +80,13 @@ cc_binary(
 )
 
 stm32_binary(
-    name = "rpc_main.elf",
-    binary = ":rpc_main",
+    name = "test_runner_app.elf",
+    testonly = True,
+    binary = ":test_runner_app",
 )
 
 rp2040_binary(
-    name = "rp2040_rpc_main.elf",
-    binary = ":rpc_main",
-)
-
-native_binary(
-    name = "flash_stm32",
-    src = "//tools:flash_device",
-    args = [
-        "--device",
-        "STM32-Discovery",
-        "$(rootpath //examples/03_rpc:rpc_main.elf)",
-    ],
-    data = [":rpc_main.elf"],
-)
-
-native_binary(
-    name = "console",
-    src = "//tools:console",
-    args = [
-        "-d",
-        "/dev/ttyACM0",
-        "-b",
-        "115200",
-        "--token-databases",
-        "$(rootpath //examples/03_rpc:rpc_main.elf)",
-    ],
-    data = [":rpc_main.elf"],
+    name = "rp2040_test_runner_app.elf",
+    testonly = True,
+    binary = ":test_runner_app",
 )
