@@ -47,3 +47,13 @@ pw_linker_script(
     ],
     linker_script = "@pigweed//pw_boot_cortex_m:basic_cortex_m.ld",
 )
+
+cc_library(
+    name = "extra_platform_libs",
+    deps = [
+        ":linker_script",
+        "@pigweed//pw_tokenizer:linker_script",
+        "@pigweed//pw_toolchain/arm_gcc:arm_none_eabi_gcc_support",
+        "@pigweed//targets/stm32f429i_disc1_stm32cube:pre_init",
+    ],
+)

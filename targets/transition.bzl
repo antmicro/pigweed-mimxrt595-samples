@@ -28,6 +28,7 @@ def _stm32_transition_impl(settings, attr):
         "@pigweed//pw_log:backend": "@pigweed//pw_log_tokenized",
         "@pigweed//pw_log:backend_impl": "@pigweed//pw_log_tokenized:impl",
         "@pigweed//pw_log_tokenized:handler_backend": "@pigweed//pw_system:log_backend",
+        "@pigweed//pw_system:extra_platform_libs": "//targets/stm32f429i_disc1_stm32cube:extra_platform_libs",
     }
 
 _stm32_transition = transition(
@@ -40,6 +41,7 @@ _stm32_transition = transition(
         "@pigweed//pw_log:backend_impl",
         "@pigweed//pw_log:backend",
         "@pigweed//pw_log_tokenized:handler_backend",
+        "@pigweed//pw_system:extra_platform_libs",
     ],
 )
 
@@ -73,6 +75,7 @@ def _rp2040_transition_impl(settings, attr):
         "@pigweed//pw_log:backend": "@pigweed//pw_log_tokenized",
         "@pigweed//pw_log:backend_impl": "@pigweed//pw_log_tokenized:impl",
         "@pigweed//pw_log_tokenized:handler_backend": "@pigweed//pw_system:log_backend",
+        "@pigweed//pw_system:extra_platform_libs": "//targets/rp2040:extra_platform_libs",
     }
 
 _rp2040_transition = transition(
@@ -83,6 +86,7 @@ _rp2040_transition = transition(
         "@pigweed//pw_log:backend_impl",
         "@pigweed//pw_log:backend",
         "@pigweed//pw_log_tokenized:handler_backend",
+        "@pigweed//pw_system:extra_platform_libs",
     ],
 )
 

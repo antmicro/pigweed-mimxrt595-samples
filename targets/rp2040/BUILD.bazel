@@ -33,3 +33,13 @@ platform(
         "@pw_toolchain//constraints/arm_mcpu:cortex-m0",
     ],
 )
+
+cc_library(
+    name = "extra_platform_libs",
+    deps = [
+        "@pico-sdk//src/common/pico_stdlib:pico_stdlib",
+        "@pigweed//pw_tokenizer:linker_script",
+        "@pigweed//pw_toolchain/arm_gcc:arm_none_eabi_gcc_support",
+        "@pigweed//targets/rp2040:pre_init",
+    ],
+)

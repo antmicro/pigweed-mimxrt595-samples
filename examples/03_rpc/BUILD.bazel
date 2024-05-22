@@ -62,38 +62,11 @@ cc_library(
 cc_binary(
     name = "rpc_main",
     srcs = ["main.cc"],
-    malloc = select({
-        "@pico-sdk//bazel/constraint:rp2": "@pigweed//pw_malloc",
-        "@platforms//cpu:armv7e-m": "@pigweed//pw_malloc",
-        "//conditions:default": "@bazel_tools//tools/cpp:malloc",
-    }),
     deps = [
         ":rpc_example_service_nanopb",
-        "@pigweed//pw_assert:backend_impl",
         "@pigweed//pw_log",
-        "@pigweed//pw_log:backend_impl",
-        "@pigweed//pw_system:init",
-        "@pigweed//pw_system:io",
-        "@pigweed//pw_system:rpc_server",
-        "@pigweed//pw_system:target_hooks",
-        "@pigweed//pw_system:work_queue",
-    ] + select({
-        "@pico-sdk//bazel/constraint:rp2": [
-            "@pico-sdk//src/common/pico_stdlib:pico_stdlib",
-            "@pigweed//pw_tokenizer:linker_script",
-            "@pigweed//pw_toolchain/arm_gcc:arm_none_eabi_gcc_support",
-            "@pigweed//targets/rp2040:pre_init",
-        ],
-        "@platforms//cpu:armv7e-m": [
-            "//targets/stm32f429i_disc1_stm32cube:linker_script",
-            "@pigweed//pw_tokenizer:linker_script",
-            "@pigweed//pw_toolchain/arm_gcc:arm_none_eabi_gcc_support",
-            "@pigweed//targets/stm32f429i_disc1_stm32cube:pre_init",
-        ],
-        "//conditions:default": [
-            "@pigweed//targets/host_device_simulator:boot",
-        ],
-    }),
+        "@pigweed//pw_system",
+    ],
 )
 
 stm32_binary(

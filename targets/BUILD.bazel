@@ -12,5 +12,13 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-# Empty BUILD.bazel file, needed because "Every .bzl file must have a
-# corresponding package".
+# TODO: https://github.com/bazelbuild/bazel/issues/22457 - Move this into the
+# platform once it no longer propagates to the exec configuration.
+alias(
+    name = "malloc",
+    actual = select({
+        "@pico-sdk//bazel/constraint:rp2": "@pigweed//pw_malloc",
+        "@platforms//cpu:armv7e-m": "@pigweed//pw_malloc",
+        "//conditions:default": "@bazel_tools//tools/cpp:malloc",
+    }),
+)

@@ -23,6 +23,8 @@ build --noincompatible_sandbox_hermetic_tmp
 # our toolchains, and CI VMs may not have any local toolchain to detect.
 common --repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
 
+common --custom_malloc=//targets:malloc
+
 # Ignore all warnings in third-party code.
 common --per_file_copt=external/.*@-w
 common --host_per_file_copt=external/.*@-w
