@@ -24,6 +24,7 @@ def _stm32_transition_impl(settings, attr):
     return {
         "//command_line_option:copt": ["-DSTM32CUBE_HEADER=\"stm32f4xx.h\"", "-DSTM32F429xx"],
         "//command_line_option:platforms": "//targets/stm32f429i_disc1_stm32cube:platform",
+        "@freertos//:freertos_config": "@pigweed//third_party/freertos:freertos_config",
         "@hal_driver//:hal_config": "@pigweed//targets/stm32f429i_disc1_stm32cube:hal_config",
         "@pigweed//pw_interrupt:backend": "@pigweed//pw_interrupt_cortex_m:context",
         "@pigweed//pw_log:backend": "@pigweed//pw_log_tokenized",
@@ -40,6 +41,7 @@ _stm32_transition = transition(
     outputs = [
         "//command_line_option:copt",
         "//command_line_option:platforms",
+        "@freertos//:freertos_config",
         "@hal_driver//:hal_config",
         "@pigweed//pw_interrupt:backend",
         "@pigweed//pw_log:backend_impl",
@@ -78,6 +80,7 @@ def _rp2040_transition_impl(settings, attr):
 
     return {
         "//command_line_option:platforms": "//targets/rp2040:platform",
+        "@freertos//:freertos_config": "@pigweed//third_party/freertos:freertos_config",
         "@pigweed//pw_interrupt:backend": "@pigweed//pw_interrupt_cortex_m:context",
         "@pigweed//pw_log:backend": "@pigweed//pw_log_tokenized",
         "@pigweed//pw_log:backend_impl": "@pigweed//pw_log_tokenized:impl",
@@ -91,6 +94,7 @@ _rp2040_transition = transition(
     inputs = [],
     outputs = [
         "//command_line_option:platforms",
+        "@freertos//:freertos_config",
         "@pigweed//pw_log:backend_impl",
         "@pigweed//pw_log:backend",
         "@pigweed//pw_log_tokenized:handler_backend",

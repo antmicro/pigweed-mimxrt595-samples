@@ -29,8 +29,6 @@ common --custom_malloc=//targets:malloc
 common --per_file_copt=external/.*@-w
 common --host_per_file_copt=external/.*@-w
 
-common --@freertos//:freertos_config=@pigweed//third_party/freertos:freertos_config
-
 # Required for new toolchain resolution API.
 build --incompatible_enable_cc_toolchain_resolution
 
