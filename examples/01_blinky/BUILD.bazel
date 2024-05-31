@@ -30,7 +30,7 @@ cc_binary(
 )
 
 stm32_binary(
-    name = "blinky.elf",
+    name = "stm32_blinky.elf",
     binary = ":blinky",
 )
 
@@ -45,9 +45,9 @@ native_binary(
     args = [
         "--device",
         "STM32-Discovery",
-        "$(rootpath //examples/01_blinky:blinky.elf)",
+        "$(rootpath //examples/01_blinky:stm32_blinky.elf)",
     ],
-    data = [":blinky.elf"],
+    data = [":stm32_blinky.elf"],
 )
 
 native_binary(
@@ -59,7 +59,7 @@ native_binary(
         "-b",
         "115200",
         "--token-databases",
-        "$(rootpath //examples/01_blinky:blinky.elf)",
+        "$(rootpath //examples/01_blinky:stm32_blinky.elf)",
     ],
-    data = [":blinky.elf"],
+    data = [":stm32_blinky.elf"],
 )

@@ -70,7 +70,7 @@ cc_binary(
 )
 
 stm32_binary(
-    name = "rpc_main.elf",
+    name = "stm32_rpc_main.elf",
     binary = ":rpc_main",
 )
 
@@ -85,9 +85,9 @@ native_binary(
     args = [
         "--device",
         "STM32-Discovery",
-        "$(rootpath //examples/03_rpc:rpc_main.elf)",
+        "$(rootpath //examples/03_rpc:stm32_rpc_main.elf)",
     ],
-    data = [":rpc_main.elf"],
+    data = [":stm32_rpc_main.elf"],
 )
 
 native_binary(
@@ -99,7 +99,7 @@ native_binary(
         "-b",
         "115200",
         "--token-databases",
-        "$(rootpath //examples/03_rpc:rpc_main.elf)",
+        "$(rootpath //examples/03_rpc:stm32_rpc_main.elf)",
     ],
-    data = [":rpc_main.elf"],
+    data = [":stm32_rpc_main.elf"],
 )

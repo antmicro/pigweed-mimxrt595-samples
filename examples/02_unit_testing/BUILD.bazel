@@ -53,7 +53,7 @@ cc_binary(
 )
 
 stm32_binary(
-    name = "test_runner_app.elf",
+    name = "stm32_test_runner_app.elf",
     testonly = True,
     binary = ":test_runner_app",
 )
