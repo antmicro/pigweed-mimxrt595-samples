@@ -1,5 +1,17 @@
 {
   "pw": {
+    "bazel_presubmit": {
+      "remote_cache": false,
+      "upload_local_results": false,
+      "programs": {
+        "default": [
+          [
+            "build",
+            "//..."
+          ]
+        ]
+      }
+    },
     "pw_cli": {
       "plugins": {
         "build": {
