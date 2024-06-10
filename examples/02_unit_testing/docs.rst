@@ -72,7 +72,7 @@ Running the test in a simulated device
 
    .. code-block::
 
-      pw device-sim ./out/gn/host_device_simulator.speed_optimized/obj/examples/02_unit_testing/bin/test_runner_app
+      pw device-sim --sim-binary ./out/gn/host_device_simulator.speed_optimized/obj/examples/02_unit_testing/bin/test_runner_app
 
 #. In the ``Python Repl`` pane, run the tests.
 

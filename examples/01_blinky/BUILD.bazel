@@ -13,6 +13,8 @@
 # the License.
 
 load("@bazel_skylib//rules:native_binary.bzl", "native_binary")
+load("@pigweed//pw_system/py:console.bzl", "device_simulator_console")
+load("@pigweed//targets/host_device_simulator:transition.bzl", "host_device_simulator_binary")
 load("//targets:transition.bzl", "rp2040_binary", "stm32_binary")
 
 package(default_visibility = ["//visibility:public"])
@@ -60,6 +62,26 @@ native_binary(
         "115200",
         "--token-databases",
         "$(rootpath //examples/01_blinky:stm32_blinky.elf)",
+        "--config-file",
+        "$(rootpath //:pw_console_config)",
     ],
-    data = [":stm32_blinky.elf"],
+    data = [
+        ":stm32_blinky.elf",
+        "//:pw_console_config",
+    ],
+)
+
+# Create a host binary using the Pigweed upstream pw_system host_device_simulator.
+host_device_simulator_binary(
+    name = "simulator_blinky",
+    binary = ":blinky",
+)
+
+# Start :simulator_blinky and connect to it with pw console by running:
+#   bazel run //examples/01_blinky:simulator_console
+device_simulator_console(
+    name = "simulator_console",
+    host_binary = ":simulator_blinky",
+    pw_console_config = "//:pw_console_config",
+    script = "//tools:device_sim",
 )

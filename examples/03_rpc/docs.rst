@@ -59,7 +59,13 @@ Trying out the RPC example
 
    .. code-block:: sh
 
-      pw device-sim ./out/gn/host_device_simulator.speed_optimized/obj/examples/03_rpc/bin/rpc_main
+      pw device-sim --sim-binary ./out/gn/host_device_simulator.speed_optimized/obj/examples/03_rpc/bin/rpc_main
+
+   If using Bazel launch the simulator with ``bazel run``:
+
+   .. code-block:: sh
+
+      bazel run //examples/03_rpc:simulator_console
 
 #. In the ``Python Repl`` pane, use an RPC to request the device's UUID.
 

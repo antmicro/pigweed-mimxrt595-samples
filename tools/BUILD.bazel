@@ -21,12 +21,30 @@ py_binary(
     srcs = ["sample_project_tools/flash_device.py"],
 )
 
+py_library(
+    name = "console_library",
+    srcs = ["sample_project_tools/console.py"],
+    imports = ["."],
+    deps = [
+        "//examples/03_rpc:rpc_example_protos_py_pb2",
+        "@pigweed//pw_protobuf:common_py_pb2",
+        "@pigweed//pw_rpc:echo_py_pb2",
+        "@pigweed//pw_system/py:pw_system_lib",
+    ],
+)
+
 py_binary(
     name = "console",
     srcs = ["sample_project_tools/console.py"],
     deps = [
-        "//examples/03_rpc:rpc_example_protos_py_pb2",
-        "@pigweed//pw_protobuf:common_py_pb2",
-        "@pigweed//pw_system/py:pw_system_lib",
+        ":console_library",
+    ],
+)
+
+py_binary(
+    name = "device_sim",
+    srcs = ["sample_project_tools/device_sim.py"],
+    deps = [
+        ":console_library",
     ],
 )

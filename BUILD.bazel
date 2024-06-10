@@ -11,20 +11,12 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
-"""Wraps pw_system's console to inject additional RPC protos."""
 
-import sys
+package(default_visibility = ["//visibility:public"])
 
-from pw_protobuf_protos import common_pb2
-from pw_rpc import echo_pb2
-import pw_system.device_sim
-from rpc_example_protos import rpc_example_service_pb2
-
-
-def main() -> int:
-    compiled_protos = [common_pb2, echo_pb2, rpc_example_service_pb2]
-    return pw_system.device_sim.main_with_compiled_protos(compiled_protos)
-
-
-if __name__ == '__main__':
-    sys.exit(main())
+filegroup(
+    name = "pw_console_config",
+    srcs = [
+        ".pw_console.yaml",
+    ],
+)

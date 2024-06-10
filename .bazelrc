@@ -38,13 +38,20 @@ build:presubmit -- \
   //... \
   //examples/01_blinky:blinky \
   //examples/01_blinky:rp2040_blinky.elf \
+  //examples/01_blinky:simulator_blinky \
+  //examples/01_blinky:simulator_console \
   //examples/01_blinky:stm32_blinky.elf \
-  //examples/02_unit_testing:test_runner_app \
   //examples/02_unit_testing:rp2040_test_runner_app.elf \
   //examples/02_unit_testing:stm32_test_runner_app.elf \
-  //examples/03_rpc:rpc_main \
+  //examples/02_unit_testing:test_runner_app \
   //examples/03_rpc:rp2040_rpc_main.elf \
-  //examples/03_rpc:stm32_rpc_main.elf
+  //examples/03_rpc:rpc_main \
+  //examples/03_rpc:simulator_console \
+  //examples/03_rpc:simulator_rpc \
+  //examples/03_rpc:stm32_rpc_main.elf \
+  //tools:console \
+  //tools:device_sim
+
 
 # Don't automatically create __init__.py files.
 #

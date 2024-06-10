@@ -89,9 +89,15 @@ attaches to the simulated device.
 
 #. Launch ``blinky`` using the ``pw device-sim`` helper.
 
-   .. code-block::
+   .. code-block:: sh
 
-      pw device-sim ./out/gn/host_device_simulator.speed_optimized/obj/examples/01_blinky/bin/blinky
+      pw device-sim --sim-binary ./out/gn/host_device_simulator.speed_optimized/obj/examples/01_blinky/bin/blinky
+
+   If using Bazel launch the simulator with ``bazel run``:
+
+   .. code-block:: sh
+
+      bazel run //examples/01_blinky:simulator_console
 
 #. When you're finished, you can type ``quit`` in the ``Python Repl`` pane to
    exit.
@@ -99,8 +105,6 @@ attaches to the simulated device.
 -------------------
 Building with Bazel
 -------------------
-In general, the sample project doesn't support Bazel yet. But this example does!
-
 To build and flash the firmware to the device run,
 
 .. code-block:: sh
