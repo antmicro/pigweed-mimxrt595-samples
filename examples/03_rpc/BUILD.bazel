@@ -18,7 +18,7 @@ load(
     "pw_proto_filegroup",
     "pw_proto_library",
 )
-load("@pigweed//pw_system/py:console.bzl", "device_simulator_console")
+load("@pigweed//pw_system/py:console.bzl", "device_console", "device_simulator_console")
 load("@pigweed//targets/host_device_simulator:transition.bzl", "host_device_simulator_binary")
 load("@rules_python//python:proto.bzl", "py_proto_library")
 load("//targets:transition.bzl", "rp2040_binary", "stm32_binary")
@@ -92,23 +92,18 @@ native_binary(
     data = [":stm32_rpc_main.elf"],
 )
 
-native_binary(
-    name = "console",
-    src = "//tools:console",
-    args = [
-        "-d",
-        "/dev/ttyACM0",
-        "-b",
-        "115200",
-        "--token-databases",
-        "$(rootpath //examples/03_rpc:stm32_rpc_main.elf)",
-        "--config-file",
-        "$(rootpath //:pw_console_config)",
-    ],
-    data = [
-        ":stm32_rpc_main.elf",
-        "//:pw_console_config",
-    ],
+device_console(
+    name = "console_stm32",
+    binary = ":stm32_rpc_main.elf",
+    pw_console_config = "//:pw_console_config",
+    script = "//tools:console",
+)
+
+device_console(
+    name = "console_rp2040",
+    binary = ":rp2040_rpc_main.elf",
+    pw_console_config = "//:pw_console_config",
+    script = "//tools:console",
 )
 
 # Create a host binary using the Pigweed upstream pw_system host_device_simulator.

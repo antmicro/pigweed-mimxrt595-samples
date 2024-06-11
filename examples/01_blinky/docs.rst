@@ -67,6 +67,12 @@ You can view the logs from your attached device with the following command:
    On macOS, your device will look like ``/dev/cu.usbmodem2141403``, but
    will most likely end with a different number.
 
+To launch the console with Bazel run:
+
+.. code-block:: sh
+
+   bazel run //examples/01_blinky:console_stm32
+
 ----------------
 Simulated device
 ----------------
