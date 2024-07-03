@@ -17,64 +17,37 @@
 TODO:  b/301334234 - Use platform-based flags and retire these transitions.
 """
 
+load("@pigweed//pw_build:merge_flags.bzl", "merge_flags_for_transition_impl", "merge_flags_for_transition_outputs")
+load("@pigweed//targets/rp2040:transition.bzl", "RP2040_SYSTEM_FLAGS")
+load("@pigweed//third_party/freertos:flags.bzl", "FREERTOS_FLAGS")
+
+_stm32_overrides = {
+    "//command_line_option:copt": ["-DSTM32CUBE_HEADER=\"stm32f4xx.h\"", "-DSTM32F429xx"],
+    "//command_line_option:platforms": "//targets/stm32f429i_disc1_stm32cube:platform",
+    "@freertos//:freertos_config": "@pigweed//third_party/freertos:freertos_config",
+    "@hal_driver//:hal_config": "@pigweed//targets/stm32f429i_disc1_stm32cube:hal_config",
+    "@pigweed//pw_assert:backend": "@pigweed//pw_assert_basic",
+    "@pigweed//pw_assert:backend_impl": "@pigweed//pw_assert_basic:impl",
+    "@pigweed//pw_boot:backend": "@pigweed//pw_boot_cortex_m",
+    "@pigweed//pw_interrupt:backend": "@pigweed//pw_interrupt_cortex_m:context",
+    "@pigweed//pw_log:backend": "@pigweed//pw_log_tokenized",
+    "@pigweed//pw_log:backend_impl": "@pigweed//pw_log_tokenized:impl",
+    "@pigweed//pw_log_tokenized:handler_backend": "@pigweed//pw_system:log_backend",
+    "@pigweed//pw_malloc:backend": "@pigweed//pw_malloc_freelist",
+    "@pigweed//pw_sys_io:backend": "@pigweed//pw_sys_io_stm32cube",
+    "@pigweed//pw_system:extra_platform_libs": "//targets/stm32f429i_disc1_stm32cube:extra_platform_libs",
+}
+
 def _stm32_transition_impl(settings, attr):
     # buildifier: disable=unused-variable
     _ignore = settings, attr
 
-    return {
-        "//command_line_option:copt": ["-DSTM32CUBE_HEADER=\"stm32f4xx.h\"", "-DSTM32F429xx"],
-        "//command_line_option:platforms": "//targets/stm32f429i_disc1_stm32cube:platform",
-        "@freertos//:freertos_config": "@pigweed//third_party/freertos:freertos_config",
-        "@hal_driver//:hal_config": "@pigweed//targets/stm32f429i_disc1_stm32cube:hal_config",
-        "@pigweed//pw_assert:backend": "@pigweed//pw_assert_basic",
-        "@pigweed//pw_assert:backend_impl": "@pigweed//pw_assert_basic:impl",
-        "@pigweed//pw_boot:backend": "@pigweed//pw_boot_cortex_m",
-        "@pigweed//pw_interrupt:backend": "@pigweed//pw_interrupt_cortex_m:context",
-        "@pigweed//pw_log:backend": "@pigweed//pw_log_tokenized",
-        "@pigweed//pw_log:backend_impl": "@pigweed//pw_log_tokenized:impl",
-        "@pigweed//pw_log_tokenized:handler_backend": "@pigweed//pw_system:log_backend",
-        "@pigweed//pw_malloc:backend": "@pigweed//pw_malloc_freelist",
-        "@pigweed//pw_sync:binary_semaphore_backend": "@pigweed//pw_sync_freertos:binary_semaphore",
-        "@pigweed//pw_sync:interrupt_spin_lock_backend": "@pigweed//pw_sync_freertos:interrupt_spin_lock",
-        "@pigweed//pw_sync:mutex_backend": "@pigweed//pw_sync_freertos:mutex",
-        "@pigweed//pw_sync:thread_notification_backend": "@pigweed//pw_sync_freertos:thread_notification",
-        "@pigweed//pw_sync:timed_thread_notification_backend": "@pigweed//pw_sync_freertos:timed_thread_notification",
-        "@pigweed//pw_sys_io:backend": "@pigweed//pw_sys_io_stm32cube",
-        "@pigweed//pw_system:extra_platform_libs": "//targets/stm32f429i_disc1_stm32cube:extra_platform_libs",
-        "@pigweed//pw_thread:id_backend": "@pigweed//pw_thread_freertos:id",
-        "@pigweed//pw_thread:iteration_backend": "@pigweed//pw_thread_freertos:thread_iteration",
-        "@pigweed//pw_thread:sleep_backend": "@pigweed//pw_thread_freertos:sleep",
-        "@pigweed//pw_thread:thread_backend": "@pigweed//pw_thread_freertos:thread",
-    }
+    return merge_flags_for_transition_impl(base = FREERTOS_FLAGS, override = _stm32_overrides)
 
 _stm32_transition = transition(
     implementation = _stm32_transition_impl,
     inputs = [],
-    outputs = [
-        "//command_line_option:copt",
-        "//command_line_option:platforms",
-        "@freertos//:freertos_config",
-        "@hal_driver//:hal_config",
-        "@pigweed//pw_assert:backend",
-        "@pigweed//pw_assert:backend_impl",
-        "@pigweed//pw_boot:backend",
-        "@pigweed//pw_interrupt:backend",
-        "@pigweed//pw_log:backend_impl",
-        "@pigweed//pw_log:backend",
-        "@pigweed//pw_log_tokenized:handler_backend",
-        "@pigweed//pw_malloc:backend",
-        "@pigweed//pw_sync:binary_semaphore_backend",
-        "@pigweed//pw_sync:interrupt_spin_lock_backend",
-        "@pigweed//pw_sync:mutex_backend",
-        "@pigweed//pw_sync:thread_notification_backend",
-        "@pigweed//pw_sync:timed_thread_notification_backend",
-        "@pigweed//pw_system:extra_platform_libs",
-        "@pigweed//pw_sys_io:backend",
-        "@pigweed//pw_thread:id_backend",
-        "@pigweed//pw_thread:sleep_backend",
-        "@pigweed//pw_thread:thread_backend",
-        "@pigweed//pw_thread:iteration_backend",
-    ],
+    outputs = merge_flags_for_transition_outputs(base = FREERTOS_FLAGS, override = _stm32_overrides),
 )
 
 def _stm32_binary_impl(ctx):
@@ -98,56 +71,21 @@ stm32_binary = rule(
     doc = "Builds the specified binary for the stm32f429i_disc1_stm32cube platform.",
 )
 
+_rp2040_overrides = {
+    "//command_line_option:platforms": "//targets/rp2040:platform",
+    "@pigweed//pw_system:extra_platform_libs": "//targets/rp2040:extra_platform_libs",
+}
+
 def _rp2040_transition_impl(settings, attr):
     # buildifier: disable=unused-variable
     _ignore = settings, attr
 
-    return {
-        "//command_line_option:platforms": "//targets/rp2040:platform",
-        "@freertos//:freertos_config": "@pigweed//third_party/freertos:freertos_config",
-        "@pigweed//pw_assert:backend": "@pigweed//pw_assert_basic",
-        "@pigweed//pw_assert:backend_impl": "@pigweed//pw_assert_basic:impl",
-        "@pigweed//pw_interrupt:backend": "@pigweed//pw_interrupt_cortex_m:context",
-        "@pigweed//pw_log:backend": "@pigweed//pw_log_tokenized",
-        "@pigweed//pw_log:backend_impl": "@pigweed//pw_log_tokenized:impl",
-        "@pigweed//pw_log_tokenized:handler_backend": "@pigweed//pw_system:log_backend",
-        "@pigweed//pw_sync:binary_semaphore_backend": "@pigweed//pw_sync_freertos:binary_semaphore",
-        "@pigweed//pw_sync:interrupt_spin_lock_backend": "@pigweed//pw_sync_freertos:interrupt_spin_lock",
-        "@pigweed//pw_sync:mutex_backend": "@pigweed//pw_sync_freertos:mutex",
-        "@pigweed//pw_sync:thread_notification_backend": "@pigweed//pw_sync_freertos:thread_notification",
-        "@pigweed//pw_sync:timed_thread_notification_backend": "@pigweed//pw_sync_freertos:timed_thread_notification",
-        "@pigweed//pw_sys_io:backend": "@pigweed//pw_sys_io_rp2040",
-        "@pigweed//pw_system:extra_platform_libs": "//targets/rp2040:extra_platform_libs",
-        "@pigweed//pw_thread:id_backend": "@pigweed//pw_thread_freertos:id",
-        "@pigweed//pw_thread:iteration_backend": "@pigweed//pw_thread_freertos:thread_iteration",
-        "@pigweed//pw_thread:sleep_backend": "@pigweed//pw_thread_freertos:sleep",
-        "@pigweed//pw_thread:thread_backend": "@pigweed//pw_thread_freertos:thread",
-    }
+    return merge_flags_for_transition_impl(base = RP2040_SYSTEM_FLAGS, override = _rp2040_overrides)
 
 _rp2040_transition = transition(
     implementation = _rp2040_transition_impl,
     inputs = [],
-    outputs = [
-        "//command_line_option:platforms",
-        "@freertos//:freertos_config",
-        "@pigweed//pw_assert:backend",
-        "@pigweed//pw_assert:backend_impl",
-        "@pigweed//pw_log:backend_impl",
-        "@pigweed//pw_log:backend",
-        "@pigweed//pw_log_tokenized:handler_backend",
-        "@pigweed//pw_interrupt:backend",
-        "@pigweed//pw_sync:binary_semaphore_backend",
-        "@pigweed//pw_sync:interrupt_spin_lock_backend",
-        "@pigweed//pw_sync:mutex_backend",
-        "@pigweed//pw_sync:thread_notification_backend",
-        "@pigweed//pw_sync:timed_thread_notification_backend",
-        "@pigweed//pw_system:extra_platform_libs",
-        "@pigweed//pw_sys_io:backend",
-        "@pigweed//pw_thread:id_backend",
-        "@pigweed//pw_thread:sleep_backend",
-        "@pigweed//pw_thread:thread_backend",
-        "@pigweed//pw_thread:iteration_backend",
-    ],
+    outputs = merge_flags_for_transition_outputs(base = RP2040_SYSTEM_FLAGS, override = _rp2040_overrides),
 )
 
 def _rp2040_binary_impl(ctx):
