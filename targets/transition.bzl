@@ -28,6 +28,8 @@ _stm32_overrides = {
     "@hal_driver//:hal_config": "@pigweed//targets/stm32f429i_disc1_stm32cube:hal_config",
     "@pigweed//pw_assert:backend": "@pigweed//pw_assert_basic",
     "@pigweed//pw_assert:backend_impl": "@pigweed//pw_assert_basic:impl",
+    "@pigweed//pw_assert:check_backend": "@pigweed//pw_assert_basic",
+    "@pigweed//pw_assert:check_backend_impl": "@pigweed//pw_assert_basic:impl",
     "@pigweed//pw_boot:backend": "@pigweed//pw_boot_cortex_m",
     "@pigweed//pw_interrupt:backend": "@pigweed//pw_interrupt_cortex_m:context",
     "@pigweed//pw_log:backend": "@pigweed//pw_log_tokenized",
