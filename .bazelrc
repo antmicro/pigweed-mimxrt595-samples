@@ -32,6 +32,9 @@ common --host_per_file_copt=external/.*@-w
 # Required for new toolchain resolution API.
 build --incompatible_enable_cc_toolchain_resolution
 
+# Expose exec toolchains for Python.
+build --@rules_python//python/config_settings:exec_tools_toolchain=enabled
+
 # Default targets to build when running:
 # bazel build --config=presubmit
 build:presubmit -- \
