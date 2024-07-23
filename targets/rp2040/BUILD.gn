@@ -29,6 +29,14 @@ pw_system_target("rp2040") {
         get_path_info("$dir_pigweed/targets/rp2040/pico_executable.gni",
                       "abspath")
 
+    pw_assert_BACKEND = dir_pw_assert_trap
+    pw_assert_LITE_BACKEND = dir_pw_assert_trap
+
+    pw_cpu_exception_ENTRY_BACKEND =
+        "$dir_pw_cpu_exception_cortex_m:cpu_exception_armv6m"
+    pw_cpu_exception_HANDLER_BACKEND = "$dir_pw_cpu_exception:basic_handler"
+    pw_cpu_exception_SUPPORT_BACKEND = "$dir_pw_cpu_exception_cortex_m:support"
+
     pw_log_BACKEND = dir_pw_log_tokenized
     pw_log_tokenized_HANDLER_BACKEND = "$dir_pw_system:log_backend.impl"
 
@@ -36,10 +44,14 @@ pw_system_target("rp2040") {
         "$dir_pigweed/targets/rp2040:rp2040_freertos_config"
     pw_third_party_freertos_PORT = "$dir_pw_third_party/freertos:arm_cm0"
 
+    pw_sync_INTERRUPT_SPIN_LOCK_BACKEND =
+        "$dir_pw_sync_freertos:interrupt_spin_lock"
+
     pw_sys_io_BACKEND = dir_pw_sys_io_rp2040
     pw_build_LINK_DEPS += [
       "$dir_pigweed/targets/rp2040:pre_init",
       "$dir_pw_assert:impl",
+      "$dir_pw_cpu_exception:entry_impl",
       "$dir_pw_log:impl",
     ]
 
