@@ -38,11 +38,8 @@ int controller_hci_uart_get_configuration(controller_hci_uart_config_t *config)
     return 0;
 }
 
-namespace {
-
-}  // namespace
-
 static void bt_ready(int err) {
+    (void)err;
     PW_LOG_INFO("Bluetooth ready");
 }
 
@@ -57,10 +54,14 @@ public:
     }
 
     void Initialize(Controller* controller, PersistentData data, Function<void(Status)>&& on_initialization_complete) override {
+        (void)controller;
+        (void)data;
+        (void)on_initialization_complete;
         PW_LOG_INFO("Initializing host");
     }
 
     void Close(Closure callback) override {
+        (void)callback;
         PW_LOG_INFO("Closing host");
     }
 
@@ -80,36 +81,48 @@ public:
     }
 
     Status ForgetPeer(PeerId peer_id) override {
+        (void)peer_id;
         PW_LOG_INFO("Forgetting peer");
         return PW_STATUS_UNKNOWN;
     }
 
     void EnablePrivacy(bool enable) override {
+        (void)enable;
         PW_LOG_INFO("Enabling privacy");
     }
 
     void SetSecurityMode(low_energy::SecurityMode mode) override {
+        (void)mode;
         PW_LOG_INFO("Setting security mode");
     }
 
     void SetPairingDelegate(InputCapability input, OutputCapability output, PairingDelegate* delegate) override {
+        (void)input;
+        (void)output;
+        (void)delegate;
         PW_LOG_INFO("Setting pairing delegate");
     }
 
     void Pair(PeerId peer_id, PairingOptions options, Function<void(Status)>&& callback) override {
+        (void)peer_id;
+        (void)options;
+        (void)callback;
         PW_LOG_INFO("Pairing with peer");
     }
 
     void SetBondDataCallback(Function<void(low_energy::BondData)>&& callback) override {
+        (void)callback;
         PW_LOG_INFO("Setting bond data callback");
     }
 
     std::optional<PeerId> PeerIdFromAddress(Address address) override {
+        (void)address;
         PW_LOG_INFO("Getting peer ID from address");
         return std::nullopt;
     }
 
     std::optional<Address> DeviceAddressFromPeerId(PeerId peer_id) override {
+        (void)peer_id;
         PW_LOG_INFO("Getting device address from peer ID");
         return std::nullopt;
     }

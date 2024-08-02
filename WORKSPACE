@@ -12,9 +12,10 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository", "new_git_repository")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-workspace(name = "examples")
+workspace(name = "mimxrt595-examples")
 
 http_archive(
     name = "rules_cc",
@@ -125,6 +126,7 @@ cipd_repository(
 python_register_toolchains(
     name = "python3",
     python_version = "3.11",
+    ignore_root_user_error = True,
 )
 
 load("@python3//:defs.bzl", "interpreter")
@@ -172,30 +174,16 @@ http_archive(
     urls = ["https://github.com/FreeRTOS/FreeRTOS-Kernel/archive/refs/tags/V10.5.1.tar.gz"],
 )
 
-http_archive(
-    name = "hal_driver",
-    build_file = "@pigweed//third_party/stm32cube:stm32_hal_driver.BUILD.bazel",
-    sha256 = "c8741e184555abcd153f7bdddc65e4b0103b51470d39ee0056ce2f8296b4e835",
-    strip_prefix = "stm32f4xx_hal_driver-1.8.0",
-    urls = ["https://github.com/STMicroelectronics/stm32f4xx_hal_driver/archive/refs/tags/v1.8.0.tar.gz"],
+git_repository(
+    name = "com_google_emboss",
+    # LINT.IfChange(emboss)
+    remote = "https://pigweed.googlesource.com/third_party/github/google/emboss",
+    tag = "v2024.0809.170004",
+    # LINT.ThenChange(/pw_package/py/pw_package/packages/emboss.py:emboss)
 )
 
-http_archive(
-    name = "cmsis_device",
-    build_file = "@pigweed//third_party/stm32cube:cmsis_device.BUILD.bazel",
-    sha256 = "6390baf3ea44aff09d0327a3c112c6ca44418806bfdfe1c5c2803941c391fdce",
-    strip_prefix = "cmsis_device_f4-2.6.8",
-    urls = ["https://github.com/STMicroelectronics/cmsis_device_f4/archive/refs/tags/v2.6.8.tar.gz"],
+new_local_repository(
+    name = "mcuxpresso_sdk",
+    path = "third_party/pigweed/third_party/mcuxpresso/sdk",
+    build_file = "BUILD",
 )
-
-http_archive(
-    name = "cmsis_core",
-    build_file = "@pigweed//third_party/stm32cube:cmsis_core.BUILD.bazel",
-    sha256 = "f711074a546bce04426c35e681446d69bc177435cd8f2f1395a52db64f52d100",
-    strip_prefix = "cmsis_core-5.4.0_cm4",
-    urls = ["https://github.com/STMicroelectronics/cmsis_core/archive/refs/tags/v5.4.0_cm4.tar.gz"],
-)
-
-load("@pigweed//targets/rp2040:deps.bzl", "pigweed_rp2_deps")
-
-pigweed_rp2_deps()

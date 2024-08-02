@@ -56,11 +56,31 @@ common --incompatible_default_to_explicit_init_py
 common --verbose_failures
 test --test_output=errors
 
-# Use the remote cache. This will only work for users who have permission to access it.
-common:remote_cache --remote_cache=grpcs://remotebuildexecution.googleapis.com
-common:remote_cache --google_default_credentials=true
-common:remote_cache --remote_instance_name=projects/pigweed-rbe-open/instances/default-instance
-common:remote_cache --remote_upload_local_results=false
+# Config for the mimxrt595_evk_freertos freertos platform.
+build:mimxrt595_evk_freertos --platforms=@pigweed//targets/mimxrt595_evk_freertos:platform
+build:mimxrt595_evk_freertos --@pigweed//pw_assert:assert_backend=@pigweed//pw_assert_basic
+build:mimxrt595_evk_freertos --@pigweed//pw_assert:assert_backend_impl=@pigweed//pw_assert_basic:impl
+build:mimxrt595_evk_freertos --@pigweed//pw_assert:check_backend=@pigweed//pw_assert_basic
+build:mimxrt595_evk_freertos --@pigweed//pw_assert:check_backend_impl=@pigweed//pw_assert_basic:impl
+build:mimxrt595_evk_freertos --@freertos//:freertos_config=@pigweed//targets/mimxrt595_evk_freertos:freertos_config
+build:mimxrt595_evk_freertos --@pigweed//pw_log:backend=@pigweed//pw_log_basic
+build:mimxrt595_evk_freertos --@pigweed//pw_log:backend_impl=@pigweed//pw_log_basic:impl
+build:mimxrt595_evk_freertos --@pigweed//pw_sys_io:backend=@pigweed//pw_sys_io_mcuxpresso
+build:mimxrt595_evk_freertos --@pigweed//targets:mcuxpresso_sdk=@mcuxpresso_sdk//:sdk
+build:mimxrt595_evk_freertos --@pigweed//pw_sync:binary_semaphore_backend=@pigweed//pw_sync_freertos:binary_semaphore
+build:mimxrt595_evk_freertos --@pigweed//pw_sync:counting_semaphore_backend=@pigweed//pw_sync_freertos:counting_semaphore
+build:mimxrt595_evk_freertos --@pigweed//pw_sync:interrupt_spin_lock_backend=@pigweed//pw_sync_freertos:interrupt_spin_lock
+build:mimxrt595_evk_freertos --@pigweed//pw_sync:mutex_backend=@pigweed//pw_sync_freertos:mutex
+build:mimxrt595_evk_freertos --@pigweed//pw_sync:thread_notification_backend=@pigweed//pw_sync_freertos:thread_notification
+build:mimxrt595_evk_freertos --@pigweed//pw_sync:timed_thread_notification_backend=@pigweed//pw_sync_freertos:timed_thread_notification
+build:mimxrt595_evk_freertos --@pigweed//pw_thread:id_backend=@pigweed//pw_thread_freertos:id
+build:mimxrt595_evk_freertos --@pigweed//pw_thread:iteration_backend=@pigweed//pw_thread_freertos:thread_iteration
+build:mimxrt595_evk_freertos --@pigweed//pw_thread:sleep_backend=@pigweed//pw_thread_freertos:sleep
+build:mimxrt595_evk_freertos --@pigweed//pw_thread:test_thread_context_backend=@pigweed//pw_thread_freertos:test_thread_context
+build:mimxrt595_evk_freertos --@pigweed//pw_thread:thread_backend=@pigweed//pw_thread_freertos:thread
+build:mimxrt595_evk_freertos --@pigweed//pw_thread:yield_backend=@pigweed//pw_thread_freertos:yield
+build:mimxrt595_evk_freertos --@pigweed//pw_boot:backend=@pigweed//pw_boot_cortex_m:armv8m
+build:mimxrt595_evk_freertos --@pigweed//pw_system:extra_platform_libs=@pigweed//targets/mimxrt595_evk_freertos:extra_platform_libs
 
 # User bazelrc file; see
 # https://bazel.build/configure/best-practices#bazelrc-file
