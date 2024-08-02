@@ -19,6 +19,25 @@
 #include "pw_system/work_queue.h"
 #include "pw_bluetooth/host.h"
 
+#include "bluetooth/bluetooth.h"
+#include "controller_hci_uart.h"
+
+int controller_hci_uart_get_configuration(controller_hci_uart_config_t *config)
+{
+    if (NULL == config)
+    {
+        return -1;
+    }
+    config->clockSrc        = 0u;
+    config->defaultBaudrate = 115200u;
+    config->runningBaudrate = 0u;
+    config->instance        = 0u;
+    config->enableRxRTS     = 1u;
+    config->enableTxCTS     = 1u;
+
+    return 0;
+}
+
 namespace {
 
 }  // namespace
@@ -31,10 +50,19 @@ void UserAppInit() {
 }
 
 }  // namespace pw::system
+static void bt_ready(int err) {
+    PW_LOG_INFO("Bluetooth ready");
+}
+
 
 namespace pw::bluetooth {
 using namespace pw::bluetooth;
 class MimxrtHost : public Host {
+
+public:
+    MimxrtHost() : Host() {
+        bt_enable(bt_ready);
+    }
 
     void Initialize(Controller* controller, PersistentData data, Function<void(Status)>&& on_initialization_complete) override {
         PW_LOG_INFO("Initializing host");
@@ -94,9 +122,6 @@ class MimxrtHost : public Host {
         return std::nullopt;
     }
 private:
-    void bt_ready(int err) {
-        PW_LOG_INFO("Bluetooth ready");
-    }
 };
 }
 

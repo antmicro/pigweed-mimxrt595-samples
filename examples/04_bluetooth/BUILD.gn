@@ -32,17 +32,31 @@ group("all") {
   }
 }
 
-pw_executable("bluetooth") {
-  sources = [ "main.cc" ]
-  deps = [
-    "$dir_pw_chrono:system_clock",
-    "$dir_pw_chrono:system_timer",
-    "$dir_pw_log:pw_log",
-    "$dir_pw_system:pw_system",
-    "$dir_pw_system:work_queue",
-    "$dir_pw_bluetooth:pw_bluetooth",
-    "$pw_third_party_mcuxpresso_SDK",
-  ]
+if (pw_third_party_mcuxpresso_SDK != "") {
+  pw_executable("bluetooth") {
+    sources = [ "main.cc" ]
+    deps = [
+      "$dir_pw_chrono:system_clock",
+      "$dir_pw_chrono:system_timer",
+      "$dir_pw_log:pw_log",
+      "$dir_pw_system:pw_system",
+      "$dir_pw_system:work_queue",
+      "$dir_pw_bluetooth:pw_bluetooth",
+      "$pw_third_party_mcuxpresso_SDK",
+    ]
+  }
+} else {
+  pw_executable("bluetooth") {
+    sources = [ "main.cc" ]
+    deps = [
+      "$dir_pw_chrono:system_clock",
+      "$dir_pw_chrono:system_timer",
+      "$dir_pw_log:pw_log",
+      "$dir_pw_system:pw_system",
+      "$dir_pw_system:work_queue",
+      "$dir_pw_bluetooth:pw_bluetooth",
+    ]
+  }
 }
 
 pw_tokenizer_database("tokenizer_database") {

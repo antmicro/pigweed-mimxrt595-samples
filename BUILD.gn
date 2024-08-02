@@ -30,7 +30,6 @@ import("$dir_pw_unit_test/test.gni")
 # Lists all the targets build by default with e.g. `ninja -C out`.
 group("default") {
   deps = [
-    ":arduino",
     ":docs",
     ":examples",
     ":host",
@@ -48,27 +47,6 @@ group("host") {
   deps = [ ":run_tests(//targets/host:host_debug_tests)" ]
 }
 
-# Arduino specific targets.
-group("arduino") {
-  # If the 'pw_arduino_build_CORE_PATH' build arg is defined assume an arduino
-  # core is available for building.
-  #
-  # For example:
-  #   pw_arduino_build_CORE_PATH="//third_party/pigweed/third_party/arduino/cores"
-
-  if (pw_arduino_build_CORE_PATH != "") {
-    deps = [ ":run_tests(//targets/arduino:arduino_debug_tests)" ]
-  }
-}
-
-# stm32f429i_disc1 specific targets
-group("stm32f429i_disc1") {
-  _default_toolchain =
-      "//targets/stm32f429i_disc1_stm32cube:stm32f429i_disc1_debug"
-  _testing_toolchain = "${_default_toolchain}_tests"
-  deps = [ ":run_tests(${_testing_toolchain})" ]
-}
-
 # In-tree Python packages
 _sample_project_python_packages = [ "//tools:tools" ]
 
@@ -77,15 +55,9 @@ pw_python_group("python") {
   python_deps = _sample_project_python_packages
 }
 
-# Pigweed Python packages to include
-_pigweed_python_packages = [
-  "$dir_pw_env_setup:core_pigweed_python_packages",
-  "$dir_pigweed/targets/lm3s6965evb_qemu/py",
-  "$dir_pigweed/targets/stm32f429i_disc1/py",
-]
 
 _all_python_packages =
-    _sample_project_python_packages + _pigweed_python_packages
+    _sample_project_python_packages
 
 # The default venv for Python actions in GN
 # Set this gn arg in a declare_args block in this file 'BUILD.gn' or in '.gn' to

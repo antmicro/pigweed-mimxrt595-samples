@@ -1,0 +1,32 @@
+stages:
+  - build
+
+image: debian:bookworm
+
+variables:
+  DEBIAN_FRONTEND: "noninteractive"
+
+build-pigweed:
+  stage: build
+  variables:
+    SCALENODE_CPU: 8
+    SCALENODE_RAM: 16384
+  script:
+    - apt update
+    - apt install -y build-essential git wget python3 python-is-python3
+    - git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@${PIGWEED_REPO}".insteadOf "https://github.com/antmicro/pigweed.git"
+    - git submodule update --init --recursive
+    - pushd third_party/pigweed/third_party/mcuxpresso/
+    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@${MCUXPRESSO_REPO} sdk
+    - pushd sdk
+    - git checkout origin/SDK_2.16.000_EVK-MIMXRT595
+    - popd && popd
+    - source bootstrap.sh
+    - gn gen out
+    # for now, build using ninja, but in the end
+    # we should use bazel instead
+    - ninja -C out
+  artifacts:
+    paths:
+      - out
+

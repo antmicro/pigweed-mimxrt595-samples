@@ -40,6 +40,11 @@ config("disable_warnings") {
     "-Wno-unused-parameter",
     "-Wno-unused-variable",
     "-Wno-error=strict-prototypes",
+    "-Wno-sign-compare",
+    "-Wno-unused-label",
+    "-Wno-shadow",
+    "-Wno-type-limits",
+    "-Wno-unused-function",
   ]
   visibility = [ ":*" ]
 }
@@ -94,7 +99,7 @@ if (pw_third_party_mcuxpresso_SDK != "") {
   }
 }
 
-#if (pw_third_party_mcuxpresso_SDK == "//targets/mimxrt595_evk_freertos:sdk") {
+if (pw_third_party_mcuxpresso_SDK == "//targets/mimxrt595_evk_freertos:sdk") {
   pw_mcuxpresso_sdk("sdk") {
     manifest = pw_target_mimxrt595_evk_freertos_MANIFEST
     include = [
@@ -111,14 +116,18 @@ if (pw_third_party_mcuxpresso_SDK != "") {
       "platform.drivers.mu.MIMXRT595S",
       "platform.drivers.pint.MIMXRT595S",
       "platform.drivers.power.MIMXRT595S",
+      "platform.drivers.common.MIMXRT595S",
       "utility.debug_console.MIMXRT595S",
-      "middleware.edgefast_bluetooth.btble.ethermind.cm33.MIMXRT595S",
+      "middleware.edgefast_bluetooth.config.template.MIMXRT595S",
+      "middleware.edgefast_bluetooth.k32w061.controller.MIMXRT595S",
+      "middleware.edgefast_bluetooth.ble.ethermind.cm33.MIMXRT595S",
     ]
     exclude = [
       "device.MIMXRT595S_startup.MIMXRT595S",
 
       # Don't need to generate build rules for freertos, we use pigweed's.
       "middleware.freertos-kernel.MIMXRT595S",
+      "middleware.freertos-kernel.heap_4.MIMXRT595S"
     ]
 
     public_configs = [
@@ -146,6 +155,40 @@ if (pw_third_party_mcuxpresso_SDK != "") {
       "FSL_SDK_DRIVER_QUICK_ACCESS_ENABLE=1",
       "SDK_DEBUGCONSOLE=1",
       "SDK_OS_FREE_RTOS",
+    # BT config
+      "CONFIG_BT_ID_MAX=1",
+      "CONFIG_BT_MAX_CONN=1",
+      "CONFIG_BT_MSG_QUEUE_COUNT=16",
+      "CONFIG_BT_HCI_RESERVE=4",
+      "CONFIG_BT_CONN_TX_USER_DATA_SIZE=8",
+      "CONFIG_BT_ATT_TX_COUNT=3",
+      "CONFIG_BT_BUF_ACL_RX_SIZE=27",
+      "CONFIG_BT_L2CAP_TX_MTU=23",
+      "CONFIG_BT_BUF_ACL_RX_COUNT=6",
+      "CONFIG_BT_ATT_RX_MAX=6",
+      "CONFIG_BT_CONN=1",
+      "CONFIG_BT_MAX_PAIRED=1",
+      "CONFIG_BT_BUF_EVT_RX_COUNT=10",
+      "CONFIG_BT_L2CAP_TX_BUF_COUNT=3",
+      "CONFIG_BT_BUF_EVT_RX_SIZE=255",
+      "CONFIG_BT_CONN_PARAM_UPDATE_TIMEOUT=5000",
+      "CONFIG_BT_CONN_TX_MAX=3",
+      "CONFIG_BT_BUF_RESERVE=8",
+      "CONFIG_NET_BUF_USER_DATA_SIZE=8",
+      "CONFIG_BT_HCI_TX_PRIO=2",
+      "CONFIG_BT_HCI_TX_STACK_SIZE=1024",
+      "CONFIG_BT_RX_STACK_SIZE=1024",
+      "CONFIG_BT_RX_PRIO=1",
+      "CONFIG_BT_BUF_CMD_TX_COUNT=2",
+      "CONFIG_BT_BUF_CMD_TX_SIZE=65",
+      "CONFIG_BT_DEVICE_NAME=\"Pigweed\"",
+      "CONFIG_BT_DEVICE_APPEARANCE=1",
+      "CONFIG_BT_CONN_TX=1",
+      "CONFIG_BT_BUF_EVT_DISCARDABLE_COUNT=3",
+      "CONFIG_BT_BUF_EVT_DISCARDABLE_SIZE=43",
+      "CONFIG_BT_BROADCASTER=1",
+      "CONFIG_BT_LIM_ADV_TIMEOUT=30",
+      "K32W061_TRANSCEIVER",
     ]
     visibility = [ ":*" ]
   }
@@ -203,7 +246,7 @@ if (pw_third_party_mcuxpresso_SDK != "") {
     ]
     deps = [ ":freertos_config" ]
   }
-#}
+}
 
 pw_doc_group("target_docs") {
   sources = [ "target_docs.rst" ]

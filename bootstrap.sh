@@ -89,13 +89,6 @@ if [ ! -e "$PW_ROOT/pw_env_setup/util.sh" ]; then
   # Init without recursion.
   git -C "$SAMPLE_PROJECT_ROOT" submodule update --init
 fi
-
-# Check that the Pico SDK has been checked out.
-if [ ! -f "$SAMPLE_PROJECT_ROOT/third_party/pico_sdk/lib/tinyusb/LICENSE" ]; then
-    echo "Updating git submodules for 'third_party/pico_sdk' ..."
-    git -C "$SAMPLE_PROJECT_ROOT/third_party/pico_sdk/" submodule update --init lib/tinyusb
-fi
-
 ########## END PROJECT-SPECIFIC CODE ##########
 export PW_PROJECT_ROOT
 export PW_ROOT
