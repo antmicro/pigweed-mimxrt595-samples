@@ -81,6 +81,9 @@ build:mimxrt595_evk_freertos --@pigweed//pw_thread:thread_backend=@pigweed//pw_t
 build:mimxrt595_evk_freertos --@pigweed//pw_thread:yield_backend=@pigweed//pw_thread_freertos:yield
 build:mimxrt595_evk_freertos --@pigweed//pw_boot:backend=@pigweed//pw_boot_cortex_m:armv8m
 build:mimxrt595_evk_freertos --@pigweed//pw_system:extra_platform_libs=@pigweed//targets/mimxrt595_evk_freertos:extra_platform_libs
+build:mimxrt595_evk_freertos --@pigweed//pw_chrono:system_clock_backend=@pigweed//pw_chrono_freertos:system_clock
+build:mimxrt595_evk_freertos --@pigweed//pw_chrono:system_timer_backend=@pigweed//pw_chrono_freertos:system_timer
+build:mimxrt595_evk_freertos --@pigweed//pw_thread_freertos:config_override=//examples/01_bluetooth:config_overrides
 build:mimxrt595_evk_freertos --strip=never
 
 # User bazelrc file; see

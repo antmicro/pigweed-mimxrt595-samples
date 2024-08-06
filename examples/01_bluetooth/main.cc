@@ -13,133 +13,81 @@
 // the License.
 #define PW_LOG_MODULE_NAME "MAIN"
 
-#include "pw_chrono/system_clock.h"
-#include "pw_chrono/system_timer.h"
-#include "pw_log/log.h"
-#include "pw_system/work_queue.h"
-#include "pw_bluetooth/host.h"
+#include <memory>
 
+#include "bluetooth/addr.h"
 #include "bluetooth/bluetooth.h"
-#include "controller_hci_uart.h"
-
-int controller_hci_uart_get_configuration(controller_hci_uart_config_t *config)
-{
-    if (NULL == config)
-    {
-        return -1;
-    }
-    config->clockSrc        = 0u;
-    config->defaultBaudrate = 115200u;
-    config->runningBaudrate = 0u;
-    config->instance        = 0u;
-    config->enableRxRTS     = 1u;
-    config->enableTxCTS     = 1u;
-
-    return 0;
-}
-
-static void bt_ready(int err) {
-    (void)err;
-    PW_LOG_INFO("Bluetooth ready");
-}
-
-
-namespace pw::bluetooth {
-using namespace pw::bluetooth;
-class MimxrtHost : public Host {
-
-public:
-    MimxrtHost() : Host() {
-        bt_enable(bt_ready);
-    }
-
-    void Initialize(Controller* controller, PersistentData data, Function<void(Status)>&& on_initialization_complete) override {
-        (void)controller;
-        (void)data;
-        (void)on_initialization_complete;
-        PW_LOG_INFO("Initializing host");
-    }
-
-    void Close(Closure callback) override {
-        (void)callback;
-        PW_LOG_INFO("Closing host");
-    }
-
-    low_energy::Central* Central() override {
-        PW_LOG_INFO("Returning central");
-        return nullptr;
-    }
-
-    low_energy::Peripheral* Peripheral() override {
-        PW_LOG_INFO("Returning peripheral");
-        return nullptr;
-    }
-
-    gatt::Server* GattServer() override {
-        PW_LOG_INFO("Returning GATT server");
-        return nullptr;
-    }
-
-    Status ForgetPeer(PeerId peer_id) override {
-        (void)peer_id;
-        PW_LOG_INFO("Forgetting peer");
-        return PW_STATUS_UNKNOWN;
-    }
-
-    void EnablePrivacy(bool enable) override {
-        (void)enable;
-        PW_LOG_INFO("Enabling privacy");
-    }
-
-    void SetSecurityMode(low_energy::SecurityMode mode) override {
-        (void)mode;
-        PW_LOG_INFO("Setting security mode");
-    }
-
-    void SetPairingDelegate(InputCapability input, OutputCapability output, PairingDelegate* delegate) override {
-        (void)input;
-        (void)output;
-        (void)delegate;
-        PW_LOG_INFO("Setting pairing delegate");
-    }
-
-    void Pair(PeerId peer_id, PairingOptions options, Function<void(Status)>&& callback) override {
-        (void)peer_id;
-        (void)options;
-        (void)callback;
-        PW_LOG_INFO("Pairing with peer");
-    }
-
-    void SetBondDataCallback(Function<void(low_energy::BondData)>&& callback) override {
-        (void)callback;
-        PW_LOG_INFO("Setting bond data callback");
-    }
-
-    std::optional<PeerId> PeerIdFromAddress(Address address) override {
-        (void)address;
-        PW_LOG_INFO("Getting peer ID from address");
-        return std::nullopt;
-    }
-
-    std::optional<Address> DeviceAddressFromPeerId(PeerId peer_id) override {
-        (void)peer_id;
-        PW_LOG_INFO("Getting device address from peer ID");
-        return std::nullopt;
-    }
-private:
-};
-}
+#include "pw_async_basic/dispatcher.h"
+#include "pw_bluetooth_sapphire/internal/host/gap/low_energy_advertising_manager.h"
+#include "pw_bluetooth_sapphire/internal/host/transport/transport.h"
+#include "pw_bluetooth_sapphire_mcuxpresso/controller.h"
+#include "pw_bluetooth_sapphire_mcuxpresso/low_energy_advertiser.h"
+#include "pw_log/log.h"
+#include "pw_thread/detached_thread.h"
+#include "pw_thread_freertos/context.h"
+#include "pw_thread_freertos/options.h"
 
 namespace pw::system {
 
+void bluetooth_thread() {
+  PW_LOG_INFO("Hello from bluetooth thread!");
+  std::unique_ptr<pw::bluetooth::Controller> controller =
+      std::make_unique<pw::bluetooth::Mimxrt595Controller>();
+  pw::async::BasicDispatcher dispatcher;
+  auto transport =
+      std::make_unique<bt::hci::Transport>(std::move(controller), dispatcher);
+  transport->Initialize([](bool success) { (void)success; });
+
+  // TODO: it seems that there is a race-condition between controller
+  // initialization callback and advertising start. Low Energy Advertiser
+  // assumes, that transport is already initialized. Add small delay to
+  // workaround this issue.
+  vTaskDelay(1000);
+
+  bt::hci::LowEnergyAdvertiserMimxrt595 advertiser(transport->GetWeakPtr(), 1);
+  bt::DeviceAddress address;
+
+  bt::AdvertisingData data;
+  if (!data.SetLocalName("Pigweed Beacon")) {
+    PW_LOG_CRITICAL("Failed to set local name");
+  }
+  std::vector<uint8_t> adv_data = {0x25, 0x00, 0xBC, 0x01, 0x02, 0x03, 0x04,
+                                   0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B,
+                                   0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x00, 0x00,
+                                   0x00, 0x00, 0x00, 0x00, 0xc8};
+  if (!data.SetManufacturerData(0x25, bt::BufferView(adv_data))) {
+    PW_LOG_CRITICAL("Failed to set manufacturer data");
+  }
+
+  bt::AdvertisingData scan_rsp;
+  bt::hci::LowEnergyAdvertiser::AdvertisingOptions options(
+      bt::hci::AdvertisingIntervalRange(BT_GAP_ADV_FAST_INT_MIN_2,
+                                        BT_GAP_ADV_FAST_INT_MAX_2),
+      BT_LE_ADV_OPT_USE_IDENTITY,
+      false,
+      false,
+      false);
+  advertiser.StartAdvertising(
+      address, data, scan_rsp, options, nullptr, nullptr);
+
+  char addr_s[BT_ADDR_LE_STR_LEN];
+  bt_addr_le_t addr = {.type = 0, .a = {0, 0, 0, 0, 0, 0}};
+  size_t count = 1;
+  bt_id_get(&addr, &count);
+  bt_addr_le_to_str(&addr, addr_s, sizeof(addr_s));
+
+  PW_LOG_INFO("Beacon started, advertising as %s\n", addr_s);
+
+  while (true) {
+    vTaskDelay(1000);
+  }
+}
+
+// This will run once after pw::system::Init() completes. This callback must
+// return or it will block the work queue.
 void UserAppInit() {
-    //pw::bluetooth::Controller controller;
-    //pw::bluetooth::Host::PersistentData data;
-    pw::bluetooth::MimxrtHost host;
-
-    //host.Initialize(&controller, data);
-
-    PW_LOG_CRITICAL("Hello, world!");
+  // Start new thread as WorkQueue thread stack is limited to 512.
+  pw::thread::DetachedThread(pw::thread::freertos::Options(), bluetooth_thread);
 }
 
 }  // namespace pw::system

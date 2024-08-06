@@ -2,8 +2,7 @@
 # 
 # mcuxpresso_builder bazel third_party/mcuxpresso/sdk/EVK-MIMXRT595_manifest_v3_14.xml \
 #     --name sdk \
-#     --include project_template.evkmimxrt595.MIMXRT595S \
-#     --include utility.debug_console.MIMXRT595S \
+#     --include component.serial_manager_uart.MIMXRT595S \
 #     --include platform.drivers.flexcomm_i2c.MIMXRT595S \
 #     --include platform.drivers.flexcomm_spi.MIMXRT595S \
 #     --include platform.drivers.flexcomm_usart_dma.MIMXRT595S \
@@ -11,11 +10,18 @@
 #     --include platform.drivers.flexio_spi.MIMXRT595S \
 #     --include platform.drivers.inputmux.MIMXRT595S \
 #     --include platform.drivers.lpc_dma.MIMXRT595S \
+#     --include platform.drivers.lpc_gpio.MIMXRT595S \
+#     --include platform.drivers.lpc_iopctl.MIMXRT595S \
+#     --include platform.drivers.flexspi.MIMXRT595S \
 #     --include platform.drivers.mu.MIMXRT595S \
 #     --include platform.drivers.pint.MIMXRT595S \
-#     --include middleware.edgefast_bluetooth.config.template.MIMXRT595S \
-#     --include middleware.edgefast_bluetooth.k32w061.controller.MIMXRT595S \
+#     --include platform.drivers.power.MIMXRT595S \
+#     --include platform.drivers.common.MIMXRT595S \
+#     --include utility.debug_console.MIMXRT595S \
 #     --include middleware.edgefast_bluetooth.ble.ethermind.cm33.MIMXRT595S \
+#     --include middleware.wifi.fwdnld_intf_abs.MIMXRT595S \
+#     --include middleware.edgefast_bluetooth.wifi_nxp.controller.base.MIMXRT595S \
+#     --include platform.drivers.cache_cache64.MIMXRT595S \
 #     --include device.MIMXRT595S_CMSIS.MIMXRT595S \
 #     --include middleware.usb.device_controller_ip3511hs.MIMXRT595S \
 #     --include middleware.usb.phy.MIMXRT595S \
@@ -23,8 +29,22 @@
 #     --include middleware.usb.device.ip3511hs_config_header.MIMXRT595S \
 #     --include middleware.usb.device.common_header.MIMXRT595S \
 #     --include middleware.usb.common_header.MIMXRT595S \
-#     --exclude middleware.freertos-kernel.MIMXRT595S \
 #     --exclude device.MIMXRT595S_startup.MIMXRT595S \
+#     --exclude component.osa.MIMXRT595S \
+#     --exclude middleware.sdmmc.sdhc.template.MIMXRT595S \
+#     --exclude middleware.sdmmc.sdif.template.MIMXRT595S \
+#     --exclude middleware.sdmmc.usdhc.template.MIMXRT595S \
+#     --exclude middleware.wifi.wifi_bt_config.template.MIMXRT595S \
+#     --exclude middleware.fatfs.template_usb.MIMXRT595S \
+#     --exclude component.wifi_bt_module.config.MIMXRT595S \
+#     --exclude middleware.edgefast_bluetooth.config.template.MIMXRT595S \
+#     --exclude middleware.usb.host.ip3516hs_config_header.MIMXRT595S \
+#     --exclude middleware.lwip.template.MIMXRT595S \
+#     --exclude middleware.edgefast_bluetooth.template.MIMXRT595S \
+#     --exclude middleware.wifi.template.MIMXRT595S \
+#     --exclude project_template.evkmimxrt595.MIMXRT595S \
+#     --exclude project_template.MIMXRT595S.MIMXRT595S \
+#     --exclude middleware.freertos-kernel.MIMXRT595S \
 #     --exclude middleware.freertos-kernel.heap_4.MIMXRT595S \
 #     --device-core cm33_MIMXRT595S
 # but it required some adaptation
@@ -35,11 +55,7 @@ package(default_visibility = ["//visibility:public"])
 cc_library(
     name = "sdk",
     srcs = [
-        "boards/evkmimxrt595/flash_config/flash_config.c",
-        "boards/evkmimxrt595/project_template/board.c",
-        "boards/evkmimxrt595/project_template/clock_config.c",
-        "boards/evkmimxrt595/project_template/peripherals.c",
-        "boards/evkmimxrt595/project_template/pin_mux.c",
+        "components/gpio/fsl_adapter_rt_gpio.c",
         "components/lists/fsl_component_generic_list.c",
         "components/log/fsl_component_log.c",
         "components/osa/fsl_os_abstraction_free_rtos.c",
@@ -55,11 +71,9 @@ cc_library(
         "devices/MIMXRT595S/drivers/fsl_flexcomm.c",
         "devices/MIMXRT595S/drivers/fsl_flexio.c",
         "devices/MIMXRT595S/drivers/fsl_flexio_spi.c",
-        "devices/MIMXRT595S/drivers/fsl_flexspi.c",
         "devices/MIMXRT595S/drivers/fsl_gpio.c",
         "devices/MIMXRT595S/drivers/fsl_hashcrypt.c",
         "devices/MIMXRT595S/drivers/fsl_i2c.c",
-        "devices/MIMXRT595S/drivers/fsl_iap.c",
         "devices/MIMXRT595S/drivers/fsl_inputmux.c",
         "devices/MIMXRT595S/drivers/fsl_mu.c",
         "devices/MIMXRT595S/drivers/fsl_pint.c",
@@ -70,6 +84,8 @@ cc_library(
         "devices/MIMXRT595S/drivers/fsl_usart.c",
         "devices/MIMXRT595S/drivers/fsl_usart_dma.c",
         "devices/MIMXRT595S/drivers/fsl_usart_freertos.c",
+        "devices/MIMXRT595S/drivers/fsl_usdhc.c",
+        "devices/MIMXRT595S/drivers/fsl_flexspi.c",
         "devices/MIMXRT595S/system_MIMXRT595S_cm33.c",
         "devices/MIMXRT595S/utilities/debug_console/fsl_debug_console.c",
         "devices/MIMXRT595S/utilities/str/fsl_str.c",
@@ -220,6 +236,10 @@ cc_library(
         "middleware/mbedtls/port/ksdk/ecp_alt_ksdk.c",
         "middleware/mbedtls/port/ksdk/ecp_curves_alt.c",
         "middleware/mbedtls/port/ksdk/ksdk_mbedtls.c",
+        "middleware/sdmmc/common/fsl_sdmmc_common.c",
+        "middleware/sdmmc/host/usdhc/non_blocking/fsl_sdmmc_host.c",
+        "middleware/sdmmc/osa/fsl_sdmmc_osa.c",
+        "middleware/sdmmc/sdio/fsl_sdio.c",
         "middleware/usb/device/usb_device_dci.c",
         "middleware/usb/device/usb_device_lpcip3511.c",
         "middleware/usb/host/class/usb_host_hub.c",
@@ -231,6 +251,37 @@ cc_library(
         "middleware/usb/host/usb_host_hci.c",
         "middleware/usb/host/usb_host_ip3516hs.c",
         "middleware/usb/phy/usb_phy.c",
+        "middleware/wifi_nxp/firmware_dnld/firmware_dnld.c",
+        "middleware/wifi_nxp/fwdnld_intf_abs/fwdnld_intf_abs.c",
+        "middleware/wifi_nxp/port/osa/mem_pool.c",
+        "middleware/wifi_nxp/port/osa/mem_pool_config.c",
+        "middleware/wifi_nxp/port/osa/osa.c",
+        "middleware/wifi_nxp/port/osa/osa_freertos.c",
+        "middleware/wifi_nxp/port/osa/slist.c",
+        "middleware/wifi_nxp/port/osa/stack_simple.c",
+        "middleware/wifi_nxp/sdio_nxp_abs/fwdnld_sdio.c",
+        "middleware/wifi_nxp/sdio_nxp_abs/mlan_sdio.c",
+        "middleware/wifi_nxp/wifi_bt_firmware/8801/8801_cpu1.c",
+        "middleware/wifi_nxp/wifi_bt_firmware/8801/sd8801_wlan.bin.inc",
+        "middleware/wifi_nxp/wifi_bt_firmware/8987/8987_cpu1.c",
+        "middleware/wifi_nxp/wifi_bt_firmware/8987/8987_cpu12.c",
+        "middleware/wifi_nxp/wifi_bt_firmware/8987/8987_cpu2.c",
+        "middleware/wifi_nxp/wifi_bt_firmware/8987/sd8987_wlan.bin.inc",
+        "middleware/wifi_nxp/wifi_bt_firmware/8987/sduart8987_wlan_bt.bin.inc",
+        "middleware/wifi_nxp/wifi_bt_firmware/8987/uart8987_bt.bin.inc",
+        "middleware/wifi_nxp/wifi_bt_firmware/IW416/IW416_cpu1.c",
+        "middleware/wifi_nxp/wifi_bt_firmware/IW416/IW416_cpu12.c",
+        "middleware/wifi_nxp/wifi_bt_firmware/IW416/IW416_cpu2.c",
+        "middleware/wifi_nxp/wifi_bt_firmware/IW416/sdIW416_wlan.bin.inc",
+        "middleware/wifi_nxp/wifi_bt_firmware/IW416/sduartIW416_wlan_bt.bin.inc",
+        "middleware/wifi_nxp/wifi_bt_firmware/IW416/uartIW416_bt.bin.inc",
+        "middleware/wifi_nxp/wifi_bt_firmware/nw61x/nw61x_cpu12_se.c",
+        "middleware/wifi_nxp/wifi_bt_firmware/nw61x/nw61x_cpu1_se.c",
+        "middleware/wifi_nxp/wifi_bt_firmware/nw61x/nw61x_cpu2_se.c",
+        "middleware/wifi_nxp/wifi_bt_firmware/nw61x/sd_nw61x.bin.se.inc",
+        "middleware/wifi_nxp/wifi_bt_firmware/nw61x/sduart_nw61x.bin.se.inc",
+        "middleware/wifi_nxp/wifi_bt_firmware/nw61x/uart_nw61x.bin.se.inc",
+        "middleware/wifi_nxp/wifidriver/sdio.c",
         "middleware/wireless/ethermind/bluetooth/export/extension/BT_common_pl.c",
         "middleware/wireless/ethermind/bluetooth/export/extension/aes_cmac_pl.c",
         "middleware/wireless/ethermind/bluetooth/export/extension/device_queue_pl.c",
@@ -249,7 +300,7 @@ cc_library(
         "middleware/wireless/ethermind/port/pal/mcux/bluetooth/BT_status_pl.c",
         "middleware/wireless/ethermind/port/pal/mcux/bluetooth/BT_storage_pl.c",
         "middleware/wireless/ethermind/port/pal/mcux/bluetooth/btsnoop_pl.c",
-        "middleware/wireless/ethermind/port/pal/mcux/bluetooth/controller/controller_k32w.c",
+        "middleware/wireless/ethermind/port/pal/mcux/bluetooth/controller/controller_wifi_nxp.c",
         "middleware/wireless/ethermind/port/pal/mcux/bluetooth/ctn_pl.c",
         "middleware/wireless/ethermind/port/pal/mcux/bluetooth/ftp_pl.c",
         "middleware/wireless/ethermind/port/pal/mcux/bluetooth/fw_loader_uart.c",
@@ -267,6 +318,7 @@ cc_library(
         "middleware/wireless/ethermind/port/pal/mcux/ethal/ethal_os.c",
         "middleware/wireless/ethermind/port/pal/mcux/ethal/ethal_serial.c",
         "middleware/wireless/ethermind/port/pal/mcux/ethal/ethal_timer.c",
+        "@mimxrt595-examples//config:app_bluetooth_config.h",
     ],
     hdrs = [
         "CMSIS/Core/Include/cmsis_compiler.h",
@@ -275,16 +327,11 @@ cc_library(
         "CMSIS/Core/Include/core_cm33.h",
         "CMSIS/Core/Include/mpu_armv8.h",
         "CMSIS/Core/Include/tz_context.h",
-        "boards/evkmimxrt595/flash_config/flash_config.h",
-        "boards/evkmimxrt595/project_template/board.h",
-        "boards/evkmimxrt595/project_template/clock_config.h",
-        "boards/evkmimxrt595/project_template/peripherals.h",
-        "boards/evkmimxrt595/project_template/pin_mux.h",
+        "components/gpio/fsl_adapter_gpio.h",
         "components/lists/fsl_component_generic_list.h",
         "components/log/fsl_component_log.h",
         "components/log/fsl_component_log_config.h",
         "components/osa/fsl_os_abstraction.h",
-        "components/osa/fsl_os_abstraction_bm.h",
         "components/osa/fsl_os_abstraction_config.h",
         "components/osa/fsl_os_abstraction_free_rtos.h",
         "components/serial_manager/fsl_component_serial_manager.h",
@@ -302,14 +349,11 @@ cc_library(
         "devices/MIMXRT595S/drivers/fsl_flexcomm.h",
         "devices/MIMXRT595S/drivers/fsl_flexio.h",
         "devices/MIMXRT595S/drivers/fsl_flexio_spi.h",
-        "devices/MIMXRT595S/drivers/fsl_flexspi.h",
         "devices/MIMXRT595S/drivers/fsl_gpio.h",
         "devices/MIMXRT595S/drivers/fsl_hashcrypt.h",
         "devices/MIMXRT595S/drivers/fsl_i2c.h",
-        "devices/MIMXRT595S/drivers/fsl_iap.h",
         "devices/MIMXRT595S/drivers/fsl_inputmux.h",
         "devices/MIMXRT595S/drivers/fsl_inputmux_connections.h",
-        "devices/MIMXRT595S/drivers/fsl_iopctl.h",
         "devices/MIMXRT595S/drivers/fsl_mu.h",
         "devices/MIMXRT595S/drivers/fsl_pint.h",
         "devices/MIMXRT595S/drivers/fsl_power.h",
@@ -319,6 +363,9 @@ cc_library(
         "devices/MIMXRT595S/drivers/fsl_usart.h",
         "devices/MIMXRT595S/drivers/fsl_usart_dma.h",
         "devices/MIMXRT595S/drivers/fsl_usart_freertos.h",
+        "devices/MIMXRT595S/drivers/fsl_usdhc.h",
+        "devices/MIMXRT595S/drivers/fsl_iopctl.h",
+        "devices/MIMXRT595S/drivers/fsl_flexspi.h",
         "devices/MIMXRT595S/fsl_device_registers.h",
         "devices/MIMXRT595S/system_MIMXRT595S_cm33.h",
         "devices/MIMXRT595S/utilities/debug_console/fsl_debug_console.h",
@@ -363,9 +410,6 @@ cc_library(
         "middleware/edgefast_bluetooth/include/toolchain/gcc.h",
         "middleware/edgefast_bluetooth/include/toolchain/iar.h",
         "middleware/edgefast_bluetooth/include/zephyr/types.h",
-        "middleware/edgefast_bluetooth/output/templates/config/edgefast_bluetooth_config.h",
-        "middleware/edgefast_bluetooth/output/templates/config/edgefast_bluetooth_debug_config.h",
-        "middleware/edgefast_bluetooth/output/templates/config/mbedtls/mbedtls_config_client.h",
         "middleware/edgefast_bluetooth/source/impl/ethermind/crypto/bt_crypto.h",
         "middleware/edgefast_bluetooth/source/impl/ethermind/host/bt_pal_addr_internal.h",
         "middleware/edgefast_bluetooth/source/impl/ethermind/host/bt_pal_adv.h",
@@ -399,7 +443,6 @@ cc_library(
         "middleware/fatfs/source/diskio.h",
         "middleware/fatfs/source/ff.h",
         "middleware/fatfs/source/fsl_usb_disk/fsl_usb_disk.h",
-        "middleware/fatfs/template/usb/ffconf.h",
         "middleware/littlefs/lfs.h",
         "middleware/littlefs/lfs_util.h",
         "middleware/mbedtls/include/mbedtls/aes.h",
@@ -532,6 +575,11 @@ cc_library(
         "middleware/mbedtls/port/ksdk/sha1_alt.h",
         "middleware/mbedtls/port/ksdk/sha256_alt.h",
         "middleware/mbedtls/port/ksdk/threading_alt.h",
+        "middleware/sdmmc/common/fsl_sdmmc_common.h",
+        "middleware/sdmmc/common/fsl_sdmmc_spec.h",
+        "middleware/sdmmc/host/usdhc/fsl_sdmmc_host.h",
+        "middleware/sdmmc/osa/fsl_sdmmc_osa.h",
+        "middleware/sdmmc/sdio/fsl_sdio.h",
         "middleware/usb/device/usb_device.h",
         "middleware/usb/device/usb_device_dci.h",
         "middleware/usb/device/usb_device_lpcip3511.h",
@@ -547,8 +595,46 @@ cc_library(
         "middleware/usb/include/usb_misc.h",
         "middleware/usb/include/usb_spec.h",
         "middleware/usb/output/npw/device_config/ip3511hs/usb_device_config.h",
-        "middleware/usb/output/npw/host_config/ip3516hs/usb_host_config.h",
         "middleware/usb/phy/usb_phy.h",
+        "middleware/wifi_nxp/firmware_dnld/firmware_dnld.h",
+        "middleware/wifi_nxp/fwdnld_intf_abs/fwdnld_intf_abs.h",
+        "middleware/wifi_nxp/incl/WIFI_IW416_BOARD_AW_AM457_CAL_DATA_EXT.h",
+        "middleware/wifi_nxp/incl/port/osa/mem_pool.h",
+        "middleware/wifi_nxp/incl/port/osa/mem_pool_config.h",
+        "middleware/wifi_nxp/incl/port/osa/osa.h",
+        "middleware/wifi_nxp/incl/port/osa/slist.h",
+        "middleware/wifi_nxp/incl/port/osa/stack_simple.h",
+        "middleware/wifi_nxp/incl/wifi_cal_data_ext.h",
+        "middleware/wifi_nxp/incl/wifi_config_default.h",
+        "middleware/wifi_nxp/incl/wifidriver/wifi-decl.h",
+        "middleware/wifi_nxp/incl/wifidriver/wifi.h",
+        "middleware/wifi_nxp/incl/wifidriver/wifi_events.h",
+        "middleware/wifi_nxp/incl/wm_utils.h",
+        "middleware/wifi_nxp/incl/wmerrno.h",
+        "middleware/wifi_nxp/incl/wmlog.h",
+        "middleware/wifi_nxp/incl/wmtypes.h",
+        "middleware/wifi_nxp/port/osa/osa_freertos.h",
+        "middleware/wifi_nxp/sdio_nxp_abs/incl/fwdnld_sdio.h",
+        "middleware/wifi_nxp/sdio_nxp_abs/incl/mlan_sdio.h",
+        "middleware/wifi_nxp/sdio_nxp_abs/incl/mlan_sdio_api.h",
+        "middleware/wifi_nxp/sdio_nxp_abs/incl/mlan_sdio_defs.h",
+        "middleware/wifi_nxp/wifi_bt_firmware/8801/sd8801_wlan.h",
+        "middleware/wifi_nxp/wifi_bt_firmware/8987/sd8987_wlan.h",
+        "middleware/wifi_nxp/wifi_bt_firmware/8987/sduart8987_wlan_bt.h",
+        "middleware/wifi_nxp/wifi_bt_firmware/8987/uart8987_bt.h",
+        "middleware/wifi_nxp/wifi_bt_firmware/IW416/sdIW416_wlan.h",
+        "middleware/wifi_nxp/wifi_bt_firmware/IW416/sduartIW416_wlan_bt.h",
+        "middleware/wifi_nxp/wifi_bt_firmware/IW416/uartIW416_bt.h",
+        "middleware/wifi_nxp/wifi_bt_firmware/nw61x/sd_nw61x_se.h",
+        "middleware/wifi_nxp/wifi_bt_firmware/nw61x/sduart_nw61x_se.h",
+        "middleware/wifi_nxp/wifi_bt_firmware/nw61x/uart_nw61x_se.h",
+        "middleware/wifi_nxp/wifi_bt_firmware/wlan_bt_fw.h",
+        "middleware/wifi_nxp/wifidriver/incl/mlan_decl.h",
+        "middleware/wifi_nxp/wifidriver/incl/mlan_ioctl.h",
+        "middleware/wifi_nxp/wifidriver/incl/mlan_main_defs.h",
+        "middleware/wifi_nxp/wifidriver/incl/type_decls.h",
+        "middleware/wifi_nxp/wifidriver/sdio.h",
+        "middleware/wifi_nxp/wifidriver/wifi-sdio.h",
         "middleware/wireless/ethermind/bluetooth/export/eOSAL/eBT_assert.h",
         "middleware/wireless/ethermind/bluetooth/export/eOSAL/eBT_config.h",
         "middleware/wireless/ethermind/bluetooth/export/eOSAL/eBT_debug_api.h",
@@ -575,14 +661,11 @@ cc_library(
         "middleware/wireless/ethermind/bluetooth/export/include/BT_bnep_api.h",
         "middleware/wireless/ethermind/bluetooth/export/include/BT_bottom_half.h",
         "middleware/wireless/ethermind/bluetooth/export/include/BT_bpp_api.h",
-        "middleware/wireless/ethermind/bluetooth/export/include/BT_common.h",
         "middleware/wireless/ethermind/bluetooth/export/include/BT_ctn_api.h",
         "middleware/wireless/ethermind/bluetooth/export/include/BT_dbase_api.h",
-        "middleware/wireless/ethermind/bluetooth/export/include/BT_device_queue.h",
         "middleware/wireless/ethermind/bluetooth/export/include/BT_error.h",
         "middleware/wireless/ethermind/bluetooth/export/include/BT_ftp_api.h",
         "middleware/wireless/ethermind/bluetooth/export/include/BT_gap_api.h",
-        "middleware/wireless/ethermind/bluetooth/export/include/BT_hci_api.h",
         "middleware/wireless/ethermind/bluetooth/export/include/BT_hdp_api.h",
         "middleware/wireless/ethermind/bluetooth/export/include/BT_hfp_ag_api.h",
         "middleware/wireless/ethermind/bluetooth/export/include/BT_hfp_unit_api.h",
@@ -691,9 +774,8 @@ cc_library(
         "middleware/wireless/ethermind/port/pal/mcux/sbc/sbc_os.h",
     ],
     defines = [
-        "FSL_SDK_DRIVER_QUICK_ACCESS_ENABLE=1",
+        "SERIAL_PORT_TYPE_UART=1",
         "CFG_BLE=",
-        "BOOT_HEADER_ENABLE=1",
         "LFS_NO_INTRINSICS=1",
         "LFS_NO_ERROR=1",
         "FSL_OSA_TASK_ENABLE=1",
@@ -701,9 +783,9 @@ cc_library(
         "LOG_ENABLE_ASYNC_MODE=1",
         "LOG_MAX_ARGUMENT_COUNT=10",
         "LOG_ENABLE_OVERWRITE=0",
-        "DEBUG_CONSOLE_TRANSFER_NON_BLOCKING=1",
-        "SERIAL_PORT_TYPE_UART=1",
+        "SDIO_ENABLED=",
         "CONFIG_ARM=1",
+        "DEBUG_CONSOLE_TRANSFER_NON_BLOCKING=1",
         "SERIAL_PORT_TYPE_UART=1",
         "MBEDTLS_CONFIG_FILE=\\\"ksdk_mbedtls_config.h\\\"",
         "CPU_MIMXRT595SFFOC_cm33",
@@ -712,39 +794,10 @@ cc_library(
         "FSL_SDK_DRIVER_QUICK_ACCESS_ENABLE=1",
         "SDK_DEBUGCONSOLE=1",
         "SDK_OS_FREE_RTOS",
-        "CONFIG_BT_ID_MAX=1",
-        "CONFIG_BT_MAX_CONN=1",
-        "CONFIG_BT_MSG_QUEUE_COUNT=16",
-        "CONFIG_BT_HCI_RESERVE=4",
-        "CONFIG_BT_CONN_TX_USER_DATA_SIZE=8",
-        "CONFIG_BT_ATT_TX_COUNT=3",
-        "CONFIG_BT_BUF_ACL_RX_SIZE=27",
-        "CONFIG_BT_L2CAP_TX_MTU=23",
-        "CONFIG_BT_BUF_ACL_RX_COUNT=6",
-        "CONFIG_BT_ATT_RX_MAX=6",
-        "CONFIG_BT_CONN=1",
-        "CONFIG_BT_MAX_PAIRED=1",
-        "CONFIG_BT_BUF_EVT_RX_COUNT=10",
-        "CONFIG_BT_L2CAP_TX_BUF_COUNT=3",
-        "CONFIG_BT_BUF_EVT_RX_SIZE=255",
-        "CONFIG_BT_CONN_PARAM_UPDATE_TIMEOUT=5000",
-        "CONFIG_BT_CONN_TX_MAX=3",
-        "CONFIG_BT_BUF_RESERVE=8",
-        "CONFIG_NET_BUF_USER_DATA_SIZE=8",
-        "CONFIG_BT_HCI_TX_PRIO=2",
-        "CONFIG_BT_HCI_TX_STACK_SIZE=1024",
-        "CONFIG_BT_RX_STACK_SIZE=1024",
-        "CONFIG_BT_RX_PRIO=1",
-        "CONFIG_BT_BUF_CMD_TX_COUNT=2",
-        "CONFIG_BT_BUF_CMD_TX_SIZE=65",
-        "CONFIG_BT_DEVICE_NAME=\\\"Pigweed\\\"",
-        "CONFIG_BT_DEVICE_APPEARANCE=1",
-        "CONFIG_BT_CONN_TX=1",
-        "CONFIG_BT_BUF_EVT_DISCARDABLE_COUNT=3",
-        "CONFIG_BT_BUF_EVT_DISCARDABLE_SIZE=43",
-        "CONFIG_BT_BROADCASTER=1",
-        "CONFIG_BT_LIM_ADV_TIMEOUT=30",
-        "K32W061_TRANSCEIVER",
+        "PW_FUNCTION_ENABLE_DYNAMIC_ALLOCATION",
+        "__STDC_FORMAT_MACROS",
+        "_GLIBCXX_HAVE_INTTYPES_H",
+        "__int64_t_defined",
         # USB config
         "USB_STACK_USE_DEDICATED_RAM=1",
         "FSL_OSA_BM_TASK_ENABLE=0",
@@ -752,8 +805,7 @@ cc_library(
     ],
     includes = [
         "CMSIS/Core/Include",
-        "boards/evkmimxrt595/flash_config",
-        "boards/evkmimxrt595/project_template",
+        "components/gpio",
         "components/lists",
         "components/log",
         "components/osa",
@@ -764,9 +816,6 @@ cc_library(
         "devices/MIMXRT595S/utilities/debug_console",
         "devices/MIMXRT595S/utilities/str",
         "middleware/edgefast_bluetooth/include",
-        "middleware/edgefast_bluetooth/output/templates/app_bluetooth_config",
-        "middleware/edgefast_bluetooth/output/templates/config",
-        "middleware/edgefast_bluetooth/output/templates/config/mbedtls",
         "middleware/edgefast_bluetooth/source/impl/ethermind",
         "middleware/edgefast_bluetooth/source/impl/ethermind/crypto",
         "middleware/edgefast_bluetooth/source/impl/ethermind/host",
@@ -774,18 +823,36 @@ cc_library(
         "middleware/edgefast_bluetooth/source/porting",
         "middleware/fatfs/source",
         "middleware/fatfs/source/fsl_usb_disk",
-        "middleware/fatfs/template/usb",
         "middleware/littlefs",
         "middleware/mbedtls/include",
         "middleware/mbedtls/library",
         "middleware/mbedtls/port/ksdk",
+        "middleware/sdmmc/common",
+        "middleware/sdmmc/host/usdhc",
+        "middleware/sdmmc/osa",
+        "middleware/sdmmc/sdio",
         "middleware/usb/device",
         "middleware/usb/host",
         "middleware/usb/host/class",
         "middleware/usb/include",
         "middleware/usb/output/npw/device_config/ip3511hs",
-        "middleware/usb/output/npw/host_config/ip3516hs",
         "middleware/usb/phy",
+        "middleware/wifi_nxp",
+        "middleware/wifi_nxp/firmware_dnld",
+        "middleware/wifi_nxp/fwdnld_intf_abs",
+        "middleware/wifi_nxp/incl",
+        "middleware/wifi_nxp/incl/port/osa",
+        "middleware/wifi_nxp/incl/wifidriver",
+        "middleware/wifi_nxp/port/osa",
+        "middleware/wifi_nxp/sdio_nxp_abs",
+        "middleware/wifi_nxp/sdio_nxp_abs/incl",
+        "middleware/wifi_nxp/wifi_bt_firmware",
+        "middleware/wifi_nxp/wifi_bt_firmware/8801",
+        "middleware/wifi_nxp/wifi_bt_firmware/8987",
+        "middleware/wifi_nxp/wifi_bt_firmware/IW416",
+        "middleware/wifi_nxp/wifi_bt_firmware/nw61x",
+        "middleware/wifi_nxp/wifidriver",
+        "middleware/wifi_nxp/wifidriver/incl",
         "middleware/wireless/ethermind/bluetooth/export/eOSAL",
         "middleware/wireless/ethermind/bluetooth/export/extension",
         "middleware/wireless/ethermind/bluetooth/export/include",
@@ -819,6 +886,7 @@ cc_library(
         "middleware/wireless/ethermind/port/pal/mcux/toolspec/mcuxpresso",
     ],
     deps = [
+        "@mimxrt595-examples//config",
         ":libethermind_ble_protocol",
         ":libethermind_ble_core",
         ":libethermind_ble_util",
@@ -826,12 +894,20 @@ cc_library(
         "@pigweed//targets/mimxrt595_evk_freertos:freertos_config",
         "@freertos",
     ],
+    copts = [
+        "-include", "$(execpath @mimxrt595-examples//config:app_bluetooth_config.h)"
+    ],
     alwayslink = True,
 )
 
 cc_import(
   name = "libethermind_ble_core",
-  hdrs = ["middleware/wireless/ethermind/bluetooth/export/include/BT_smp_api.h"],
+  hdrs = [
+        "middleware/wireless/ethermind/bluetooth/export/include/BT_smp_api.h",
+        "middleware/wireless/ethermind/bluetooth/export/include/BT_common.h",
+        "middleware/wireless/ethermind/bluetooth/export/include/BT_device_queue.h",
+        "middleware/wireless/ethermind/bluetooth/export/include/BT_hci_api.h",
+    ],
   static_library = "middleware/wireless/ethermind/bluetooth/private/lib/mcux/default/ble/cm33/gcc/libethermind_ble_core.a",
 )
 cc_import(
@@ -845,7 +921,9 @@ cc_import(
 )
 cc_import(
   name = "libethermind_ble_protocol",
-  hdrs = ["middleware/wireless/ethermind/bluetooth/export/include/BT_att_api.h"],
+  hdrs = [
+        "middleware/wireless/ethermind/bluetooth/export/include/BT_att_api.h",
+    ],
   static_library = "middleware/wireless/ethermind/bluetooth/private/lib/mcux/default/ble/cm33/gcc/libethermind_ble_protocol.a",
 )
 cc_import(

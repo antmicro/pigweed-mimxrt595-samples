@@ -205,3 +205,87 @@ load("@hedron_compile_commands//:workspace_setup_transitive_transitive.bzl", "he
 hedron_compile_commands_setup_transitive_transitive()
 load("@hedron_compile_commands//:workspace_setup_transitive_transitive_transitive.bzl", "hedron_compile_commands_setup_transitive_transitive_transitive")
 hedron_compile_commands_setup_transitive_transitive_transitive()
+
+# Setup Fuchsia SDK.
+# Required by: bt-host.
+# Used in modules: //pw_bluetooth_sapphire.
+# NOTE: These blocks cannot feasibly be moved into a macro.
+# See https://github.com/bazelbuild/bazel/issues/1550
+git_repository(
+    name = "fuchsia_infra",
+    # ROLL: Warning: this entry is automatically updated.
+    # ROLL: Last updated 2024-08-10.
+    # ROLL: By https://cr-buildbucket.appspot.com/build/8739954865728922337.
+    commit = "a61ac0c9305860e9d439ee153b5d5bb34c176fcd",
+    remote = "https://fuchsia.googlesource.com/fuchsia-infra-bazel-rules",
+)
+
+load("@fuchsia_infra//:workspace.bzl", "fuchsia_infra_workspace")
+
+fuchsia_infra_workspace()
+
+FUCHSIA_LINUX_SDK_VERSION = "version:22.20240717.3.1"
+
+# The Fuchsia SDK is no longer released for MacOS, so we need to pin an older
+# version, from the halcyon days when this OS was still supported.
+FUCHSIA_MAC_SDK_VERSION = "version:20.20240408.3.1"
+
+cipd_repository(
+    name = "fuchsia_sdk",
+    path = "fuchsia/sdk/core/fuchsia-bazel-rules/${os}-amd64",
+    tag_by_os = {
+        "linux": FUCHSIA_LINUX_SDK_VERSION,
+        "mac": FUCHSIA_MAC_SDK_VERSION,
+    },
+)
+
+load("@fuchsia_sdk//fuchsia:deps.bzl", "rules_fuchsia_deps")
+
+rules_fuchsia_deps()
+
+register_toolchains("@fuchsia_sdk//:fuchsia_toolchain_sdk")
+
+cipd_repository(
+    name = "fuchsia_products_metadata",
+    path = "fuchsia/development/product_bundles/v2",
+    tag_by_os = {
+        "linux": FUCHSIA_LINUX_SDK_VERSION,
+        "mac": FUCHSIA_MAC_SDK_VERSION,
+    },
+)
+
+load("@fuchsia_sdk//fuchsia:products.bzl", "fuchsia_products_repository")
+
+fuchsia_products_repository(
+    name = "fuchsia_products",
+    metadata_file = "@fuchsia_products_metadata//:product_bundles.json",
+)
+
+load("@fuchsia_sdk//fuchsia:clang.bzl", "fuchsia_clang_repository")
+
+fuchsia_clang_repository(
+    name = "fuchsia_clang",
+    # TODO: https://pwbug.dev/346354914 - Reuse @llvm_toolchain. This currently
+    # leads to flaky loading phase errors!
+    # from_workspace = "@llvm_toolchain//:BUILD",
+    cipd_tag = "git_revision:c58bc24fcf678c55b0bf522be89eff070507a005",
+    sdk_root_label = "@fuchsia_sdk",
+)
+
+load("@fuchsia_clang//:defs.bzl", "register_clang_toolchains")
+
+register_clang_toolchains()
+
+# Since Fuchsia doesn't release arm64 SDKs, use this to gate Fuchsia targets.
+load("@pigweed//pw_env_setup:bazel/host_metadata_repository.bzl", "host_metadata_repository")
+
+host_metadata_repository(
+    name = "host_metadata",
+)
+
+git_repository(
+    name = "boringssl",
+    commit = "74a51c6ab3c9c674a62bf02c904f12e5109761b8",
+    remote = "https://boringssl.googlesource.com/boringssl",
+    build_file = "@pigweed//third_party/boringssl:BUILD.bazel",
+)
