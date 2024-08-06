@@ -5,3 +5,12 @@
 [submodule "third_party/FreeRTOS"]
 	path = third_party/FreeRTOS
 	url = https://github.com/FreeRTOS/FreeRTOS-Kernel
+[submodule "third_party/icu"]
+	path = third_party/icu
+	url = https://fuchsia.googlesource.com/third_party/icu
+[submodule "third_party/emboss/src"]
+	path = third_party/emboss/src
+	url = https://github.com/google/emboss.git
+[submodule "third_party/boringssl/src"]
+	path = third_party/boringssl/src
+	url = https://pigweed.googlesource.com/third_party/boringssl/boringssl

@@ -17,16 +17,21 @@ build-pigweed:
     - wget https://github.com/bazelbuild/bazelisk/releases/download/v1.20.0/bazelisk-linux-amd64
     - chmod +x bazelisk-linux-amd64 && mv bazelisk-linux-amd64 /usr/bin/bazelisk
     - git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@${PIGWEED_REPO}".insteadOf "https://github.com/antmicro/pigweed.git"
+    - wget https://go.dev/dl/go1.22.6.linux-amd64.tar.gz
+    - tar -C /usr/local -xzf go1.22.6.linux-amd64.tar.gz
+    - export PATH=$PATH:/usr/local/go/bin
     - git submodule update --init --recursive
     - pushd third_party/pigweed/third_party/mcuxpresso/
     - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@${MCUXPRESSO_REPO} sdk
     - pushd sdk
     - git checkout origin/SDK_2.16.000_EVK-MIMXRT595
     - popd && popd
-    - bazelisk build --config mimxrt595_evk_freertos //examples/01_bluetooth:bluetooth
-    - bazelisk build --config mimxrt595_evk_freertos //examples/02_usb_fastboot:usb_fastboot
-    - mkdir out
-    - cp -r bazel-bin/examples/* out
+    - pushd third_party/boringssl
+    - python src/util/generate_build_files.py gn
+    - popd
+    - source bootstrap.sh
+    - gn gen out
+    - ninja -C out
   artifacts:
     paths:
       - out
