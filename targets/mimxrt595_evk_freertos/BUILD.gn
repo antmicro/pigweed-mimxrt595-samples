@@ -121,6 +121,14 @@ if (pw_third_party_mcuxpresso_SDK == "//targets/mimxrt595_evk_freertos:sdk") {
       "middleware.edgefast_bluetooth.config.template.MIMXRT595S",
       "middleware.edgefast_bluetooth.k32w061.controller.MIMXRT595S",
       "middleware.edgefast_bluetooth.ble.ethermind.cm33.MIMXRT595S",
+      # USB support
+      "device.MIMXRT595S_CMSIS.MIMXRT595S",
+      "middleware.usb.device_controller_ip3511hs.MIMXRT595S",
+      "middleware.usb.phy.MIMXRT595S",
+      "middleware.usb.device.controller.driver.MIMXRT595S",
+      "middleware.usb.device.ip3511hs_config_header.MIMXRT595S",
+      "middleware.usb.device.common_header.MIMXRT595S",
+      "middleware.usb.common_header.MIMXRT595S"
     ]
     exclude = [
       "device.MIMXRT595S_startup.MIMXRT595S",
@@ -189,6 +197,10 @@ if (pw_third_party_mcuxpresso_SDK == "//targets/mimxrt595_evk_freertos:sdk") {
       "CONFIG_BT_BROADCASTER=1",
       "CONFIG_BT_LIM_ADV_TIMEOUT=30",
       "K32W061_TRANSCEIVER",
+      # USB config
+      "USB_STACK_USE_DEDICATED_RAM=1",
+      "FSL_OSA_BM_TASK_ENABLE=0",
+      "FSL_OSA_BM_TIMER_CONFIG=0",
     ]
     visibility = [ ":*" ]
   }
