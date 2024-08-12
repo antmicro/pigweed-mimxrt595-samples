@@ -1,0 +1,23 @@
+import("//build_overrides/pigweed.gni")
+
+import("$dir_pw_build/target_types.gni")
+import("$dir_pw_third_party/mcuxpresso/mcuxpresso.gni")
+
+group("all") {
+  deps = [ ":usb_cdc_vcom" ]
+}
+
+if (pw_third_party_mcuxpresso_SDK != "") {
+  pw_executable("usb_cdc_vcom") {
+    sources = [
+      "usb_device_descriptor.c",
+      "virtual_com.c",
+      "usb_device_cdc_acm.c",
+      "usb_device_ch9.c",
+      "usb_device_class.c"
+    ]
+    deps = [
+      "$pw_third_party_mcuxpresso_SDK",
+    ]
+  }
+}
