@@ -42,14 +42,6 @@ namespace {
 
 }  // namespace
 
-namespace pw::system {
-
-// This will run once after pw::system::Init() completes. This callback must
-// return or it will block the work queue.
-void UserAppInit() {
-}
-
-}  // namespace pw::system
 static void bt_ready(int err) {
     PW_LOG_INFO("Bluetooth ready");
 }
@@ -125,13 +117,16 @@ private:
 };
 }
 
-int main() {
-//pw::bluetooth::Controller controller;
-//pw::bluetooth::Host::PersistentData data;
-pw::bluetooth::MimxrtHost host;
+namespace pw::system {
 
-//host.Initialize(&controller, data);
+void UserAppInit() {
+    //pw::bluetooth::Controller controller;
+    //pw::bluetooth::Host::PersistentData data;
+    pw::bluetooth::MimxrtHost host;
 
-  PW_LOG_CRITICAL("Hello, world!");
-  return 0;
+    //host.Initialize(&controller, data);
+
+    PW_LOG_CRITICAL("Hello, world!");
 }
+
+}  // namespace pw::system
