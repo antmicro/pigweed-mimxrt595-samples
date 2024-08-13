@@ -783,35 +783,3 @@ void APPTask(void *handle)
     }
 }
 
-#if defined(__CC_ARM) || (defined(__ARMCC_VERSION)) || defined(__GNUC__)
-int main(void)
-#else
-void main(void)
-#endif
-{
-    BOARD_InitPins();
-    BOARD_BootClockRUN();
-    BOARD_InitDebugConsole();
-
-    if (xTaskCreate(APPTask,                                       /* pointer to the task                      */
-                    s_appName,                                     /* task name for kernel awareness debugging */
-                    APP_TASK_STACK_SIZE / sizeof(portSTACK_TYPE),  /* task stack size                          */
-                    &s_cdcVcom,                                    /* optional task startup argument           */
-                    4,                                             /* initial priority                         */
-                    &s_cdcVcom.applicationTaskHandle               /* optional task handle to create           */
-                    ) != pdPASS)
-    {
-        usb_echo("app task create failed!\r\n");
-#if (defined(__CC_ARM) || (defined(__ARMCC_VERSION)) || defined(__GNUC__))
-        return 1;
-#else
-        return;
-#endif
-    }
-
-    vTaskStartScheduler();
-
-#if (defined(__CC_ARM) || (defined(__ARMCC_VERSION)) || defined(__GNUC__))
-    return 1;
-#endif
-}

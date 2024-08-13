@@ -98,4 +98,5 @@ typedef struct _usb_cdc_acm_info
     uint8_t currentInterface; /* Current interface index.                           */
     uint16_t uartState;       /* UART state of the CDC device.                      */
 } usb_cdc_acm_info_t;
+void APPTask(void *handle);
 #endif /* _USB_CDC_VCOM_H_ */
