@@ -8,19 +8,23 @@
 #ifndef _USB_DEVICE_DESCRIPTOR_H_
 #define _USB_DEVICE_DESCRIPTOR_H_ 1
 
+#include "fastboot.h"
+
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
 #define USB_DEVICE_SPECIFIC_BCD_VERSION (0x0200U)
 #define USB_DEVICE_DEMO_BCD_VERSION     (0x0101U)
 
-#define USB_DEVICE_VID (0x1FC9U)
-#define USB_DEVICE_PID (0x0094U)
+#define USB_DEVICE_VID (FASTBOOT_VID)
+#define USB_DEVICE_PID (FASTBOOT_PID)
 
 /* Communication  Class Codes */
 #define CDC_COMM_CLASS (0x02U)
 /* Data  Class Codes */
 #define CDC_DATA_CLASS (0x0AU)
+/* Vendor-specific class, not defined by USB-IF */
+#define USB_CLASS_VENDOR_SPECIFIC (0xFFU)
 
 /* Communication Class SubClass Codes */
 #define USB_CDC_DIRECT_LINE_CONTROL_MODEL         (0x01U)
@@ -99,7 +103,7 @@
 
 /* Configuration, interface and endpoint. */
 #define USB_DEVICE_CONFIGURATION_COUNT (1U)
-#define USB_DEVICE_STRING_COUNT        (3U)
+#define USB_DEVICE_STRING_COUNT        (4U)
 #define USB_DEVICE_LANGUAGE_COUNT      (1U)
 
 #define USB_CDC_VCOM_CONFIGURE_INDEX (1U)
@@ -143,9 +147,9 @@
 #define USB_DESCRIPTOR_TYPE_CDC_CS_ENDPOINT  (0x25U)
 
 /* Class code. */
-#define USB_DEVICE_CLASS    (0x02U)
-#define USB_DEVICE_SUBCLASS (0x00U)
-#define USB_DEVICE_PROTOCOL (0x00U)
+#define USB_DEVICE_CLASS    (USB_CLASS_VENDOR_SPECIFIC)
+#define USB_DEVICE_SUBCLASS (USB_CLASS_VENDOR_SPECIFIC)
+#define USB_DEVICE_PROTOCOL (USB_CLASS_VENDOR_SPECIFIC)
 
 #define USB_DEVICE_MAX_POWER (0x32U)
 
@@ -153,9 +157,9 @@
 #define USB_CDC_VCOM_CIC_SUBCLASS (USB_CDC_ABSTRACT_CONTROL_MODEL)
 #define USB_CDC_VCOM_CIC_PROTOCOL (USB_CDC_NO_CLASS_SPECIFIC_PROTOCOL)
 
-#define USB_CDC_VCOM_DIC_CLASS    (CDC_DATA_CLASS)
-#define USB_CDC_VCOM_DIC_SUBCLASS (0x00)
-#define USB_CDC_VCOM_DIC_PROTOCOL (USB_CDC_NO_CLASS_SPECIFIC_PROTOCOL)
+#define USB_CDC_VCOM_DIC_CLASS    (FASTBOOT_USB_IFC_CLASS)
+#define USB_CDC_VCOM_DIC_SUBCLASS (FASTBOOT_USB_IFC_SUBCLASS)
+#define USB_CDC_VCOM_DIC_PROTOCOL (FASTBOOT_USB_IFC_PROTOCOL)
 
 /*******************************************************************************
  * API

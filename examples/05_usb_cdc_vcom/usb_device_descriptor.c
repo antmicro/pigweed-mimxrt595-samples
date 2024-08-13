@@ -123,7 +123,7 @@ uint8_t g_UsbDeviceDescriptor[] = {
     /* Index of string descriptor describing product */
     0x02,
     /* Index of string descriptor describing the device's serial number */
-    0x00,
+    0x03,
     /* Number of possible configurations */
     USB_DEVICE_CONFIGURATION_COUNT,
 };
@@ -273,12 +273,30 @@ uint8_t g_UsbDeviceString2[] = {2U + 2U * 20U, USB_DESCRIPTOR_TYPE_STRING,
                                 'M',           0,
                                 'O',           0};
 
+USB_DMA_INIT_DATA_ALIGN(USB_DATA_ALIGN_SIZE)
+uint8_t g_UsbDeviceString3[] = {
+    2U + 2U * 13U, USB_DESCRIPTOR_TYPE_STRING,
+    'M',           0x00U,
+    'I',           0x00U,
+    'M',           0x00U,
+    'X',           0x00U,
+    'R',           0x00U,
+    'T',           0x00U,
+    '5',           0x00U,
+    '9',           0x00U,
+    '5',           0x00U,
+    '-',           0x00U,
+    'E',           0x00U,
+    'V',           0x00U,
+    'K',           0x00U,
+};
+
 uint8_t *g_UsbDeviceStringDescriptorArray[USB_DEVICE_STRING_COUNT] = {g_UsbDeviceString0, g_UsbDeviceString1,
-                                                                      g_UsbDeviceString2};
+                                                                      g_UsbDeviceString2, g_UsbDeviceString3};
 
 /* Define string descriptor size */
 uint32_t g_UsbDeviceStringDescriptorLength[USB_DEVICE_STRING_COUNT] = {
-    sizeof(g_UsbDeviceString0), sizeof(g_UsbDeviceString1), sizeof(g_UsbDeviceString2)};
+    sizeof(g_UsbDeviceString0), sizeof(g_UsbDeviceString1), sizeof(g_UsbDeviceString2), sizeof(g_UsbDeviceString3)};
 usb_language_t g_UsbDeviceLanguage[USB_DEVICE_LANGUAGE_COUNT] = {{
     g_UsbDeviceStringDescriptorArray,
     g_UsbDeviceStringDescriptorLength,
