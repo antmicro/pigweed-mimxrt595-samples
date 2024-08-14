@@ -19,8 +19,6 @@ default_args = {
   # Default gn build virtualenv target.
   pw_build_PYTHON_BUILD_VENV = "//:sample_project_build_venv"
 
-  pw_build_PIP_REQUIREMENTS = [ "//docs/requirements.txt" ]
-
   pw_build_TEST_TRANSITIVE_PYTHON_DEPS = false
 
   dir_pw_third_party_freertos = "//third_party/FreeRTOS"

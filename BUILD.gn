@@ -39,7 +39,7 @@ group("default") {
 }
 
 group("docs") {
-  deps = [ "//docs($dir_pigweed/targets/docs)" ]
+  deps = [ ]
 }
 
 # Group all targets that run on host only, e.g. tests, utils.
