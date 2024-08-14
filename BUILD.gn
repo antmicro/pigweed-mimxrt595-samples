@@ -100,8 +100,8 @@ group("examples") {
 
   # mimxrt595_evk examples.
   deps += [
-    "//examples/04_bluetooth:bluetooth(//targets/mimxrt595_evk_freertos:mimxrt595_evk_freertos_debug)",
-    "//examples/05_usb_cdc_vcom:usb_cdc_vcom(//targets/mimxrt595_evk_freertos:mimxrt595_evk_freertos_debug)",
+    "//examples/01_bluetooth:bluetooth(//targets/mimxrt595_evk_freertos:mimxrt595_evk_freertos_debug)",
+    "//examples/02_usb_cdc_vcom:usb_cdc_vcom(//targets/mimxrt595_evk_freertos:mimxrt595_evk_freertos_debug)",
   ]
 }
 
