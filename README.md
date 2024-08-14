@@ -1,123 +1,35 @@
-# Pigweed Sample Project
+# MIMXRT595-EVK Pigweed Samples
 
-[TOC]
+Copyright (c) 2024 [Antmicro](https://www.antmicro.com)
 
-This repository outlines the recommended way of using Pigweed in a new or
-existing project. Feel free to fork this repository, or read it as a reference.
+This repository contains [Pigweed](https://pigweed.dev/) samples for the [MIMXRT595-EVK](https://www.nxp.com/design/design-center/development-boards-and-designs/i-mx-evaluation-and-development-boards/i-mx-rt595-evaluation-kit:MIMXRT595-EVK).
+The repository structure is based on the [Pigweed sample project](https://pigweed.dev/examples/).
 
-For more information see the [Pigweed Getting started
-guide](https://pigweed.dev/docs/getting_started.html).
+The following, custom, samples are provided:
+- `examples/01_bluetooth`
+- `examples/02_usb_cdc_vcom`
 
-Check back for more complex examples and features coming soon!
+## Environment setup
 
-## Getting started
+If you're setitng local environment for the first time, you need to download the required tools. This can be done be sourcing the `bootstrap.sh` script.
 
-Make sure you've set up [Pigweed's
-prerequisites](https://pigweed.dev/docs/getting_started.html#prerequisites).
-
-**If you're on Windows**, you can automate the initial setup by downloading the
-first-time setup script **from cmd.exe**:
-
-```bat
-curl https://pigweed.googlesource.com/pigweed/sample_project/+/main/tools/setup_windows_prerequisites.bat?format=TEXT > setup_pigweed_prerequisites.b64 && certutil -decode -f setup_pigweed_prerequisites.b64 setup_pigweed_prerequisites.bat && del setup_pigweed_prerequisites.b64
-```
-
-Then you can run the script with the following command **in cmd.exe**:
-
-```bat
-setup_pigweed_prerequisites.bat
-```
-
-Note: You may see a few UAC prompts as the script installs Git, Python, and
-enables developer mode.
-
-Once that is done, you can clone this project with the following command:
-
-```sh
-git clone https://pigweed.googlesource.com/pigweed/sample_project
-```
-
-### Environment setup
-
-Pigweed uses a local development environment for most of its tools. This
-means tools are not installed to your machine, and are instead stored in a
-directory inside your project (Note: git ignores this directory). The tools
-are temporarily added to the PATH of the current shell session.
-
-To make sure the latest tooling has been fetched and set up, run the bootstrap
-command for your operating system:
-
-**Windows**
-
-```bat
-bootstrap.bat
-```
-
-**Linux & Mac**
-
-```sh
+```bash
 source ./bootstrap.sh
 ```
 
-After tooling updates, you might need to run bootstrap again to ensure the
-latest tools.
+After initial bootstrap is completed, you can use the `activate.sh` script to enter existing environment.
 
-After the initial bootstrap, you can use use the `activate` scripts to configure
-the current shell for development without doing a full update.
+## Building samples
 
-**Windows**
+Before building the samples, you will need to download NXP's [MCUXpresso SDK](https://mcuxpresso.nxp.com/en/welcome) for your device and unpack it to the `third_party/pigweed/third_party/mcuxpresso/sdk` folder.
 
-```sh
-activate.bat
+To build the samples you need to generate build rules and run `ninja` in the generated folder:
+
+```bash
+gn gen out
 ```
 
-**Linux & Mac**
-
-```sh
-source ./activate.sh
+Once the build rules are in place, you can build the samples with:
+```bash
+ninja -C out
 ```
-
-### Building
-
-All of these commands must be run from inside an activated developer
-environment. See [Environment setup](#environment-setup)
-
-#### One-shot build
-
-To build the project, documentation, and tests, run the following command in
-an activated environment:
-
-```sh
-pw build
-```
-
-#### Automatically build on file save
-
-Alternatively, if you'd like an automatic rebuild to trigger whenever you save
-changes to files, use `pw watch`:
-
-```sh
-pw watch
-```
-
-## Typical workflow
-
-When you pull latest repository changes, run bootstrap:
-```sh
-source ./bootstrap.sh
-```
-
-If you're just launching a new shell session, you can activate instead:
-```sh
-source ./activate.sh
-```
-
-and rebuild with:
-```sh
-pw build
-```
-
-## More info and Examples
-
-Extended documentation and examples are built along code changes. You can view
-them at `out/gn/docs/gen/docs/html/index.html`.
