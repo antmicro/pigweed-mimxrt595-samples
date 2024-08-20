@@ -74,30 +74,6 @@ extern usb_device_class_struct_t g_UsbDeviceFastbootConfig;
 usb_cdc_vcom_struct_t s_cdcVcom;
 static char const *s_appName = "app task";
 
-/* Line coding of cdc device */
-USB_DMA_INIT_DATA_ALIGN(USB_DATA_ALIGN_SIZE)
-static uint8_t s_lineCoding[LINE_CODING_SIZE] = {
-    /* E.g. 0x00,0xC2,0x01,0x00 : 0x0001C200 is 115200 bits per second */
-    (LINE_CODING_DTERATE >> 0U) & 0x000000FFU,
-    (LINE_CODING_DTERATE >> 8U) & 0x000000FFU,
-    (LINE_CODING_DTERATE >> 16U) & 0x000000FFU,
-    (LINE_CODING_DTERATE >> 24U) & 0x000000FFU,
-    LINE_CODING_CHARFORMAT,
-    LINE_CODING_PARITYTYPE,
-    LINE_CODING_DATABITS};
-
-/* Abstract state of cdc device */
-USB_DMA_INIT_DATA_ALIGN(USB_DATA_ALIGN_SIZE)
-static uint8_t s_abstractState[COMM_FEATURE_DATA_SIZE] = {(STATUS_ABSTRACT_STATE >> 0U) & 0x00FFU,
-                                                          (STATUS_ABSTRACT_STATE >> 8U) & 0x00FFU};
-
-/* Country code of cdc device */
-USB_DMA_INIT_DATA_ALIGN(USB_DATA_ALIGN_SIZE)
-static uint8_t s_countryCode[COMM_FEATURE_DATA_SIZE] = {(COUNTRY_SETTING >> 0U) & 0x00FFU,
-                                                        (COUNTRY_SETTING >> 8U) & 0x00FFU};
-
-/* CDC ACM information */
-USB_DMA_NONINIT_DATA_ALIGN(USB_DATA_ALIGN_SIZE) static usb_cdc_acm_info_t s_usbCdcAcmInfo;
 /* Data buffer for receiving and sending*/
 USB_DMA_NONINIT_DATA_ALIGN(USB_DATA_ALIGN_SIZE) static uint8_t s_currRecvBuf[DATA_BUFF_SIZE];
 USB_DMA_NONINIT_DATA_ALIGN(USB_DATA_ALIGN_SIZE) static uint8_t s_currSendBuf[DATA_BUFF_SIZE];
@@ -225,10 +201,7 @@ usb_status_t USB_DeviceCdcVcomCallback(class_handle_t handle, uint32_t event, vo
     uint32_t len;
 #endif
     uint8_t *uartBitmap;
-    usb_cdc_acm_info_t *acmInfo = &s_usbCdcAcmInfo;
-    usb_device_cdc_acm_request_param_struct_t *acmReqParam;
     usb_device_endpoint_callback_message_struct_t *epCbParam;
-    acmReqParam = (usb_device_cdc_acm_request_param_struct_t *)param;
     epCbParam   = (usb_device_endpoint_callback_message_struct_t *)param;
     switch (event)
     {
@@ -292,154 +265,6 @@ usb_status_t USB_DeviceCdcVcomCallback(class_handle_t handle, uint32_t event, vo
             }
         }
         break;
-        case kUSB_DeviceCdcEventSerialStateNotif:
-            ((usb_device_cdc_acm_struct_t *)handle)->hasSentState = 0;
-            error                                                 = kStatus_USB_Success;
-            break;
-        case kUSB_DeviceCdcEventSendEncapsulatedCommand:
-            break;
-        case kUSB_DeviceCdcEventGetEncapsulatedResponse:
-            break;
-        case kUSB_DeviceCdcEventSetCommFeature:
-            if (USB_DEVICE_CDC_FEATURE_ABSTRACT_STATE == acmReqParam->setupValue)
-            {
-                if (1U == acmReqParam->isSetup)
-                {
-                    *(acmReqParam->buffer) = s_abstractState;
-                    *(acmReqParam->length) = sizeof(s_abstractState);
-                }
-                else
-                {
-                    /* no action, data phase, s_abstractState has been assigned */
-                }
-                error = kStatus_USB_Success;
-            }
-            else if (USB_DEVICE_CDC_FEATURE_COUNTRY_SETTING == acmReqParam->setupValue)
-            {
-                if (1U == acmReqParam->isSetup)
-                {
-                    *(acmReqParam->buffer) = s_countryCode;
-                    *(acmReqParam->length) = sizeof(s_countryCode);
-                }
-                else
-                {
-                    /* no action, data phase, s_countryCode has been assigned */
-                }
-                error = kStatus_USB_Success;
-            }
-            else
-            {
-                /* no action, return kStatus_USB_InvalidRequest */
-            }
-            break;
-        case kUSB_DeviceCdcEventGetCommFeature:
-            if (USB_DEVICE_CDC_FEATURE_ABSTRACT_STATE == acmReqParam->setupValue)
-            {
-                *(acmReqParam->buffer) = s_abstractState;
-                *(acmReqParam->length) = COMM_FEATURE_DATA_SIZE;
-                error                  = kStatus_USB_Success;
-            }
-            else if (USB_DEVICE_CDC_FEATURE_COUNTRY_SETTING == acmReqParam->setupValue)
-            {
-                *(acmReqParam->buffer) = s_countryCode;
-                *(acmReqParam->length) = COMM_FEATURE_DATA_SIZE;
-                error                  = kStatus_USB_Success;
-            }
-            else
-            {
-                /* no action, return kStatus_USB_InvalidRequest */
-            }
-            break;
-        case kUSB_DeviceCdcEventClearCommFeature:
-            break;
-        case kUSB_DeviceCdcEventGetLineCoding:
-            *(acmReqParam->buffer) = s_lineCoding;
-            *(acmReqParam->length) = LINE_CODING_SIZE;
-            error                  = kStatus_USB_Success;
-            break;
-        case kUSB_DeviceCdcEventSetLineCoding:
-        {
-            if (1U == acmReqParam->isSetup)
-            {
-                *(acmReqParam->buffer) = s_lineCoding;
-                *(acmReqParam->length) = sizeof(s_lineCoding);
-            }
-            else
-            {
-                /* no action, data phase, s_lineCoding has been assigned */
-            }
-            error = kStatus_USB_Success;
-        }
-        break;
-        case kUSB_DeviceCdcEventSetControlLineState:
-        {
-            s_usbCdcAcmInfo.dteStatus = acmReqParam->setupValue;
-            /* activate/deactivate Tx carrier */
-            if (acmInfo->dteStatus & USB_DEVICE_CDC_CONTROL_SIG_BITMAP_CARRIER_ACTIVATION)
-            {
-                acmInfo->uartState |= USB_DEVICE_CDC_UART_STATE_TX_CARRIER;
-            }
-            else
-            {
-                acmInfo->uartState &= (uint16_t)~USB_DEVICE_CDC_UART_STATE_TX_CARRIER;
-            }
-
-            /* activate carrier and DTE. Com port of terminal tool running on PC is open now */
-            if (acmInfo->dteStatus & USB_DEVICE_CDC_CONTROL_SIG_BITMAP_DTE_PRESENCE)
-            {
-                acmInfo->uartState |= USB_DEVICE_CDC_UART_STATE_RX_CARRIER;
-            }
-            /* Com port of terminal tool running on PC is closed now */
-            else
-            {
-                acmInfo->uartState &= (uint16_t)~USB_DEVICE_CDC_UART_STATE_RX_CARRIER;
-            }
-
-            /* Indicates to DCE if DTE is present or not */
-            acmInfo->dtePresent = (acmInfo->dteStatus & USB_DEVICE_CDC_CONTROL_SIG_BITMAP_DTE_PRESENCE) ? true : false;
-
-            /* Initialize the serial state buffer */
-            acmInfo->serialStateBuf[0] = NOTIF_REQUEST_TYPE;                /* bmRequestType */
-            acmInfo->serialStateBuf[1] = USB_DEVICE_CDC_NOTIF_SERIAL_STATE; /* bNotification */
-            acmInfo->serialStateBuf[2] = 0x00;                              /* wValue */
-            acmInfo->serialStateBuf[3] = 0x00;
-            acmInfo->serialStateBuf[4] = 0x00; /* wIndex */
-            acmInfo->serialStateBuf[5] = 0x00;
-            acmInfo->serialStateBuf[6] = UART_BITMAP_SIZE; /* wLength */
-            acmInfo->serialStateBuf[7] = 0x00;
-            /* Notify to host the line state */
-            acmInfo->serialStateBuf[4] = acmReqParam->interfaceIndex;
-            /* Lower byte of UART BITMAP */
-            uartBitmap    = (uint8_t *)&acmInfo->serialStateBuf[NOTIF_PACKET_SIZE + UART_BITMAP_SIZE - 2];
-            uartBitmap[0] = acmInfo->uartState & 0xFFu;
-            uartBitmap[1] = (acmInfo->uartState >> 8) & 0xFFu;
-
-            /* Update status */
-            if (acmInfo->dteStatus & USB_DEVICE_CDC_CONTROL_SIG_BITMAP_CARRIER_ACTIVATION)
-            {
-                /*  To do: CARRIER_ACTIVATED */
-            }
-            else
-            {
-                /* To do: CARRIER_DEACTIVATED */
-            }
-
-            if (1U == s_cdcVcom.attach)
-            {
-#if defined(FSL_FEATURE_USB_KHCI_KEEP_ALIVE_ENABLED) && (FSL_FEATURE_USB_KHCI_KEEP_ALIVE_ENABLED > 0U) && \
-    defined(USB_DEVICE_CONFIG_KEEP_ALIVE_MODE) && (USB_DEVICE_CONFIG_KEEP_ALIVE_MODE > 0U) &&             \
-    defined(FSL_FEATURE_USB_KHCI_USB_RAM) && (FSL_FEATURE_USB_KHCI_USB_RAM > 0U)
-                s_waitForDataReceive = 1;
-                USB0->INTEN &= ~USB_INTEN_SOFTOKEN_MASK;
-                s_comOpen = 1;
-                usb_echo("USB_APP_CDC_DTE_ACTIVATED\r\n");
-#endif
-            }
-            error = kStatus_USB_Success;
-        }
-        break;
-        case kUSB_DeviceCdcEventSendBreak:
-            break;
         default:
             break;
     }

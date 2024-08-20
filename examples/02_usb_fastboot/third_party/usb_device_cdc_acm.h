@@ -16,82 +16,6 @@
 /*******************************************************************************
 * Definitions
 ******************************************************************************/
-#define USB_DEVICE_CONFIG_CDC_ACM_MAX_INSTANCE (1U)   /*!< The maximum number of CDC device instance. */
-#define USB_DEVICE_CONFIG_CDC_COMM_CLASS_CODE (0x02U) /*!< The CDC communication class code. */
-#define USB_DEVICE_CONFIG_CDC_DATA_CLASS_CODE (0x0AU) /*!< The CDC data class code. */
-
-#define USB_DEVICE_CDC_REQUEST_SEND_ENCAPSULATED_COMMAND \
-    (0x00U) /*!< The CDC class request code for SEND_ENCAPSULATED_COMMAND. */
-#define USB_DEVICE_CDC_REQUEST_GET_ENCAPSULATED_RESPONSE \
-    (0x01U)                                             /*!< The CDC class request code for GET_ENCAPSULATED_RESPONSE. */
-#define USB_DEVICE_CDC_REQUEST_SET_COMM_FEATURE (0x02U) /*!< The CDC class request code for SET_COMM_FEATURE. */
-#define USB_DEVICE_CDC_REQUEST_GET_COMM_FEATURE (0x03U) /*!< The CDC class request code for GET_COMM_FEATURE. */
-#define USB_DEVICE_CDC_REQUEST_CLEAR_COMM_FEATURE (0x04U) /*!< The CDC class request code for CLEAR_COMM_FEATURE. */
-#define USB_DEVICE_CDC_REQUEST_SET_AUX_LINE_STATE (0x10U) /*!< The CDC class request code for SET_AUX_LINE_STATE. */
-#define USB_DEVICE_CDC_REQUEST_SET_HOOK_STATE (0x11U)     /*!< The CDC class request code for SET_HOOK_STATE. */
-#define USB_DEVICE_CDC_REQUEST_PULSE_SETUP (0x12U)        /*!< The CDC class request code for PULSE_SETUP. */
-#define USB_DEVICE_CDC_REQUEST_SEND_PULSE (0x13U)         /*!< The CDC class request code for SEND_PULSE. */
-#define USB_DEVICE_CDC_REQUEST_SET_PULSE_TIME (0x14U)     /*!< The CDC class request code for SET_PULSE_TIME. */
-#define USB_DEVICE_CDC_REQUEST_RING_AUX_JACK (0x15U)      /*!< The CDC class request code for RING_AUX_JACK. */
-#define USB_DEVICE_CDC_REQUEST_SET_LINE_CODING (0x20U)    /*!< The CDC class request code for SET_LINE_CODING. */
-#define USB_DEVICE_CDC_REQUEST_GET_LINE_CODING (0x21U)    /*!< The CDC class request code for GET_LINE_CODING. */
-#define USB_DEVICE_CDC_REQUEST_SET_CONTROL_LINE_STATE \
-    (0x22U)                                                /*!< The CDC class request code for SET_CONTROL_LINE_STATE. */
-#define USB_DEVICE_CDC_REQUEST_SEND_BREAK (0x23U)          /*!< The CDC class request code for SEND_BREAK. */
-#define USB_DEVICE_CDC_REQUEST_SET_RINGER_PARAMS (0x30U)   /*!< The CDC class request code for SET_RINGER_PARAMS. */
-#define USB_DEVICE_CDC_REQUEST_GET_RINGER_PARAMS (0x31U)   /*!< The CDC class request code for GET_RINGER_PARAMS. */
-#define USB_DEVICE_CDC_REQUEST_SET_OPERATION_PARAM (0x32U) /*!< The CDC class request code for SET_OPERATION_PARAM. */
-#define USB_DEVICE_CDC_REQUEST_GET_OPERATION_PARAM (0x33U) /*!< The CDC class request code for GET_OPERATION_PARAM. */
-#define USB_DEVICE_CDC_REQUEST_SET_LINE_PARAMS (0x34U)     /*!< The CDC class request code for SET_LINE_PARAMS. */
-#define USB_DEVICE_CDC_REQUEST_GET_LINE_PARAMS (0x35U)     /*!< The CDC class request code for GET_LINE_PARAMS. */
-#define USB_DEVICE_CDC_REQUEST_DIAL_DIGITS (0x36U)         /*!< The CDC class request code for DIAL_DIGITS. */
-#define USB_DEVICE_CDC_REQUEST_SET_UNIT_PARAMETER (0x37U)  /*!< The CDC class request code for SET_UNIT_PARAMETER. */
-#define USB_DEVICE_CDC_REQUEST_GET_UNIT_PARAMETER (0x38U)  /*!< The CDC class request code for GET_UNIT_PARAMETER. */
-#define USB_DEVICE_CDC_REQUEST_CLEAR_UNIT_PARAMETER \
-    (0x39U) /*!< The CDC class request code for CLEAR_UNIT_PARAMETER. */
-#define USB_DEVICE_CDC_REQUEST_SET_ETHERNET_MULTICAST_FILTERS \
-    (0x40U) /*!< The CDC class request code for SET_ETHERNET_MULTICAST_FILTERS. */
-#define USB_DEVICE_CDC_REQUEST_SET_ETHERNET_POW_PATTER_FILTER \
-    (0x41U) /*!< The CDC class request code for SET_ETHERNET_POW_PATTER_FILTER. */
-#define USB_DEVICE_CDC_REQUEST_GET_ETHERNET_POW_PATTER_FILTER \
-    (0x42U) /*!< The CDC class request code for GET_ETHERNET_POW_PATTER_FILTER. */
-#define USB_DEVICE_CDC_REQUEST_SET_ETHERNET_PACKET_FILTER \
-    (0x43U) /*!< The CDC class request code for SET_ETHERNET_PACKET_FILTER. */
-#define USB_DEVICE_CDC_REQUEST_GET_ETHERNET_STATISTIC \
-    (0x44U)                                                /*!< The CDC class request code for GET_ETHERNET_STATISTIC. */
-#define USB_DEVICE_CDC_REQUEST_SET_ATM_DATA_FORMAT (0x50U) /*!< The CDC class request code for SET_ATM_DATA_FORMAT. */
-#define USB_DEVICE_CDC_REQUEST_GET_ATM_DEVICE_STATISTICS \
-    (0x51) /*!< The CDC class request code for GET_ATM_DEVICE_STATISTICS. */
-#define USB_DEVICE_CDC_REQUEST_SET_ATM_DEFAULT_VC (0x52U) /*!< The CDC class request code for SET_ATM_DEFAULT_VC. */
-#define USB_DEVICE_CDC_REQUEST_GET_ATM_VC_STATISTICS \
-    (0x53U) /*!< The CDC class request code for GET_ATM_VC_STATISTICS. */
-#define USB_DEVICE_CDC_REQUEST_MDLM_SPECIFIC_REQUESTS_MASK \
-    (0x7FU) /*!< The CDC class request code for MDLM_SPECIFIC_REQUESTS_MASK. */
-
-#define USB_DEVICE_CDC_NOTIF_NETWORK_CONNECTION (0x00U)  /*!< The CDC class notify code for NETWORK_CONNECTION. */
-#define USB_DEVICE_CDC_NOTIF_RESPONSE_AVAIL (0x01U)      /*!< The CDC class notify code for RESPONSE_AVAIL. */
-#define USB_DEVICE_CDC_NOTIF_AUX_JACK_HOOK_STATE (0x08U) /*!< The CDC class notify code for AUX_JACK_HOOK_STATE. */
-#define USB_DEVICE_CDC_NOTIF_RING_DETECT (0x09U)         /*!< The CDC class notify code for RING_DETECT. */
-#define USB_DEVICE_CDC_NOTIF_SERIAL_STATE (0x20U)        /*!< The CDC class notify code for SERIAL_STATE. */
-#define USB_DEVICE_CDC_NOTIF_CALL_STATE_CHANGE (0x28U)   /*!< The CDC class notify code for CALL_STATE_CHANGE. */
-#define USB_DEVICE_CDC_NOTIF_LINE_STATE_CHANGE (0x29U)   /*!< The CDC class notify code for LINE_STATE_CHANGE. */
-#define USB_DEVICE_CDC_NOTIF_CONNECTION_SPEED_CHANGE \
-    (0x2AU) /*!< The CDC class notify code for CONNECTION_SPEED_CHANGE. */
-
-#define USB_DEVICE_CDC_FEATURE_ABSTRACT_STATE (0x01U)  /*!< The CDC class feature select code for ABSTRACT_STATE. */
-#define USB_DEVICE_CDC_FEATURE_COUNTRY_SETTING (0x02U) /*!< The CDC class feature select code for COUNTRY_SETTING. */
-
-#define USB_DEVICE_CDC_CONTROL_SIG_BITMAP_CARRIER_ACTIVATION \
-    (0x02U) /*!< The CDC class control signal bitmap value for CARRIER_ACTIVATION. */
-#define USB_DEVICE_CDC_CONTROL_SIG_BITMAP_DTE_PRESENCE \
-    (0x01U)                                           /*!< The CDC class control signal bitmap value for DTE_PRESENCE. */
-#define USB_DEVICE_CDC_UART_STATE_RX_CARRIER (0x01U)  /*!< The UART state bitmap value of RX_CARRIER. */
-#define USB_DEVICE_CDC_UART_STATE_TX_CARRIER (0x02U)  /*!< The UART state bitmap value of TX_CARRIER. */
-#define USB_DEVICE_CDC_UART_STATE_BREAK (0x04U)       /*!< The UART state bitmap value of BREAK. */
-#define USB_DEVICE_CDC_UART_STATE_RING_SIGNAL (0x08U) /*!< The UART state bitmap value of RING_SIGNAL. */
-#define USB_DEVICE_CDC_UART_STATE_FRAMING (0x10U)     /*!< The UART state bitmap value of FRAMING. */
-#define USB_DEVICE_CDC_UART_STATE_PARITY (0x20U)      /*!< The UART state bitmap value of PARITY. */
-#define USB_DEVICE_CDC_UART_STATE_OVERRUN (0x40U)     /*!< The UART state bitmap value of OVERRUN. */
 
 /*! @brief Definition of CDC class event. */
 typedef enum _usb_device_cdc_acm_event
@@ -141,11 +65,9 @@ typedef struct _usb_device_cdc_acm_struct
 {
     usb_device_handle handle;                           /*!< The handle of the USB device. */
     usb_device_class_config_struct_t *configStruct;     /*!< The class configure structure. */
-    usb_device_interface_struct_t *commInterfaceHandle; /*!< The CDC communication interface handle. */
     usb_device_interface_struct_t *dataInterfaceHandle; /*!< The CDC data interface handle. */
     usb_device_cdc_acm_pipe_t bulkIn;                   /*!< The bulk in pipe for sending packet to host. */
     usb_device_cdc_acm_pipe_t bulkOut;                  /*!< The bulk out pipe for receiving packet from host. */
-    usb_device_cdc_acm_pipe_t interruptIn; /*!< The interrupt in pipe for notifying the device state to host. */
     uint8_t configuration;                 /*!< The current configuration value. */
     uint8_t interfaceNumber;               /*!< The current interface number. */
     uint8_t alternate;                     /*!< The alternate setting value of the interface. */
