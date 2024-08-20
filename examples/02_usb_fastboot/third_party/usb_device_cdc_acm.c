@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "fastboot.h"
 #include "usb_device_config.h"
 #include "usb.h"
 #include "usb_device.h"
@@ -265,9 +266,10 @@ static usb_status_t USB_DeviceCdcAcmEndpointsInit(usb_device_cdc_acm_struct_t *c
         }
     }
 
+    interface = NULL;
     for (count = 0U; count < interfaceList->count; count++)
     {
-        if (USB_DEVICE_CONFIG_CDC_DATA_CLASS_CODE == interfaceList->interfaces[count].classCode)
+        if (FASTBOOT_USB_IFC_CLASS == interfaceList->interfaces[count].classCode)
         {
             for (index = 0U; index < interfaceList->interfaces[count].count; index++)
             {
@@ -280,7 +282,10 @@ static usb_status_t USB_DeviceCdcAcmEndpointsInit(usb_device_cdc_acm_struct_t *c
             break;
         }
     }
-
+    if (NULL == interface)
+    {
+        return kStatus_USB_Error;
+    }
     cdcAcmHandle->dataInterfaceHandle = interface;
 
     for (count = 0U; count < interface->endpointList.count; count++)

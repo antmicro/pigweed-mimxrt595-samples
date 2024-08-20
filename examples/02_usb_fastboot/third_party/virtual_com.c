@@ -243,7 +243,7 @@ usb_status_t USB_DeviceCdcVcomCallback(class_handle_t handle, uint32_t event, vo
                  */
                 error = USB_DeviceCdcAcmSend(handle, USB_CDC_VCOM_BULK_IN_ENDPOINT, NULL, 0);
             }
-            else if ((1U == s_cdcVcom.attach) && (1U == s_cdcVcom.startTransactions))
+            else if ((1U == s_cdcVcom.attach))
             {
                 if ((epCbParam->buffer != NULL) || ((epCbParam->buffer == NULL) && (epCbParam->length == 0)))
                 {
@@ -266,7 +266,7 @@ usb_status_t USB_DeviceCdcVcomCallback(class_handle_t handle, uint32_t event, vo
         break;
         case kUSB_DeviceCdcEventRecvResponse:
         {
-            if ((1U == s_cdcVcom.attach) && (1U == s_cdcVcom.startTransactions))
+            if ((1U == s_cdcVcom.attach))
             {
                 s_recvSize = epCbParam->length;
                 error      = kStatus_USB_Success;
@@ -438,7 +438,6 @@ usb_status_t USB_DeviceCdcVcomCallback(class_handle_t handle, uint32_t event, vo
 
             if (1U == s_cdcVcom.attach)
             {
-                s_cdcVcom.startTransactions = 1;
 #if defined(FSL_FEATURE_USB_KHCI_KEEP_ALIVE_ENABLED) && (FSL_FEATURE_USB_KHCI_KEEP_ALIVE_ENABLED > 0U) && \
     defined(USB_DEVICE_CONFIG_KEEP_ALIVE_MODE) && (USB_DEVICE_CONFIG_KEEP_ALIVE_MODE > 0U) &&             \
     defined(FSL_FEATURE_USB_KHCI_USB_RAM) && (FSL_FEATURE_USB_KHCI_USB_RAM > 0U)
@@ -709,7 +708,7 @@ void APPTask(void *handle)
 
     while (1)
     {
-        if ((1U == s_cdcVcom.attach) && (1U == s_cdcVcom.startTransactions))
+        if ((1U == s_cdcVcom.attach))
         {
             /* Enter critical can not be added here because of the loop */
             /* endpoint callback length is USB_CANCELLED_TRANSFER_LENGTH (0xFFFFFFFFU) when transfer is canceled */

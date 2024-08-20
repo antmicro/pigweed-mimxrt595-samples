@@ -80,8 +80,6 @@ typedef struct _usb_cdc_vcom_struct
     TaskHandle_t deviceTaskHandle;      /* USB device task handle. */
     TaskHandle_t applicationTaskHandle; /* Application task handle. */
     uint8_t speed; /* Speed of USB device. USB_SPEED_FULL/USB_SPEED_LOW/USB_SPEED_HIGH.                 */
-    volatile uint8_t
-        startTransactions; /* A flag to indicate whether a CDC device is ready to transmit and receive data.    */
     uint8_t currentConfiguration;                                           /* Current configuration value. */
     uint8_t currentInterfaceAlternateSetting[USB_CDC_VCOM_INTERFACE_COUNT]; /* Current alternate setting value for each
                                                                                interface. */
