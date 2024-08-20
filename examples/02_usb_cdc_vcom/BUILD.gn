@@ -8,18 +8,36 @@ group("all") {
 }
 
 if (pw_third_party_mcuxpresso_SDK != "") {
+  config("fastboot_include_paths") {
+    include_dirs = [
+      "."
+    ]
+    visibility = [ ":*" ]
+  }
+
+  config("thirdparty_include_paths") {
+    include_dirs = [
+      "./third_party/"
+    ]
+    visibility = [ ":*" ]
+  }
+
   pw_executable("usb_cdc_vcom") {
     sources = [
       "main.cc",
-      "usb_device_descriptor.c",
-      "virtual_com.c",
-      "usb_device_cdc_acm.c",
-      "usb_device_ch9.c",
-      "usb_device_class.c"
+      "third_party/usb_device_descriptor.c",
+      "third_party/virtual_com.c",
+      "third_party/usb_device_cdc_acm.c",
+      "third_party/usb_device_ch9.c",
+      "third_party/usb_device_class.c"
     ]
     deps = [
       "$dir_pw_system:pw_system",
       "$pw_third_party_mcuxpresso_SDK",
+    ]
+    configs = [
+      ":fastboot_include_paths",
+      ":thirdparty_include_paths"
     ]
   }
 }
