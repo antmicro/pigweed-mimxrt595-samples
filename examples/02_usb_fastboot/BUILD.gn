@@ -22,7 +22,7 @@ if (pw_third_party_mcuxpresso_SDK != "") {
     visibility = [ ":*" ]
   }
 
-  pw_executable("usb_cdc_vcom") {
+  pw_executable("usb_fastboot") {
     sources = [
       "main.cc",
       "third_party/usb_device_descriptor.c",

@@ -7,7 +7,7 @@ The repository structure is based on the [Pigweed sample project](https://pigwee
 
 The following, custom, samples are provided:
 - `examples/01_bluetooth`
-- `examples/02_usb_cdc_vcom`
+- `examples/02_usb_fastboot`
 
 ## Environment setup
 
