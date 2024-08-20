@@ -417,9 +417,7 @@ usb_status_t USB_DeviceCdcAcmEvent(void *handle, uint32_t event, void *param)
             error                       = USB_DeviceCdcAcmEndpointsInit(cdcAcmHandle);
             if (kStatus_USB_Success != error)
             {
-#if 0
-                (void)usb_echo("kUSB_DeviceClassEventSetConfiguration, USB_DeviceInitEndpoint fail\r\n");
-#endif
+                usb_echo("USB_DeviceCdcAcmEndpointsInit failed during SET_CONFIGURATION request! (%d)\r\n", error);
             }
             break;
         case kUSB_DeviceClassEventSetInterface:
@@ -445,9 +443,7 @@ usb_status_t USB_DeviceCdcAcmEvent(void *handle, uint32_t event, void *param)
             error                   = USB_DeviceCdcAcmEndpointsInit(cdcAcmHandle);
             if (kStatus_USB_Success != error)
             {
-#if 0
-                (void)usb_echo("kUSB_DeviceClassEventSetInterface, USB_DeviceInitEndpoint fail\r\n");
-#endif
+                usb_echo("USB_DeviceCdcAcmEndpointsInit failed during SET_INTERFACE request! (%d)\r\n", error);
             }
             break;
         case kUSB_DeviceClassEventSetEndpointHalt:
