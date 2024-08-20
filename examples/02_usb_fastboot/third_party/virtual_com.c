@@ -68,8 +68,8 @@ usb_status_t USB_DeviceCallback(usb_device_handle handle, uint32_t event, void *
 /*******************************************************************************
  * Variables
  ******************************************************************************/
-extern usb_device_endpoint_struct_t g_UsbDeviceCdcVcomDicEndpoints[];
-extern usb_device_class_struct_t g_UsbDeviceCdcVcomConfig;
+extern usb_device_endpoint_struct_t g_UsbDeviceFastbootEndpoints[];
+extern usb_device_class_struct_t g_UsbDeviceFastbootConfig;
 /* Data structure of virtual com device */
 usb_cdc_vcom_struct_t s_cdcVcom;
 static char const *s_appName = "app task";
@@ -108,7 +108,7 @@ static volatile uint32_t s_sendSize = 0;
 static usb_device_class_config_struct_t s_cdcAcmConfig[1] = {{
     USB_DeviceCdcVcomCallback,
     0,
-    &g_UsbDeviceCdcVcomConfig,
+    &g_UsbDeviceFastbootConfig,
 }};
 
 /* USB device class configuration information */
@@ -235,13 +235,13 @@ usb_status_t USB_DeviceCdcVcomCallback(class_handle_t handle, uint32_t event, vo
         case kUSB_DeviceCdcEventSendResponse:
         {
             if ((epCbParam->length != 0) &&
-                (0U == (epCbParam->length % g_UsbDeviceCdcVcomDicEndpoints[0].maxPacketSize)))
+                (0U == (epCbParam->length % g_UsbDeviceFastbootEndpoints[0].maxPacketSize)))
             {
                 /* If the last packet is the size of endpoint, then send also zero-ended packet,
                  ** meaning that we want to inform the host that we do not have any additional
                  ** data, so it can flush the output.
                  */
-                error = USB_DeviceCdcAcmSend(handle, USB_CDC_VCOM_BULK_IN_ENDPOINT, NULL, 0);
+                error = USB_DeviceCdcAcmSend(handle, FASTBOOT_USB_BULK_IN_ENDPOINT, NULL, 0);
             }
             else if ((1U == s_cdcVcom.attach))
             {
@@ -249,8 +249,8 @@ usb_status_t USB_DeviceCdcVcomCallback(class_handle_t handle, uint32_t event, vo
                 {
                     /* User: add your own code for send complete event */
                     /* Schedule buffer for next receive event */
-                    error = USB_DeviceCdcAcmRecv(handle, USB_CDC_VCOM_BULK_OUT_ENDPOINT, s_currRecvBuf,
-                                                 g_UsbDeviceCdcVcomDicEndpoints[1].maxPacketSize);
+                    error = USB_DeviceCdcAcmRecv(handle, FASTBOOT_USB_BULK_OUT_ENDPOINT, s_currRecvBuf,
+                                                 g_UsbDeviceFastbootEndpoints[1].maxPacketSize);
 #if defined(FSL_FEATURE_USB_KHCI_KEEP_ALIVE_ENABLED) && (FSL_FEATURE_USB_KHCI_KEEP_ALIVE_ENABLED > 0U) && \
     defined(USB_DEVICE_CONFIG_KEEP_ALIVE_MODE) && (USB_DEVICE_CONFIG_KEEP_ALIVE_MODE > 0U) &&             \
     defined(FSL_FEATURE_USB_KHCI_USB_RAM) && (FSL_FEATURE_USB_KHCI_USB_RAM > 0U)
@@ -280,8 +280,8 @@ usb_status_t USB_DeviceCdcVcomCallback(class_handle_t handle, uint32_t event, vo
                 if (0U == s_recvSize)
                 {
                     /* Schedule buffer for next receive event */
-                    error = USB_DeviceCdcAcmRecv(handle, USB_CDC_VCOM_BULK_OUT_ENDPOINT, s_currRecvBuf,
-                                                 g_UsbDeviceCdcVcomDicEndpoints[1].maxPacketSize);
+                    error = USB_DeviceCdcAcmRecv(handle, FASTBOOT_USB_BULK_OUT_ENDPOINT, s_currRecvBuf,
+                                                 g_UsbDeviceFastbootEndpoints[1].maxPacketSize);
 #if defined(FSL_FEATURE_USB_KHCI_KEEP_ALIVE_ENABLED) && (FSL_FEATURE_USB_KHCI_KEEP_ALIVE_ENABLED > 0U) && \
     defined(USB_DEVICE_CONFIG_KEEP_ALIVE_MODE) && (USB_DEVICE_CONFIG_KEEP_ALIVE_MODE > 0U) &&             \
     defined(FSL_FEATURE_USB_KHCI_USB_RAM) && (FSL_FEATURE_USB_KHCI_USB_RAM > 0U)
@@ -413,19 +413,7 @@ usb_status_t USB_DeviceCdcVcomCallback(class_handle_t handle, uint32_t event, vo
             uartBitmap    = (uint8_t *)&acmInfo->serialStateBuf[NOTIF_PACKET_SIZE + UART_BITMAP_SIZE - 2];
             uartBitmap[0] = acmInfo->uartState & 0xFFu;
             uartBitmap[1] = (acmInfo->uartState >> 8) & 0xFFu;
-#if ((defined USB_DEVICE_CONFIG_CDC_CIC_EP_DISABLE) && (USB_DEVICE_CONFIG_CDC_CIC_EP_DISABLE > 0U))
-#else
-            len = (uint32_t)(NOTIF_PACKET_SIZE + UART_BITMAP_SIZE);
-            if (0U == ((usb_device_cdc_acm_struct_t *)handle)->hasSentState)
-            {
-                error = USB_DeviceCdcAcmSend(handle, USB_CDC_VCOM_INTERRUPT_IN_ENDPOINT, acmInfo->serialStateBuf, len);
-                if (kStatus_USB_Success != error)
-                {
-                    usb_echo("kUSB_DeviceCdcEventSetControlLineState error!");
-                }
-                ((usb_device_cdc_acm_struct_t *)handle)->hasSentState = 1;
-            }
-#endif
+
             /* Update status */
             if (acmInfo->dteStatus & USB_DEVICE_CDC_CONTROL_SIG_BITMAP_CARRIER_ACTIVATION)
             {
@@ -522,14 +510,14 @@ usb_status_t USB_DeviceCallback(usb_device_handle handle, uint32_t event, void *
                 s_cdcVcom.currentConfiguration = 0U;
                 error                          = kStatus_USB_Success;
             }
-            else if (USB_CDC_VCOM_CONFIGURE_INDEX == (*temp8))
+            else if (FASTBOOT_USB_CONFIGURE_INDEX == (*temp8))
             {
                 s_cdcVcom.attach               = 1;
                 s_cdcVcom.currentConfiguration = *temp8;
                 error                          = kStatus_USB_Success;
                 /* Schedule buffer for receive */
-                USB_DeviceCdcAcmRecv(s_cdcVcom.cdcAcmHandle, USB_CDC_VCOM_BULK_OUT_ENDPOINT, s_currRecvBuf,
-                                     g_UsbDeviceCdcVcomDicEndpoints[1].maxPacketSize);
+                USB_DeviceCdcAcmRecv(s_cdcVcom.cdcAcmHandle, FASTBOOT_USB_BULK_OUT_ENDPOINT, s_currRecvBuf,
+                                     g_UsbDeviceFastbootEndpoints[1].maxPacketSize);
             }
             else
             {
@@ -541,17 +529,9 @@ usb_status_t USB_DeviceCallback(usb_device_handle handle, uint32_t event, void *
             {
                 uint8_t interface        = (uint8_t)((*temp16 & 0xFF00U) >> 0x08U);
                 uint8_t alternateSetting = (uint8_t)(*temp16 & 0x00FFU);
-                if (interface == USB_CDC_VCOM_COMM_INTERFACE_INDEX)
+                if (interface == FASTBOOT_USB_INTERFACE_INDEX)
                 {
-                    if (alternateSetting < USB_CDC_VCOM_COMM_INTERFACE_ALTERNATE_COUNT)
-                    {
-                        s_cdcVcom.currentInterfaceAlternateSetting[interface] = alternateSetting;
-                        error                                                 = kStatus_USB_Success;
-                    }
-                }
-                else if (interface == USB_CDC_VCOM_DATA_INTERFACE_INDEX)
-                {
-                    if (alternateSetting < USB_CDC_VCOM_DATA_INTERFACE_ALTERNATE_COUNT)
+                    if (alternateSetting < FASTBOOT_USB_INTERFACE_ALTERNATE_COUNT)
                     {
                         s_cdcVcom.currentInterfaceAlternateSetting[interface] = alternateSetting;
                         error                                                 = kStatus_USB_Success;
@@ -576,7 +556,7 @@ usb_status_t USB_DeviceCallback(usb_device_handle handle, uint32_t event, void *
             {
                 /* Get current alternate setting of the interface request */
                 uint8_t interface = (uint8_t)((*temp16 & 0xFF00U) >> 0x08U);
-                if (interface < USB_CDC_VCOM_INTERFACE_COUNT)
+                if (interface < FASTBOOT_USB_INTERFACE_COUNT)
                 {
                     *temp16 = (*temp16 & 0xFF00U) | s_cdcVcom.currentInterfaceAlternateSetting[interface];
                     error   = kStatus_USB_Success;
@@ -735,7 +715,7 @@ void APPTask(void *handle)
                 s_sendSize    = 0;
 
                 error =
-                    USB_DeviceCdcAcmSend(s_cdcVcom.cdcAcmHandle, USB_CDC_VCOM_BULK_IN_ENDPOINT, s_currSendBuf, size);
+                    USB_DeviceCdcAcmSend(s_cdcVcom.cdcAcmHandle, FASTBOOT_USB_BULK_IN_ENDPOINT, s_currSendBuf, size);
                 if (error != kStatus_USB_Success)
                 {
                     /* Failure to send Data Handling code here */

@@ -22,20 +22,20 @@
 #ifndef CONTROLLER_ID
 #define CONTROLLER_ID kUSB_ControllerEhci0
 #endif
-#define DATA_BUFF_SIZE HS_CDC_VCOM_BULK_OUT_PACKET_SIZE
+#define DATA_BUFF_SIZE HS_FASTBOOT_BULK_OUT_PACKET_SIZE
 #endif
 #if defined(USB_DEVICE_CONFIG_KHCI) && (USB_DEVICE_CONFIG_KHCI > 0)
 #ifndef CONTROLLER_ID
 #define CONTROLLER_ID kUSB_ControllerKhci0
 #endif
-#define DATA_BUFF_SIZE FS_CDC_VCOM_BULK_OUT_PACKET_SIZE
+#define DATA_BUFF_SIZE FS_FASTBOOT_BULK_OUT_PACKET_SIZE
 
 #endif
 #if defined(USB_DEVICE_CONFIG_LPCIP3511FS) && (USB_DEVICE_CONFIG_LPCIP3511FS > 0U)
 #ifndef CONTROLLER_ID
 #define CONTROLLER_ID kUSB_ControllerLpcIp3511Fs0
 #endif
-#define DATA_BUFF_SIZE FS_CDC_VCOM_BULK_OUT_PACKET_SIZE
+#define DATA_BUFF_SIZE FS_FASTBOOT_BULK_OUT_PACKET_SIZE
 
 #endif
 
@@ -43,7 +43,7 @@
 #ifndef CONTROLLER_ID
 #define CONTROLLER_ID kUSB_ControllerLpcIp3511Hs0
 #endif
-#define DATA_BUFF_SIZE HS_CDC_VCOM_BULK_OUT_PACKET_SIZE
+#define DATA_BUFF_SIZE HS_FASTBOOT_BULK_OUT_PACKET_SIZE
 #endif
 
 #if defined(__GIC_PRIO_BITS)
@@ -81,7 +81,7 @@ typedef struct _usb_cdc_vcom_struct
     TaskHandle_t applicationTaskHandle; /* Application task handle. */
     uint8_t speed; /* Speed of USB device. USB_SPEED_FULL/USB_SPEED_LOW/USB_SPEED_HIGH.                 */
     uint8_t currentConfiguration;                                           /* Current configuration value. */
-    uint8_t currentInterfaceAlternateSetting[USB_CDC_VCOM_INTERFACE_COUNT]; /* Current alternate setting value for each
+    uint8_t currentInterfaceAlternateSetting[FASTBOOT_USB_INTERFACE_COUNT]; /* Current alternate setting value for each
                                                                                interface. */
 } usb_cdc_vcom_struct_t;
 

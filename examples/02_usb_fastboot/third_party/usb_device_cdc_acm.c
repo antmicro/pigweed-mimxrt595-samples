@@ -214,58 +214,6 @@ static usb_status_t USB_DeviceCdcAcmEndpointsInit(usb_device_cdc_acm_struct_t *c
     }
 
     interfaceList = &cdcAcmHandle->configStruct->classInfomation->interfaceList[cdcAcmHandle->configuration - 1U];
-
-    for (count = 0U; count < interfaceList->count; count++)
-    {
-        if (USB_DEVICE_CONFIG_CDC_COMM_CLASS_CODE == interfaceList->interfaces[count].classCode)
-        {
-            for (index = 0U; index < interfaceList->interfaces[count].count; index++)
-            {
-                if (interfaceList->interfaces[count].interface[index].alternateSetting == cdcAcmHandle->alternate)
-                {
-                    interface = &interfaceList->interfaces[count].interface[index];
-                    break;
-                }
-            }
-            cdcAcmHandle->interfaceNumber = interfaceList->interfaces[count].interfaceNumber;
-            break;
-        }
-    }
-    if (NULL == interface)
-    {
-        return error;
-    }
-    cdcAcmHandle->commInterfaceHandle = interface;
-    for (count = 0U; count < interface->endpointList.count; count++)
-    {
-        usb_device_endpoint_init_struct_t epInitStruct;
-        epInitStruct.zlt             = 0U;
-        epInitStruct.interval        = interface->endpointList.endpoint[count].interval;
-        epInitStruct.endpointAddress = interface->endpointList.endpoint[count].endpointAddress;
-        epInitStruct.maxPacketSize   = interface->endpointList.endpoint[count].maxPacketSize;
-        epInitStruct.transferType    = interface->endpointList.endpoint[count].transferType;
-
-        if ((USB_IN == ((epInitStruct.endpointAddress & USB_DESCRIPTOR_ENDPOINT_ADDRESS_DIRECTION_MASK) >>
-                        USB_DESCRIPTOR_ENDPOINT_ADDRESS_DIRECTION_SHIFT)) &&
-            (USB_ENDPOINT_INTERRUPT == epInitStruct.transferType))
-        {
-            cdcAcmHandle->interruptIn.ep = (epInitStruct.endpointAddress & USB_DESCRIPTOR_ENDPOINT_ADDRESS_NUMBER_MASK);
-            cdcAcmHandle->interruptIn.isBusy         = 0U;
-            cdcAcmHandle->interruptIn.pipeDataBuffer = (uint8_t *)USB_INVALID_TRANSFER_BUFFER;
-            cdcAcmHandle->interruptIn.pipeStall      = 0U;
-            cdcAcmHandle->interruptIn.pipeDataLen    = 0U;
-            epCallback.callbackFn                    = USB_DeviceCdcAcmInterruptIn;
-        }
-
-        epCallback.callbackParam = cdcAcmHandle;
-
-        error = USB_DeviceInitEndpoint(cdcAcmHandle->handle, &epInitStruct, &epCallback);
-        if (kStatus_USB_Success != error)
-        {
-            return error;
-        }
-    }
-
     interface = NULL;
     for (count = 0U; count < interfaceList->count; count++)
     {
