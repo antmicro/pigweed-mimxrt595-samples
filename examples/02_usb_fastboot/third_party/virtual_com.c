@@ -37,6 +37,9 @@
 extern uint8_t USB_EnterLowpowerMode(void);
 #endif
 #include "fsl_power.h"
+
+#include "fastboot.h"
+
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -76,9 +79,7 @@ static char const *s_appName = "app task";
 
 /* Data buffer for receiving and sending*/
 USB_DMA_NONINIT_DATA_ALIGN(USB_DATA_ALIGN_SIZE) static uint8_t s_currRecvBuf[DATA_BUFF_SIZE];
-USB_DMA_NONINIT_DATA_ALIGN(USB_DATA_ALIGN_SIZE) static uint8_t s_currSendBuf[DATA_BUFF_SIZE];
 static volatile uint32_t s_recvSize = 0;
-static volatile uint32_t s_sendSize = 0;
 
 /* USB device class information */
 static usb_device_class_config_struct_t s_cdcAcmConfig[1] = {{
@@ -223,6 +224,9 @@ usb_status_t USB_DeviceCdcVcomCallback(class_handle_t handle, uint32_t event, vo
                 if ((epCbParam->buffer != NULL) || ((epCbParam->buffer == NULL) && (epCbParam->length == 0)))
                 {
                     /* User: add your own code for send complete event */
+                    if(epCbParam->buffer) {
+                        OnFastbootPacketSent(epCbParam->buffer, epCbParam->length);
+                    }
                     /* Schedule buffer for next receive event */
                     error = USB_DeviceCdcAcmRecv(handle, FASTBOOT_USB_BULK_OUT_ENDPOINT, s_currRecvBuf,
                                                  g_UsbDeviceFastbootEndpoints[1].maxPacketSize);
@@ -245,7 +249,9 @@ usb_status_t USB_DeviceCdcVcomCallback(class_handle_t handle, uint32_t event, vo
             {
                 s_recvSize = epCbParam->length;
                 error      = kStatus_USB_Success;
-
+                if(s_recvSize > 0) {
+                    OnFastbootPacketReceived(s_currRecvBuf, s_recvSize);
+                }
 #if defined(FSL_FEATURE_USB_KHCI_KEEP_ALIVE_ENABLED) && (FSL_FEATURE_USB_KHCI_KEEP_ALIVE_ENABLED > 0U) && \
     defined(USB_DEVICE_CONFIG_KEEP_ALIVE_MODE) && (USB_DEVICE_CONFIG_KEEP_ALIVE_MODE > 0U) &&             \
     defined(FSL_FEATURE_USB_KHCI_USB_RAM) && (FSL_FEATURE_USB_KHCI_USB_RAM > 0U)
@@ -420,17 +426,6 @@ usb_status_t USB_DeviceCallback(usb_device_handle handle, uint32_t event, void *
     return error;
 }
 
-static void CDC_VCOM_FreeRTOSEnterCritical(uint32_t *sr)
-{
-    *sr = DisableGlobalIRQ();
-    __ASM("CPSID i");
-}
-
-static void CDC_VCOM_FreeRTOSExitCritical(uint32_t sr)
-{
-    EnableGlobalIRQ(sr);
-}
-
 /*!
  * @brief Application initialization function.
  *
@@ -495,8 +490,6 @@ void APPTask(void *handle)
 {
     (void)s_appName;
     (void)handle;
-    usb_status_t error = kStatus_USB_Error;
-    uint32_t usbOsaCurrentSr;
 
     USB_DeviceApplicationInit();
 
@@ -516,80 +509,5 @@ void APPTask(void *handle)
         }
     }
 #endif
-
-    while (1)
-    {
-        if ((1U == s_cdcVcom.attach))
-        {
-            /* Enter critical can not be added here because of the loop */
-            /* endpoint callback length is USB_CANCELLED_TRANSFER_LENGTH (0xFFFFFFFFU) when transfer is canceled */
-            if ((0 != s_recvSize) && (USB_CANCELLED_TRANSFER_LENGTH != s_recvSize))
-            {
-                /* The operating timing sequence has guaranteed there is no conflict to access the s_recvSize between
-                   USB ISR and this task. Therefore, the following code of Enter/Exit ctitical mode is useless, only to
-                   mention users the exclusive access of s_recvSize if users implement their own
-                   application referred to this SDK demo */
-                CDC_VCOM_FreeRTOSEnterCritical(&usbOsaCurrentSr);
-                if ((0U != s_recvSize) && (USB_CANCELLED_TRANSFER_LENGTH != s_recvSize))
-                {
-                    /* Copy Buffer to Send Buff */
-                    memcpy(s_currSendBuf, s_currRecvBuf, s_recvSize);
-                    s_sendSize = s_recvSize;
-                    s_recvSize = 0;
-                }
-                CDC_VCOM_FreeRTOSExitCritical(usbOsaCurrentSr);
-            }
-
-            if (0U != s_sendSize)
-            {
-                uint32_t size = s_sendSize;
-                s_sendSize    = 0;
-
-                error =
-                    USB_DeviceCdcAcmSend(s_cdcVcom.cdcAcmHandle, FASTBOOT_USB_BULK_IN_ENDPOINT, s_currSendBuf, size);
-                if (error != kStatus_USB_Success)
-                {
-                    /* Failure to send Data Handling code here */
-                }
-            }
-#if defined(FSL_FEATURE_USB_KHCI_KEEP_ALIVE_ENABLED) && (FSL_FEATURE_USB_KHCI_KEEP_ALIVE_ENABLED > 0U) && \
-    defined(USB_DEVICE_CONFIG_KEEP_ALIVE_MODE) && (USB_DEVICE_CONFIG_KEEP_ALIVE_MODE > 0U) &&             \
-    defined(FSL_FEATURE_USB_KHCI_USB_RAM) && (FSL_FEATURE_USB_KHCI_USB_RAM > 0U)
-            if ((s_waitForDataReceive))
-            {
-                if (s_comOpen == 1)
-                {
-                    /* Wait for all the packets been sent during opening the com port. Otherwise these packets may
-                     * wake up the system.
-                     */
-                    usb_echo("Waiting to enter lowpower ...\r\n");
-                    for (uint32_t i = 0U; i < 16000000U; ++i)
-                    {
-                        __NOP(); /* delay */
-                    }
-
-                    s_comOpen = 0;
-                }
-                usb_echo("Enter lowpower\r\n");
-                BOARD_DbgConsole_Deinit();
-                USB0->INTEN &= ~USB_INTEN_TOKDNEEN_MASK;
-                if (SysTick->CTRL & SysTick_CTRL_ENABLE_Msk)
-                {
-                    SysTick->CTRL &= ~SysTick_CTRL_TICKINT_Msk;
-                }
-                USB_EnterLowpowerMode();
-
-                if (SysTick->CTRL & SysTick_CTRL_ENABLE_Msk)
-                {
-                    SysTick->CTRL |= SysTick_CTRL_TICKINT_Msk;
-                }
-                s_waitForDataReceive = 0;
-                USB0->INTEN |= USB_INTEN_TOKDNEEN_MASK;
-                BOARD_DbgConsole_Init();
-                usb_echo("Exit  lowpower\r\n");
-            }
-#endif
-        }
-    }
 }
 

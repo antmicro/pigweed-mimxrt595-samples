@@ -33,11 +33,14 @@ cc_library(
 cc_binary(
     name = "usb_fastboot",
     srcs = [
+        "transport_mimxrt595evk.cc",
         "main.cc",
     ],
     deps = [
         ":third_party",
         "@pigweed//pw_system:pw_system",
+        "@pigweed//pw_hex_dump:pw_hex_dump",
+        "@pigweed//pw_allocator:bucket_block_allocator",
         "@pigweed//targets/mimxrt595_evk_freertos:boot",
         "@mcuxpresso_sdk//:sdk",
     ],

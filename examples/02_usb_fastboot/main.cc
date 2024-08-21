@@ -11,6 +11,7 @@ extern "C" {
 #include "virtual_com.h"
 }
 
+#include "fastboot.h"
 #include "pw_thread/thread.h"
 #include "pw_thread/detached_thread.h"
 #include "pw_thread_freertos/context.h"
@@ -29,7 +30,7 @@ static pw::thread::freertos::Options s_thread_opts = pw::thread::freertos::Optio
 namespace pw::system {
 
 void UserAppInit() {
-    pw::thread::Thread(s_thread_opts, [] {
+    pw::thread::DetachedThread(s_thread_opts, [] {
         APPTask(&s_cdcVcom);
     });
 }
