@@ -199,9 +199,11 @@ usb_status_t USB_DeviceCdcVcomCallback(class_handle_t handle, uint32_t event, vo
 #if ((defined USB_DEVICE_CONFIG_CDC_CIC_EP_DISABLE) && (USB_DEVICE_CONFIG_CDC_CIC_EP_DISABLE > 0U))
 #else
     uint32_t len;
+    (void)len;
 #endif
     uint8_t *uartBitmap;
     usb_device_endpoint_callback_message_struct_t *epCbParam;
+    (void)uartBitmap;
     epCbParam   = (usb_device_endpoint_callback_message_struct_t *)param;
     switch (event)
     {
@@ -354,13 +356,15 @@ usb_status_t USB_DeviceCallback(usb_device_handle handle, uint32_t event, void *
             {
                 uint8_t interface        = (uint8_t)((*temp16 & 0xFF00U) >> 0x08U);
                 uint8_t alternateSetting = (uint8_t)(*temp16 & 0x00FFU);
+                (void)alternateSetting;
                 if (interface == FASTBOOT_USB_INTERFACE_INDEX)
                 {
-                    if (alternateSetting < FASTBOOT_USB_INTERFACE_ALTERNATE_COUNT)
+                    // always false
+                    /*if (alternateSetting < FASTBOOT_USB_INTERFACE_ALTERNATE_COUNT)
                     {
                         s_cdcVcom.currentInterfaceAlternateSetting[interface] = alternateSetting;
                         error                                                 = kStatus_USB_Success;
-                    }
+                    }*/
                 }
                 else
                 {
@@ -489,6 +493,8 @@ void USB_DeviceTask(void *handle)
  */
 void APPTask(void *handle)
 {
+    (void)s_appName;
+    (void)handle;
     usb_status_t error = kStatus_USB_Error;
     uint32_t usbOsaCurrentSr;
 

@@ -94,6 +94,7 @@ static usb_status_t USB_DeviceCdcAcmBulkIn(usb_device_handle handle,
                                            usb_device_endpoint_callback_message_struct_t *message,
                                            void *callbackParam)
 {
+    (void)handle;
     usb_device_cdc_acm_struct_t *cdcAcmHandle;
     usb_status_t status = kStatus_USB_Error;
     cdcAcmHandle        = (usb_device_cdc_acm_struct_t *)callbackParam;
@@ -129,6 +130,7 @@ static usb_status_t USB_DeviceCdcAcmBulkOut(usb_device_handle handle,
                                             usb_device_endpoint_callback_message_struct_t *message,
                                             void *callbackParam)
 {
+    (void)handle;
     usb_device_cdc_acm_struct_t *cdcAcmHandle;
     usb_status_t status = kStatus_USB_Error;
     cdcAcmHandle        = (usb_device_cdc_acm_struct_t *)callbackParam;
@@ -287,6 +289,7 @@ usb_status_t USB_DeviceCdcAcmEvent(void *handle, uint32_t event, void *param)
 {
     usb_device_cdc_acm_struct_t *cdcAcmHandle;
     usb_device_cdc_acm_request_param_struct_t reqParam;
+    (void)reqParam;
     usb_status_t error = kStatus_USB_Error;
     uint32_t count;
     uint16_t interfaceAlternate;

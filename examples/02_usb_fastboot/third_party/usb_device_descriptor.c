@@ -248,6 +248,7 @@ usb_language_list_t g_UsbDeviceLanguageList = {
 usb_status_t USB_DeviceGetDeviceDescriptor(usb_device_handle handle,
                                            usb_device_get_device_descriptor_struct_t *deviceDescriptor)
 {
+    (void)handle;
     deviceDescriptor->buffer = g_UsbDeviceDescriptor;
     deviceDescriptor->length = USB_DESCRIPTOR_LENGTH_DEVICE;
     return kStatus_USB_Success;
@@ -266,6 +267,7 @@ usb_status_t USB_DeviceGetDeviceDescriptor(usb_device_handle handle,
 usb_status_t USB_DeviceGetConfigurationDescriptor(
     usb_device_handle handle, usb_device_get_configuration_descriptor_struct_t *configurationDescriptor)
 {
+    (void)handle;
     if (FASTBOOT_USB_CONFIGURE_COUNT > configurationDescriptor->configuration)
     {
         configurationDescriptor->buffer = g_UsbDeviceConfigurationDescriptor;
@@ -288,6 +290,7 @@ usb_status_t USB_DeviceGetConfigurationDescriptor(
 usb_status_t USB_DeviceGetStringDescriptor(usb_device_handle handle,
                                            usb_device_get_string_descriptor_struct_t *stringDescriptor)
 {
+    (void)handle;
     if (stringDescriptor->stringIndex == 0U)
     {
         stringDescriptor->buffer = (uint8_t *)g_UsbDeviceLanguageList.languageString;
@@ -341,6 +344,7 @@ usb_status_t USB_DeviceSetSpeed(usb_device_handle handle, uint8_t speed)
 {
     usb_descriptor_union_t *ptr1;
     usb_descriptor_union_t *ptr2;
+    (void)handle;
 
     ptr1 = (usb_descriptor_union_t *)(&g_UsbDeviceConfigurationDescriptor[0]);
     ptr2 = (usb_descriptor_union_t *)(&g_UsbDeviceConfigurationDescriptor[USB_DESCRIPTOR_LENGTH_CONFIGURATION_ALL - 1]);

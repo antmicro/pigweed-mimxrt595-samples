@@ -234,6 +234,8 @@ static usb_status_t USB_DeviceCh9SetClearFeature(usb_device_common_class_struct_
                                                  uint8_t **buffer,
                                                  uint32_t *length)
 {
+    (void)buffer;
+    (void)length;
     usb_status_t error = kStatus_USB_InvalidRequest;
     uint8_t state      = 0U;
     uint8_t isSet      = 0U;
@@ -388,6 +390,8 @@ static usb_status_t USB_DeviceCh9SetAddress(usb_device_common_class_struct_t *cl
                                             uint8_t **buffer,
                                             uint32_t *length)
 {
+    (void)buffer;
+    (void)length;
     usb_status_t error = kStatus_USB_InvalidRequest;
     uint8_t state      = 0U;
 
@@ -660,6 +664,8 @@ static usb_status_t USB_DeviceCh9SetConfiguration(usb_device_common_class_struct
                                                   uint8_t **buffer,
                                                   uint32_t *length)
 {
+    (void)buffer;
+    (void)length;
     uint8_t state = 0U;
 #if (defined(USB_DEVICE_CONFIG_RETURN_VALUE_CHECK) && (USB_DEVICE_CONFIG_RETURN_VALUE_CHECK > 0U))
     usb_status_t error = kStatus_USB_InvalidRequest;
@@ -796,6 +802,8 @@ static usb_status_t USB_DeviceCh9SetInterface(usb_device_common_class_struct_t *
                                               uint8_t **buffer,
                                               uint32_t *length)
 {
+    (void)buffer;
+    (void)length;
     uint8_t state = 0U;
 #if (defined(USB_DEVICE_CONFIG_RETURN_VALUE_CHECK) && (USB_DEVICE_CONFIG_RETURN_VALUE_CHECK > 0U))
     usb_status_t error = kStatus_USB_InvalidRequest;
@@ -860,6 +868,8 @@ static usb_status_t USB_DeviceCh9SynchFrame(usb_device_common_class_struct_t *cl
                                             uint8_t **buffer,
                                             uint32_t *length)
 {
+    (void)buffer;
+    (void)length;
     usb_status_t error = kStatus_USB_InvalidRequest;
     uint8_t state      = 0U;
 
@@ -932,6 +942,9 @@ static usb_status_t USB_DeviceControlCallbackFeedback(usb_device_handle handle,
                                                       uint8_t **buffer,
                                                       uint32_t *length)
 {
+    (void)buffer;
+    (void)length;
+    (void)stage;
     usb_status_t status = kStatus_USB_InvalidRequest;
 
     if (kStatus_USB_InvalidRequest == error)
