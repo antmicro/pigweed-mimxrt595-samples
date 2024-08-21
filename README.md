@@ -23,13 +23,9 @@ After initial bootstrap is completed, you can use the `activate.sh` script to en
 
 Before building the samples, you will need to download NXP's [MCUXpresso SDK](https://mcuxpresso.nxp.com/en/welcome) for your device and unpack it to the `third_party/pigweed/third_party/mcuxpresso/sdk` folder.
 
-To build the samples you need to generate build rules and run `ninja` in the generated folder:
+To build the samples you need to run `bazelisk` with `mimxrt595_evk_freertos` configuration and sample target.
 
 ```bash
-gn gen out
-```
-
-Once the build rules are in place, you can build the samples with:
-```bash
-ninja -C out
+bazelisk build --config mimxrt595_evk_freertos //examples/01_bluetooth:bluetooth
+bazelisk build --config mimxrt595_evk_freertos //examples/02_usb_fastboot:usb_fastboot
 ```
