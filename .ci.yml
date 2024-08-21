@@ -24,6 +24,7 @@ build-pigweed:
     - git checkout origin/SDK_2.16.000_EVK-MIMXRT595
     - popd && popd
     - bazelisk build --config mimxrt595_evk_freertos //examples/01_bluetooth:bluetooth
+    - bazelisk build --config mimxrt595_evk_freertos //examples/02_usb_fastboot:usb_fastboot
   artifacts:
     paths:
       - bazel-bin/examples
