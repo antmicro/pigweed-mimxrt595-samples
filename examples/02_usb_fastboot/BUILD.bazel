@@ -1,0 +1,50 @@
+
+load("@pigweed//targets/mimxrt595_evk_freertos:binary.bzl", "mimxrt595_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "third_party",
+    srcs = [
+        "third_party/usb_device_descriptor.c",
+        "third_party/virtual_com.c",
+        "third_party/usb_device_cdc_acm.c",
+        "third_party/usb_device_ch9.c",
+        "third_party/usb_device_class.c",
+    ],
+    hdrs = [
+        "fastboot.h",
+        "third_party/virtual_com.h",
+        "third_party/usb_device_cdc_acm.h",
+        "third_party/usb_device_ch9.h",
+        "third_party/usb_device_class.h",
+        "third_party/usb_device_config.h",
+        "third_party/usb_device_descriptor.h",
+    ],
+    includes = [
+        "third_party",
+        ".",
+    ],
+    deps = [
+        "@mcuxpresso_sdk//:sdk",
+    ]
+)
+
+cc_binary(
+    name = "usb_fastboot",
+    srcs = [
+        "main.cc",
+    ],
+    deps = [
+        ":third_party",
+        "@pigweed//pw_system:pw_system",
+        "@pigweed//targets/mimxrt595_evk_freertos:boot",
+        "@mcuxpresso_sdk//:sdk",
+    ],
+)
+
+mimxrt595_binary(
+    name = "usb_fastboot.elf",
+    binary = ":usb_fastboot",
+)
+
