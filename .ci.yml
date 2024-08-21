@@ -25,7 +25,9 @@ build-pigweed:
     - popd && popd
     - bazelisk build --config mimxrt595_evk_freertos //examples/01_bluetooth:bluetooth
     - bazelisk build --config mimxrt595_evk_freertos //examples/02_usb_fastboot:usb_fastboot
+    - mkdir out
+    - cp -r bazel-bin/examples/* out
   artifacts:
     paths:
-      - bazel-bin/examples
+      - out
 
