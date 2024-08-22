@@ -10,34 +10,166 @@ extern "C" {
 #include "virtual_com.h"
 // clang-format on
 }
+#include "transport_mimxrt595evk.h"
+
 #include <cstring>
 
 #include "fastboot.h"
-#include "pw_allocator/bucket_block_allocator.h"
-#include "pw_allocator/buffer.h"
+#include "pw_allocator/allocator.h"
 #include "pw_bytes/span.h"
 #include "pw_hex_dump/hex_dump.h"
 #include "pw_log/log.h"
+#include "pw_malloc/malloc.h"
 #include "pw_status/status.h"
 
-static const char FASTBOOT_RESPONSE_OKAY[] = "OKAY";
+/* ISR queue size, in packets
+ * There are two separate queues - for inbound and outbound fastboot
+ * packets. This defines the size of each one individually.
+ */
+static constexpr size_t ISR_PACKET_QUEUE_SIZE = 16;
+
+/* Fastboot packet structure
+ *
+ * This can be an incoming or outgoing packet.
+ */
+struct Packet {
+  size_t size;
+  uint8_t data[];
+
+  constexpr Packet(size_t size_) : size(size_) {}
+
+  /* Convert from a pointer to the data buffer to the Packet itself
+   */
+  static inline Packet* from_data_pointer(uint8_t* data) {
+    const size_t back_offset =
+        offsetof(Packet, data) - (offsetof(Packet, size));
+    return reinterpret_cast<Packet*>((uintptr_t)data - back_offset);
+  }
+};
 
 class PacketAllocator {
  public:
-  PacketAllocator() { m_packet_allocator->Init(m_packet_allocator.as_bytes()); }
+  PacketAllocator(pw::Allocator& alloc) : m_alloc(alloc) {}
 
-  void* Alloc(size_t len) {
-    return m_packet_allocator->Allocate(pw::allocator::Layout(len));
+  /* Make a Packet object for the specified data buffer,
+   */
+  Packet* MakePacket(uint8_t const* buf, size_t len) {
+    taskENTER_CRITICAL();
+    auto* packet = AllocAndCopyData(buf, len);
+    taskEXIT_CRITICAL();
+    return packet;
   }
 
-  void Free(void* ptr) { m_packet_allocator->Deallocate(ptr); }
+  /* Make a Packet object for the specified data buffer, ISR-safe
+   */
+  Packet* MakePacketFromISR(uint8_t const* buf, size_t len) {
+    auto saved = taskENTER_CRITICAL_FROM_ISR();
+    auto* packet = AllocAndCopyData(buf, len);
+    taskEXIT_CRITICAL_FROM_ISR(saved);
+    return packet;
+  }
+
+  /* Free a given Packet object
+   */
+  void Free(Packet* ptr) {
+    taskENTER_CRITICAL();
+    m_alloc.Deallocate(ptr);
+    taskEXIT_CRITICAL();
+  }
+
+  /* Free a given Packet object, ISR-safe
+   */
+  void FreeFromISR(Packet* ptr) {
+    auto saved = taskENTER_CRITICAL_FROM_ISR();
+    m_alloc.Deallocate(ptr);
+    taskEXIT_CRITICAL_FROM_ISR(saved);
+  }
 
  private:
-  pw::allocator::WithBuffer<pw::allocator::BucketBlockAllocator<>, 0x1000>
-      m_packet_allocator;
+  Packet* AllocAndCopyData(uint8_t const* buf, size_t len) {
+    auto* packet = Alloc(len);
+    if (!packet) {
+      return nullptr;
+    }
+    std::memcpy(packet->data, buf, len);
+    return packet;
+  }
+
+  Packet* Alloc(size_t len) {
+    auto* buf = m_alloc.Allocate(
+        pw::allocator::Layout(sizeof(Packet) + len, alignof(Packet)));
+    if (!buf) {
+      return nullptr;
+    }
+
+    return new (buf) Packet(len);
+  }
+
+  pw::Allocator& m_alloc;
 };
 
-static PacketAllocator s_packet_allocator = {};
+/* Wrapper for storing pointers to objects in a FreeRTOS queue
+ */
+template <typename T>
+class PointerQueue {
+ public:
+  PointerQueue(size_t queue_size) {
+    m_queue = xQueueCreate(queue_size, sizeof(T*));
+  }
+
+  /* Enqueue a pointer from a task, will block until space is available
+   * Returns true on success
+   */
+  bool Queue(T* ptr) {
+    if (!m_queue) {
+      return false;
+    }
+    const auto err = xQueueSendToBack(m_queue, &ptr, portMAX_DELAY);
+    return err == pdTRUE;
+  }
+
+  /* Enqueue a pointer from an ISR, won't block if no space is available
+   * Returns true on success
+   */
+  bool QueueFromISR(T* ptr) {
+    if (!m_queue) {
+      return false;
+    }
+    const auto err = xQueueSendToBackFromISR(m_queue, &ptr, 0);
+    return err == pdTRUE;
+  }
+
+  /* Dequeue a pointer from a task, will block until data is available
+   * Returns pointer, or nullptr if no data is available.
+   */
+  T* Dequeue() {
+    if (!m_queue) {
+      return nullptr;
+    }
+    T* ptr = nullptr;
+    const auto err = xQueueReceive(m_queue, &ptr, portMAX_DELAY);
+    return (err == pdTRUE ? ptr : nullptr);
+  }
+
+  /* Dequeue a pointer from an ISR, won't block if no data is available
+   * Returns pointer, or nullptr if no data is available.
+   */
+  T* DequeueFromISR() {
+    if (!m_queue) {
+      return nullptr;
+    }
+    T* ptr = nullptr;
+    const auto err = xQueueReceiveFromISR(m_queue, &ptr, 0);
+    return (err == pdTRUE ? ptr : nullptr);
+  }
+
+ private:
+  QueueHandle_t m_queue;
+};
+
+static PacketAllocator s_packet_allocator{*pw::malloc::GetSystemAllocator()};
+static PointerQueue<Packet> s_packets_in{ISR_PACKET_QUEUE_SIZE};
+static PointerQueue<Packet> s_packets_out{ISR_PACKET_QUEUE_SIZE};
 
 static void HexdumpWithAscii(uint8_t const* buf, size_t len) {
   constexpr pw::dump::FormattedHexDumper::Flags flags = {
@@ -61,59 +193,129 @@ static void HexdumpWithAscii(uint8_t const* buf, size_t len) {
   }
 }
 
-// WARNING: This is within interrupt context!
-// The USB sample is built on callbacks, and this will be called directly
-// from a USB ISR! This should optimally save the packet in a FreeRTOS queue
-// instead and delegate responses to a separate task. Keep in mind that
-// the lower-level USB code uses the same buffer for all reads, so the
-// contents of `buf` would also have to be copied to an allocated temporary
-// packet buffer.
-extern "C" void OnFastbootPacketReceived(uint8_t const* buf, size_t len) {
-  PW_LOG_DEBUG("OnFastbootPacketReceived: received fastboot packet length=%d",
-               len);
-  HexdumpWithAscii(buf, len);
-
-  if (len > 0) {
-    FastbootSendPacket((uint8_t const*)FASTBOOT_RESPONSE_OKAY,
-                       sizeof(FASTBOOT_RESPONSE_OKAY));
-  }
+// Initialize the USB transport
+static void UsbInit() {
+  // NOTE: This is separated from fastboot::mimxrt595evk::UsbTransportInit
+  // because the extern would point to `fastboot::mimxrt595evk::s_cdcVcom`
+  // instead of the intended global symbol `s_cdcVcom` from virtual_com.c
+  extern usb_cdc_vcom_struct_t s_cdcVcom;
+  APPTask(&s_cdcVcom);
 }
 
-// WARNING: This is within interrupt context!
-// Frees packet buffers that already have been sent to the host.
+/* Try enqueueing a fastboot packet
+ */
+static usb_status_t UsbEnqueueFastbootPacket(Packet* packet) {
+  extern usb_cdc_vcom_struct_t s_cdcVcom;
+  const auto error = USB_DeviceCdcAcmSend(s_cdcVcom.cdcAcmHandle,
+                                          FASTBOOT_USB_BULK_IN_ENDPOINT,
+                                          (uint8_t*)packet->data,
+                                          packet->size);
+  if (error != kStatus_USB_Success && error != kStatus_USB_Busy) {
+    // PW_LOG_ERROR("UsbEnqueueFastbootPacket: queueing packet failed (%d)",
+    //              error);
+  }
+  return error;
+}
+
+/* WARNING: This is within interrupt context!
+ * Queue the fastboot packets that were received
+ */
+extern "C" void OnFastbootPacketReceived(uint8_t const* buf, size_t len) {
+  auto* packet = s_packet_allocator.MakePacketFromISR(buf, len);
+  if (!packet) {
+    // PW_LOG_ERROR(
+    //     "OnFastbootPacketReceived: dropping packet of length=%d - allocation
+    //     " "failed", len);
+    return;
+  }
+  s_packets_in.QueueFromISR(packet);
+}
+
+/* WARNING : This is within interrupt context!
+ * Frees packet buffers that have already been sent to the host.
+ */
 extern "C" void OnFastbootPacketSent(uint8_t const* buf, size_t len) {
   if (!buf || !len) {
     return;
   }
-  s_packet_allocator.Free(const_cast<void*>((void const*)buf));
+
+  // The pointer received from lower level code points to
+  // the buffer, not the packet structure.
+  auto* packet = Packet::from_data_pointer(const_cast<uint8_t*>(buf));
+  s_packet_allocator.FreeFromISR(packet);
+
+  // Check if there are any more packets queued and start sending
+  // one immediately if available.
+  if (auto* next_packet = s_packets_out.DequeueFromISR();
+      next_packet != nullptr) {
+    if (UsbEnqueueFastbootPacket(next_packet) != kStatus_USB_Success) {
+      s_packet_allocator.FreeFromISR(next_packet);
+    }
+  }
 }
 
-extern usb_cdc_vcom_struct_t s_cdcVcom;
+void fastboot::mimxrt595evk::UsbTransportInit() { UsbInit(); }
 
-extern "C" int FastbootSendPacket(uint8_t const* buf, size_t len) {
-  auto* packet = s_packet_allocator.Alloc(len);
+size_t fastboot::mimxrt595evk::FastbootSendPacket(pw::ConstByteSpan to_send) {
+  auto* packet = s_packet_allocator.MakePacket((uint8_t const*)to_send.data(),
+                                               to_send.size());
   if (!packet) {
     PW_LOG_ERROR(
         "FastbootSendPacket failed: could not allocate buffer for in-flight "
         "packet");
     return -1;
   }
-  std::memcpy(packet, buf, len);
 
-  const auto error =
-      USB_DeviceCdcAcmSend(s_cdcVcom.cdcAcmHandle,
-                           FASTBOOT_USB_BULK_IN_ENDPOINT,
-                           const_cast<uint8_t*>((uint8_t*)packet),
-                           len);
-  if (error != kStatus_USB_Success) {
+  PW_LOG_DEBUG("FastbootSendPacket: prepared packet=%p", packet);
+  HexdumpWithAscii((uint8_t*)packet->data, packet->size);
+  const volatile auto size = packet->size;
+
+  const auto error = UsbEnqueueFastbootPacket(packet);
+  // If there is a packet primed already, add the new one to the ISR queue
+  // It will be picked up automatically after the existing one is already
+  // transmitted to the host.
+  if (error == kStatus_USB_Busy) {
+    s_packets_out.Queue(packet);
+    PW_LOG_DEBUG("FastbootSendPacket: queued packet=%p (USB busy)", packet);
+    return size;
+  } else if (error != kStatus_USB_Success) {
     s_packet_allocator.Free(packet);
     PW_LOG_ERROR("FastbootSendPacket failed: queueing packet failed (%d)",
                  error);
     return -2;
   }
+  // Do not use `packet` from this point on! Use-after-free may occur if
+  // an ISR happens immediately after queuing, and the ISR frees the
+  // packet already.
+  // This is fine, as we're only using the pointer and not dereferencing it.
+  PW_LOG_DEBUG("FastbootSendPacket: packet %p sent", packet);
+  return size;
+}
 
-  PW_LOG_DEBUG("FastbootSendPacket: queued packet=%p", packet);
-  HexdumpWithAscii((uint8_t*)packet, len);
+size_t fastboot::mimxrt595evk::FastbootReceivePacket(pw::ByteSpan out) {
+  while (true) {
+    // Dequeue will block with portMAX_DELAY timeout, the
+    // outer loop is only to handle the edge case if that
+    // timeout were to actually expire.
+    auto* packet = s_packets_in.Dequeue();
+    if (!packet) {
+      continue;
+    }
 
-  return 0;
+    PW_LOG_DEBUG("FastbootReceivePacket: Received fastboot packet length=%d",
+                 packet->size);
+    HexdumpWithAscii(packet->data, packet->size);
+
+    const auto copy_size = std::min(out.size(), packet->size);
+    std::memcpy(out.data(), packet->data, copy_size);
+    if (copy_size < packet->size) {
+      PW_LOG_WARN(
+          "FastbootReceivePacket: %d bytes were dropped due to buffer being "
+          "too small!",
+          packet->size - copy_size);
+    }
+
+    s_packet_allocator.Free(packet);
+    return copy_size;
+  }
 }

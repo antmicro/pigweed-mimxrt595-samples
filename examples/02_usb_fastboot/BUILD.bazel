@@ -13,6 +13,7 @@ cc_library(
         "third_party/usb_device_class.c",
     ],
     hdrs = [
+        "transport_mimxrt595evk.h",
         "fastboot.h",
         "third_party/virtual_com.h",
         "third_party/usb_device_cdc_acm.h",
@@ -40,7 +41,7 @@ cc_binary(
         ":third_party",
         "@pigweed//pw_system:pw_system",
         "@pigweed//pw_hex_dump:pw_hex_dump",
-        "@pigweed//pw_allocator:bucket_block_allocator",
+        "@pigweed//pw_malloc_freertos:pw_malloc_freertos",
         "@pigweed//targets/mimxrt595_evk_freertos:boot",
         "@mcuxpresso_sdk//:sdk",
     ],

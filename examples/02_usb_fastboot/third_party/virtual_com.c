@@ -39,6 +39,8 @@ extern uint8_t USB_EnterLowpowerMode(void);
 #include "fsl_power.h"
 
 #include "fastboot.h"
+extern void OnFastbootPacketReceived(const uint8_t *buf, size_t len);
+extern void OnFastbootPacketSent(const uint8_t *buf, size_t len);
 
 /*******************************************************************************
  * Definitions
