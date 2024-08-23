@@ -221,21 +221,9 @@ usb_status_t USB_DeviceCdcVcomCallback(class_handle_t handle, uint32_t event, vo
             }
             else if ((1U == s_cdcVcom.attach))
             {
-                if ((epCbParam->buffer != NULL) || ((epCbParam->buffer == NULL) && (epCbParam->length == 0)))
+                if (epCbParam->buffer)
                 {
-                    /* User: add your own code for send complete event */
-                    if(epCbParam->buffer) {
-                        OnFastbootPacketSent(epCbParam->buffer, epCbParam->length);
-                    }
-                    /* Schedule buffer for next receive event */
-                    error = USB_DeviceCdcAcmRecv(handle, FASTBOOT_USB_BULK_OUT_ENDPOINT, s_currRecvBuf,
-                                                 g_UsbDeviceFastbootEndpoints[1].maxPacketSize);
-#if defined(FSL_FEATURE_USB_KHCI_KEEP_ALIVE_ENABLED) && (FSL_FEATURE_USB_KHCI_KEEP_ALIVE_ENABLED > 0U) && \
-    defined(USB_DEVICE_CONFIG_KEEP_ALIVE_MODE) && (USB_DEVICE_CONFIG_KEEP_ALIVE_MODE > 0U) &&             \
-    defined(FSL_FEATURE_USB_KHCI_USB_RAM) && (FSL_FEATURE_USB_KHCI_USB_RAM > 0U)
-                    s_waitForDataReceive = 1;
-                    USB0->INTEN &= ~USB_INTEN_SOFTOKEN_MASK;
-#endif
+                    OnFastbootPacketSent(epCbParam->buffer, epCbParam->length);
                 }
             }
             else
@@ -252,24 +240,9 @@ usb_status_t USB_DeviceCdcVcomCallback(class_handle_t handle, uint32_t event, vo
                 if(s_recvSize > 0) {
                     OnFastbootPacketReceived(s_currRecvBuf, s_recvSize);
                 }
-#if defined(FSL_FEATURE_USB_KHCI_KEEP_ALIVE_ENABLED) && (FSL_FEATURE_USB_KHCI_KEEP_ALIVE_ENABLED > 0U) && \
-    defined(USB_DEVICE_CONFIG_KEEP_ALIVE_MODE) && (USB_DEVICE_CONFIG_KEEP_ALIVE_MODE > 0U) &&             \
-    defined(FSL_FEATURE_USB_KHCI_USB_RAM) && (FSL_FEATURE_USB_KHCI_USB_RAM > 0U)
-                s_waitForDataReceive = 0;
-                USB0->INTEN |= USB_INTEN_SOFTOKEN_MASK;
-#endif
-                if (0U == s_recvSize)
-                {
-                    /* Schedule buffer for next receive event */
-                    error = USB_DeviceCdcAcmRecv(handle, FASTBOOT_USB_BULK_OUT_ENDPOINT, s_currRecvBuf,
-                                                 g_UsbDeviceFastbootEndpoints[1].maxPacketSize);
-#if defined(FSL_FEATURE_USB_KHCI_KEEP_ALIVE_ENABLED) && (FSL_FEATURE_USB_KHCI_KEEP_ALIVE_ENABLED > 0U) && \
-    defined(USB_DEVICE_CONFIG_KEEP_ALIVE_MODE) && (USB_DEVICE_CONFIG_KEEP_ALIVE_MODE > 0U) &&             \
-    defined(FSL_FEATURE_USB_KHCI_USB_RAM) && (FSL_FEATURE_USB_KHCI_USB_RAM > 0U)
-                    s_waitForDataReceive = 1;
-                    USB0->INTEN &= ~USB_INTEN_SOFTOKEN_MASK;
-#endif
-                }
+                /* Schedule buffer for next receive event */
+                error = USB_DeviceCdcAcmRecv(handle, FASTBOOT_USB_BULK_OUT_ENDPOINT, s_currRecvBuf,
+                                                g_UsbDeviceFastbootEndpoints[1].maxPacketSize);
             }
         }
         break;
