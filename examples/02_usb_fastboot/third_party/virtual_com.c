@@ -210,6 +210,11 @@ usb_status_t USB_DeviceCdcVcomCallback(class_handle_t handle, uint32_t event, vo
     {
         case kUSB_DeviceCdcEventSendResponse:
         {
+            if(epCbParam->length == USB_CANCELLED_TRANSFER_LENGTH)
+            {
+                error = kStatus_USB_Success;
+                break;
+            }
             if ((epCbParam->length != 0) &&
                 (0U == (epCbParam->length % g_UsbDeviceFastbootEndpoints[0].maxPacketSize)))
             {
@@ -233,6 +238,11 @@ usb_status_t USB_DeviceCdcVcomCallback(class_handle_t handle, uint32_t event, vo
         break;
         case kUSB_DeviceCdcEventRecvResponse:
         {
+            if(epCbParam->length == USB_CANCELLED_TRANSFER_LENGTH)
+            {
+                error = kStatus_USB_Success;
+                break;
+            }
             if ((1U == s_cdcVcom.attach))
             {
                 s_recvSize = epCbParam->length;
