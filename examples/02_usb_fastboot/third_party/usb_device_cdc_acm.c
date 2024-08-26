@@ -15,6 +15,7 @@
 #include "usb_device.h"
 
 #include "usb_device_class.h"
+#include "usb_device_descriptor.h"
 
 #if USB_DEVICE_CONFIG_CDC_ACM
 #include "usb_device_cdc_acm.h"
@@ -265,6 +266,8 @@ static usb_status_t USB_DeviceCdcAcmEndpointsDeinit(usb_device_cdc_acm_struct_t 
     }
     for (count = 0U; count < cdcAcmHandle->dataInterfaceHandle->endpointList.count; count++)
     {
+        /* ensure pending transfers are cancelled */
+        (void)USB_DeviceCancel(cdcAcmHandle->handle, cdcAcmHandle->dataInterfaceHandle->endpointList.endpoint[count].endpointAddress);
         status = USB_DeviceDeinitEndpoint(
             cdcAcmHandle->handle, cdcAcmHandle->dataInterfaceHandle->endpointList.endpoint[count].endpointAddress);
     }
@@ -316,9 +319,9 @@ usb_status_t USB_DeviceCdcAcmEvent(void *handle, uint32_t event, void *param)
             {
                 break;
             }
-            if (*temp8 == cdcAcmHandle->configuration)
+            if (*temp8 != FASTBOOT_USB_CONFIGURE_INDEX)
             {
-                error = kStatus_USB_Success;
+                error = kStatus_USB_InvalidRequest;
                 break;
             }
 
