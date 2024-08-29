@@ -18,7 +18,6 @@ extern "C" {
 #include "pw_allocator/allocator.h"
 #include "pw_bytes/span.h"
 #include "pw_hex_dump/hex_dump.h"
-#include "pw_log/log.h"
 #include "pw_malloc/malloc.h"
 #include "pw_status/status.h"
 
@@ -27,6 +26,18 @@ extern "C" {
  * packets. This defines the size of each one individually.
  */
 static constexpr size_t ISR_PACKET_QUEUE_SIZE = 16;
+
+/* Enable additional debug output (inbound/outbound packets and
+ * queueing state).
+ */
+#define FASTBOOT_DEBUG 1
+
+#if defined(FASTBOOT_DEBUG) && (FASTBOOT_DEBUG > 0)
+#define PW_LOG_LEVEL PW_LOG_LEVEL_DEBUG
+#else
+#define PW_LOG_LEVEL PW_LOG_LEVEL_INFO
+#endif
+#include "pw_log/log.h"
 
 /* Fastboot packet structure
  *
