@@ -40,7 +40,7 @@ cc_binary(
         "@pigweed//pw_bluetooth:emboss_hci_commands",
         "@pigweed//pw_stream_uart_mcuxpresso:pw_stream_uart_mcuxpresso",
         "@pigweed//pw_async_basic:dispatcher",
-        "//pw_bluetooth_sapphire_mcuxpresso:bluetooth_sapphire_mcuxpresso",
+        "@pigweed//pw_bluetooth_sapphire_mcuxpresso:bluetooth_sapphire_mcuxpresso",
         "@pigweed//targets/mimxrt595_evk_freertos:boot",
         "//config:init_peripherals",
         "@mcuxpresso_sdk//:sdk",
