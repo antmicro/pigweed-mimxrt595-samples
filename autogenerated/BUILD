@@ -29,6 +29,7 @@
 #     --include middleware.usb.device.ip3511hs_config_header.MIMXRT595S \
 #     --include middleware.usb.device.common_header.MIMXRT595S \
 #     --include middleware.usb.common_header.MIMXRT595S \
+#     --include platform.drivers.flash_config.evkmimxrt595.MIMXRT595S \
 #     --exclude device.MIMXRT595S_startup.MIMXRT595S \
 #     --exclude component.osa.MIMXRT595S \
 #     --exclude middleware.sdmmc.sdhc.template.MIMXRT595S \
@@ -55,6 +56,7 @@ package(default_visibility = ["//visibility:public"])
 cc_library(
     name = "sdk",
     srcs = [
+        "boards/evkmimxrt595/flash_config/flash_config.c",
         "components/gpio/fsl_adapter_rt_gpio.c",
         "components/lists/fsl_component_generic_list.c",
         "components/log/fsl_component_log.c",
@@ -71,9 +73,11 @@ cc_library(
         "devices/MIMXRT595S/drivers/fsl_flexcomm.c",
         "devices/MIMXRT595S/drivers/fsl_flexio.c",
         "devices/MIMXRT595S/drivers/fsl_flexio_spi.c",
+        "devices/MIMXRT595S/drivers/fsl_flexspi.c",
         "devices/MIMXRT595S/drivers/fsl_gpio.c",
         "devices/MIMXRT595S/drivers/fsl_hashcrypt.c",
         "devices/MIMXRT595S/drivers/fsl_i2c.c",
+        "devices/MIMXRT595S/drivers/fsl_iap.c",
         "devices/MIMXRT595S/drivers/fsl_inputmux.c",
         "devices/MIMXRT595S/drivers/fsl_mu.c",
         "devices/MIMXRT595S/drivers/fsl_pint.c",
@@ -85,7 +89,6 @@ cc_library(
         "devices/MIMXRT595S/drivers/fsl_usart_dma.c",
         "devices/MIMXRT595S/drivers/fsl_usart_freertos.c",
         "devices/MIMXRT595S/drivers/fsl_usdhc.c",
-        "devices/MIMXRT595S/drivers/fsl_flexspi.c",
         "devices/MIMXRT595S/system_MIMXRT595S_cm33.c",
         "devices/MIMXRT595S/utilities/debug_console/fsl_debug_console.c",
         "devices/MIMXRT595S/utilities/str/fsl_str.c",
@@ -327,6 +330,7 @@ cc_library(
         "CMSIS/Core/Include/core_cm33.h",
         "CMSIS/Core/Include/mpu_armv8.h",
         "CMSIS/Core/Include/tz_context.h",
+        "boards/evkmimxrt595/flash_config/flash_config.h",
         "components/gpio/fsl_adapter_gpio.h",
         "components/lists/fsl_component_generic_list.h",
         "components/log/fsl_component_log.h",
@@ -349,11 +353,14 @@ cc_library(
         "devices/MIMXRT595S/drivers/fsl_flexcomm.h",
         "devices/MIMXRT595S/drivers/fsl_flexio.h",
         "devices/MIMXRT595S/drivers/fsl_flexio_spi.h",
+        "devices/MIMXRT595S/drivers/fsl_flexspi.h",
         "devices/MIMXRT595S/drivers/fsl_gpio.h",
         "devices/MIMXRT595S/drivers/fsl_hashcrypt.h",
         "devices/MIMXRT595S/drivers/fsl_i2c.h",
+        "devices/MIMXRT595S/drivers/fsl_iap.h",
         "devices/MIMXRT595S/drivers/fsl_inputmux.h",
         "devices/MIMXRT595S/drivers/fsl_inputmux_connections.h",
+        "devices/MIMXRT595S/drivers/fsl_iopctl.h",
         "devices/MIMXRT595S/drivers/fsl_mu.h",
         "devices/MIMXRT595S/drivers/fsl_pint.h",
         "devices/MIMXRT595S/drivers/fsl_power.h",
@@ -364,8 +371,6 @@ cc_library(
         "devices/MIMXRT595S/drivers/fsl_usart_dma.h",
         "devices/MIMXRT595S/drivers/fsl_usart_freertos.h",
         "devices/MIMXRT595S/drivers/fsl_usdhc.h",
-        "devices/MIMXRT595S/drivers/fsl_iopctl.h",
-        "devices/MIMXRT595S/drivers/fsl_flexspi.h",
         "devices/MIMXRT595S/fsl_device_registers.h",
         "devices/MIMXRT595S/system_MIMXRT595S_cm33.h",
         "devices/MIMXRT595S/utilities/debug_console/fsl_debug_console.h",
@@ -776,6 +781,7 @@ cc_library(
     defines = [
         "SERIAL_PORT_TYPE_UART=1",
         "CFG_BLE=",
+        "BOOT_HEADER_ENABLE=1",
         "LFS_NO_INTRINSICS=1",
         "LFS_NO_ERROR=1",
         "FSL_OSA_TASK_ENABLE=1",
@@ -805,6 +811,7 @@ cc_library(
     ],
     includes = [
         "CMSIS/Core/Include",
+        "boards/evkmimxrt595/flash_config",
         "components/gpio",
         "components/lists",
         "components/log",
