@@ -34,15 +34,15 @@ void bluetooth_thread() {
   std::unique_ptr<pw::bluetooth::Controller> controller =
       std::make_unique<pw::bluetooth::Mimxrt595Controller>();
   pw::async::BasicDispatcher dispatcher;
+
+  pw::sync::ThreadNotification transport_init_notification;
   auto transport =
       std::make_unique<bt::hci::Transport>(std::move(controller), dispatcher);
-  transport->Initialize([](bool success) { (void)success; });
-
-  // TODO: it seems that there is a race-condition between controller
-  // initialization callback and advertising start. Low Energy Advertiser
-  // assumes, that transport is already initialized. Add small delay to
-  // workaround this issue.
-  vTaskDelay(1000);
+  transport->Initialize([&transport_init_notification](bool success) {
+    transport_init_notification.release();
+    (void)success;
+  });
+  transport_init_notification.acquire();
 
   bt::hci::LowEnergyAdvertiserMimxrt595 advertiser(transport->GetWeakPtr(), 1);
   bt::DeviceAddress address;
