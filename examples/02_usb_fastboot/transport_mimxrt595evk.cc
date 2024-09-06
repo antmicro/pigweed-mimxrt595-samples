@@ -267,7 +267,7 @@ extern "C" void OnFastbootPacketSent(uint8_t const* buf, size_t len) {
 
 void fastboot::mimxrt595evk::UsbTransportInit() { UsbInit(); }
 
-size_t fastboot::mimxrt595evk::FastbootSendPacket(pw::ConstByteSpan to_send) {
+ssize_t fastboot::mimxrt595evk::FastbootSendPacket(pw::ConstByteSpan to_send) {
   auto* packet = s_packet_allocator.MakePacket((uint8_t const*)to_send.data(),
                                                to_send.size());
   if (!packet) {
@@ -303,7 +303,7 @@ size_t fastboot::mimxrt595evk::FastbootSendPacket(pw::ConstByteSpan to_send) {
   return size;
 }
 
-size_t fastboot::mimxrt595evk::FastbootReceivePacket(pw::ByteSpan out) {
+ssize_t fastboot::mimxrt595evk::FastbootReceivePacket(pw::ByteSpan out) {
   while (true) {
     // Dequeue will block with portMAX_DELAY timeout, the
     // outer loop is only to handle the edge case if that

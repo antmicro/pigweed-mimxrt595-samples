@@ -1,6 +1,7 @@
 #pragma once
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 
 extern "C" {
 
@@ -32,12 +33,12 @@ void UsbTransportInit();
  *
  * The caller must be within a FreeRTOS task!
  */
-size_t FastbootSendPacket(pw::ConstByteSpan);
+ssize_t FastbootSendPacket(pw::ConstByteSpan);
 
 /* Read a fastboot packet from the host into the specified ByteSpan.
  *
  * The caller must be within a FreeRTOS task!
  */
-size_t FastbootReceivePacket(pw::ByteSpan);
+ssize_t FastbootReceivePacket(pw::ByteSpan);
 
 }  // namespace fastboot::mimxrt595evk
