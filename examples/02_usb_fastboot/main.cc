@@ -1,17 +1,34 @@
+#include "pw_fastboot/device_hal.h"
+#include "pw_fastboot/device_variable.h"
+#include "pw_fastboot/transport.h"
 #include "transport_mimxrt595evk.h"
-#include "pw_log/log.h"
 #include "pw_thread/detached_thread.h"
+#include "pw_fastboot/fastboot_device.h"
+#include <cstdio>
+#include <memory>
+#include <string>
 
 static void FastbootProtocolLoop() {
-    static std::byte s_packet_buffer[512];
-    static constexpr char FASTBOOT_RESPONSE_OKAY[] = "OKAY";
-
-    fastboot::mimxrt595evk::UsbTransportInit();
-    while (true) {
-        auto n = fastboot::mimxrt595evk::FastbootReceivePacket(pw::ByteSpan{s_packet_buffer, sizeof(s_packet_buffer)});
-        (void)n;
-        fastboot::mimxrt595evk::FastbootSendPacket(pw::ConstByteSpan{(std::byte const*)FASTBOOT_RESPONSE_OKAY, sizeof(FASTBOOT_RESPONSE_OKAY)});
-    }
+    auto variables = std::make_unique<DeviceVariableProvider>();
+    variables->RegisterVariable("test1", [](auto, auto, std::string* message) -> bool {
+        *message = "VARIABLE1";
+        return true;
+    });
+    variables->RegisterVariable("test2", [](auto, auto, std::string* message) -> bool {
+        *message = "TEST-VARIABLE-2";
+        return true;
+    });
+    variables->RegisterSpecialVariable("test3", [](FastbootDevice* device) -> bool {
+        device->WriteInfo("This is an example of a special/multiline fastboot variable.");
+        device->WriteInfo("This can be used for example to dump logs.");
+        device->WriteInfo("To write a line, call device->WriteInfo.");
+        device->WriteInfo("Special variables are not displayed in output of fastboot getvar all.");
+        return true;
+    });
+    FastbootDevice device {std::make_unique<fastboot::mimxrt595evk::UsbTransport>(),
+                           std::move(variables),
+                           std::make_unique<DeviceHAL>()};
+    device.ExecuteCommands();
 }
 
 namespace pw::system {
