@@ -21,6 +21,8 @@
 #include "pw_fastboot/fastboot_device.h"
 #include "stringutils/strings.h"
 
+namespace pw::fastboot {
+
 static bool GetVersion(FastbootDevice* /* device */,
                        const std::vector<std::string>& /* args */,
                        std::string* message) {
@@ -80,3 +82,5 @@ bool DeviceVariableProvider::RegisterSpecialVariable(std::string name,
   auto it = special_vars_.emplace(std::make_pair(name, SpecialVariable{get}));
   return it.second;
 }
+
+}  // namespace pw::fastboot

@@ -25,6 +25,8 @@
 #include "pw_log/log.h"
 #include "stringutils/strings.h"
 
+namespace pw::fastboot::internal {
+
 bool GetVarHandler(FastbootDevice* device,
                    const std::vector<std::string>& args) {
   if (args.size() < 2) {
@@ -168,3 +170,5 @@ bool FlashHandler(FastbootDevice* device,
   }
   return device->WriteOkay("Flashing done");
 }
+
+}  // namespace pw::fastboot::internal

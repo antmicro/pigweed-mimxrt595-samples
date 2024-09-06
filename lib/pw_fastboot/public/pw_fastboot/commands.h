@@ -19,8 +19,7 @@
 #include <string>
 #include <vector>
 
-constexpr unsigned int kMaxDownloadSizeDefault = 0x10000000;
-constexpr unsigned int kMaxFetchSizeDefault = 0x10000000;
+namespace pw::fastboot {
 
 class FastbootDevice;
 
@@ -30,6 +29,11 @@ enum class FastbootResult {
   INFO,
   DATA,
 };
+
+namespace internal {
+
+constexpr unsigned int kMaxDownloadSizeDefault = 0x10000000;
+constexpr unsigned int kMaxFetchSizeDefault = 0x10000000;
 
 // Execute a command with the given arguments (possibly empty).
 using CommandHandler =
@@ -52,3 +56,6 @@ bool GetVarHandler(FastbootDevice* device,
 bool FlashHandler(FastbootDevice* device, const std::vector<std::string>& args);
 bool OemCmdHandler(FastbootDevice* device,
                    const std::vector<std::string>& args);
+
+}  // namespace internal
+}  // namespace pw::fastboot

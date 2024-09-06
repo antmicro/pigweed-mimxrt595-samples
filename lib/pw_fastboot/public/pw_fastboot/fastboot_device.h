@@ -27,6 +27,8 @@
 #include "device_variable.h"
 #include "transport.h"
 
+namespace pw::fastboot {
+
 class FastbootDevice {
  public:
   FastbootDevice(std::unique_ptr<Transport> transport,
@@ -51,10 +53,12 @@ class FastbootDevice {
   DeviceHAL* device_hal() { return device_hal_.get(); }
 
  private:
-  const std::unordered_map<std::string, CommandHandler> kCommandMap;
+  const std::unordered_map<std::string, internal::CommandHandler> kCommandMap;
 
   std::unique_ptr<Transport> transport_;
   std::unique_ptr<DeviceVariableProvider> variables_;
   std::unique_ptr<DeviceHAL> device_hal_;
   std::vector<char> download_data_;
 };
+
+}  // namespace pw::fastboot

@@ -19,6 +19,8 @@
 #include <string>
 #include <unordered_map>
 
+namespace pw::fastboot {
+
 class FastbootDevice;
 
 enum class RebootType { ToSoftware, ToRecovery, ToBootloader, ToFastboot };
@@ -39,3 +41,5 @@ class DeviceHAL {
 
  private:
 };
+
+}  // namespace pw::fastboot

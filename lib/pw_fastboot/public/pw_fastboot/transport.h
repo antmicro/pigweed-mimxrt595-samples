@@ -18,6 +18,8 @@
 
 #include <cstdio>
 
+namespace pw::fastboot {
+
 // General interface to allow the fastboot protocol to be used over different
 // types of transports.
 class Transport {
@@ -46,3 +48,5 @@ class Transport {
   Transport(const Transport&) = delete;
   const Transport& operator=(const Transport&) = delete;
 };
+
+}  // namespace pw::fastboot

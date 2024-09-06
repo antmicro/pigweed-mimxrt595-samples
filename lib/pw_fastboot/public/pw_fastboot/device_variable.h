@@ -19,6 +19,8 @@
 #include <string>
 #include <unordered_map>
 
+namespace pw::fastboot {
+
 class FastbootDevice;
 
 // Callback used for simple variables that return a string
@@ -69,3 +71,5 @@ class DeviceVariableProvider {
   std::unordered_map<std::string, SimpleVariable> simple_vars_;
   std::unordered_map<std::string, SpecialVariable> special_vars_;
 };
+
+}  // namespace pw::fastboot
