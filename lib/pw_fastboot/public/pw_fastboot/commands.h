@@ -30,8 +30,6 @@ enum class FastbootResult {
   DATA,
 };
 
-namespace internal {
-
 constexpr unsigned int kMaxDownloadSizeDefault = 0x10000000;
 constexpr unsigned int kMaxFetchSizeDefault = 0x10000000;
 
@@ -39,23 +37,4 @@ constexpr unsigned int kMaxFetchSizeDefault = 0x10000000;
 using CommandHandler =
     std::function<bool(Device*, const std::vector<std::string>&)>;
 
-bool DownloadHandler(Device* device,
-                     const std::vector<std::string>& args);
-bool ShutDownHandler(Device* device,
-                     const std::vector<std::string>& args);
-bool RebootHandler(Device* device,
-                   const std::vector<std::string>& args);
-bool RebootBootloaderHandler(Device* device,
-                             const std::vector<std::string>& args);
-bool RebootFastbootHandler(Device* device,
-                           const std::vector<std::string>& args);
-bool RebootRecoveryHandler(Device* device,
-                           const std::vector<std::string>& args);
-bool GetVarHandler(Device* device,
-                   const std::vector<std::string>& args);
-bool FlashHandler(Device* device, const std::vector<std::string>& args);
-bool OemCmdHandler(Device* device,
-                   const std::vector<std::string>& args);
-
-}  // namespace internal
 }  // namespace pw::fastboot

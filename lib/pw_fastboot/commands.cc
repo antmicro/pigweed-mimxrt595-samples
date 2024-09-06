@@ -18,6 +18,7 @@
 
 #include <unordered_set>
 
+#include "private/pw_fastboot/command_handlers.h"
 #include "pw_fastboot/constants.h"
 #include "pw_fastboot/device_hal.h"
 #include "pw_fastboot/device_variable.h"
@@ -25,10 +26,9 @@
 #include "pw_log/log.h"
 #include "stringutils/strings.h"
 
-namespace pw::fastboot::internal {
+namespace pw::fastboot {
 
-bool GetVarHandler(Device* device,
-                   const std::vector<std::string>& args) {
+bool GetVarHandler(Device* device, const std::vector<std::string>& args) {
   if (args.size() < 2) {
     return device->WriteFail("Missing argument");
   }
@@ -58,16 +58,14 @@ bool GetVarHandler(Device* device,
   return device->WriteOkay(message);
 }
 
-bool OemCmdHandler(Device* device,
-                   const std::vector<std::string>& args) {
+bool OemCmdHandler(Device* device, const std::vector<std::string>& args) {
   if (!device->device_hal()->OemCommand(device, args[0])) {
     return device->WriteFail("Unable to do OEM command " + args[0]);
   }
   return device->WriteOkay("");
 }
 
-bool DownloadHandler(Device* device,
-                     const std::vector<std::string>& args) {
+bool DownloadHandler(Device* device, const std::vector<std::string>& args) {
   if (args.size() < 2) {
     return device->WriteFail("size argument unspecified");
   }
@@ -114,8 +112,7 @@ bool ShutDownHandler(Device* device,
   return result;
 }
 
-bool RebootHandler(Device* device,
-                   const std::vector<std::string>& /* args */) {
+bool RebootHandler(Device* device, const std::vector<std::string>& /* args */) {
   auto result = device->WriteInfo("Rebooting");
   if (!device->device_hal()->Reboot(device, RebootType::ToSoftware)) {
     return device->WriteFail("Reboot failed");
@@ -154,8 +151,7 @@ bool RebootRecoveryHandler(Device* device,
   return result;
 }
 
-bool FlashHandler(Device* device,
-                  const std::vector<std::string>& args) {
+bool FlashHandler(Device* device, const std::vector<std::string>& args) {
   if (args.size() < 2) {
     return device->WriteFail("Invalid arguments");
   }
@@ -171,4 +167,4 @@ bool FlashHandler(Device* device,
   return device->WriteOkay("Flashing done");
 }
 
-}  // namespace pw::fastboot::internal
+}  // namespace pw::fastboot

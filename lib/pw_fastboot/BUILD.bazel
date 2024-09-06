@@ -6,6 +6,7 @@ cc_library(
         "commands.cc",
         "device_variable.cc",
         "fastboot_device.cc",
+        "private/pw_fastboot/command_handlers.h",
     ],
     hdrs = [
         "public/pw_fastboot/commands.h",

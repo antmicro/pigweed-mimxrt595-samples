@@ -53,7 +53,7 @@ class Device {
   DeviceHAL* device_hal() { return device_hal_.get(); }
 
  private:
-  const std::unordered_map<std::string, internal::CommandHandler> kCommandMap;
+  const std::unordered_map<std::string, CommandHandler> kCommandMap;
 
   std::unique_ptr<Transport> transport_;
   std::unique_ptr<VariableProvider> variables_;

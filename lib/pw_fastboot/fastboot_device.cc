@@ -20,6 +20,7 @@
 #include <cstring>
 #include <memory>
 
+#include "private/pw_fastboot/command_handlers.h"
 #include "pw_fastboot/constants.h"
 #include "pw_fastboot/device_hal.h"
 #include "pw_fastboot/device_variable.h"
@@ -30,20 +31,19 @@ using std::string_literals::operator""s;
 
 namespace pw::fastboot {
 
-Device::Device(
-    std::unique_ptr<Transport> transport,
-    std::unique_ptr<VariableProvider> variables,
-    std::unique_ptr<DeviceHAL> device_hal)
+Device::Device(std::unique_ptr<Transport> transport,
+               std::unique_ptr<VariableProvider> variables,
+               std::unique_ptr<DeviceHAL> device_hal)
     : kCommandMap({
-          {FB_CMD_DOWNLOAD, internal::DownloadHandler},
-          {FB_CMD_GETVAR, internal::GetVarHandler},
-          {FB_CMD_SHUTDOWN, internal::ShutDownHandler},
-          {FB_CMD_REBOOT, internal::RebootHandler},
-          {FB_CMD_REBOOT_BOOTLOADER, internal::RebootBootloaderHandler},
-          {FB_CMD_REBOOT_FASTBOOT, internal::RebootFastbootHandler},
-          {FB_CMD_REBOOT_RECOVERY, internal::RebootRecoveryHandler},
-          {FB_CMD_FLASH, internal::FlashHandler},
-          {FB_CMD_OEM, internal::OemCmdHandler},
+          {FB_CMD_DOWNLOAD, DownloadHandler},
+          {FB_CMD_GETVAR, GetVarHandler},
+          {FB_CMD_SHUTDOWN, ShutDownHandler},
+          {FB_CMD_REBOOT, RebootHandler},
+          {FB_CMD_REBOOT_BOOTLOADER, RebootBootloaderHandler},
+          {FB_CMD_REBOOT_FASTBOOT, RebootFastbootHandler},
+          {FB_CMD_REBOOT_RECOVERY, RebootRecoveryHandler},
+          {FB_CMD_FLASH, FlashHandler},
+          {FB_CMD_OEM, OemCmdHandler},
       }),
       transport_(std::move(transport)),
       variables_(std::move(variables)),
@@ -53,8 +53,7 @@ Device::~Device() { CloseDevice(); }
 
 void Device::CloseDevice() { transport_->Close(); }
 
-bool Device::WriteStatus(FastbootResult result,
-                                 const std::string& message) {
+bool Device::WriteStatus(FastbootResult result, const std::string& message) {
   // "FAIL", "OKAY", "INFO", "DATA"
   constexpr size_t kNumResponseTypes = 4;
   // The response reason occupies 4 bytes at the start of the message.
