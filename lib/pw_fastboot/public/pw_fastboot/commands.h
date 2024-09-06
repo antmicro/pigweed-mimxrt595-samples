@@ -21,7 +21,7 @@
 
 namespace pw::fastboot {
 
-class FastbootDevice;
+class Device;
 
 enum class FastbootResult {
   OKAY,
@@ -37,24 +37,24 @@ constexpr unsigned int kMaxFetchSizeDefault = 0x10000000;
 
 // Execute a command with the given arguments (possibly empty).
 using CommandHandler =
-    std::function<bool(FastbootDevice*, const std::vector<std::string>&)>;
+    std::function<bool(Device*, const std::vector<std::string>&)>;
 
-bool DownloadHandler(FastbootDevice* device,
+bool DownloadHandler(Device* device,
                      const std::vector<std::string>& args);
-bool ShutDownHandler(FastbootDevice* device,
+bool ShutDownHandler(Device* device,
                      const std::vector<std::string>& args);
-bool RebootHandler(FastbootDevice* device,
+bool RebootHandler(Device* device,
                    const std::vector<std::string>& args);
-bool RebootBootloaderHandler(FastbootDevice* device,
+bool RebootBootloaderHandler(Device* device,
                              const std::vector<std::string>& args);
-bool RebootFastbootHandler(FastbootDevice* device,
+bool RebootFastbootHandler(Device* device,
                            const std::vector<std::string>& args);
-bool RebootRecoveryHandler(FastbootDevice* device,
+bool RebootRecoveryHandler(Device* device,
                            const std::vector<std::string>& args);
-bool GetVarHandler(FastbootDevice* device,
+bool GetVarHandler(Device* device,
                    const std::vector<std::string>& args);
-bool FlashHandler(FastbootDevice* device, const std::vector<std::string>& args);
-bool OemCmdHandler(FastbootDevice* device,
+bool FlashHandler(Device* device, const std::vector<std::string>& args);
+bool OemCmdHandler(Device* device,
                    const std::vector<std::string>& args);
 
 }  // namespace internal

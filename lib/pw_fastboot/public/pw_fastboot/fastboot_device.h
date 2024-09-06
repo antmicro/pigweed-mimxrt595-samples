@@ -29,12 +29,12 @@
 
 namespace pw::fastboot {
 
-class FastbootDevice {
+class Device {
  public:
-  FastbootDevice(std::unique_ptr<Transport> transport,
-                 std::unique_ptr<DeviceVariableProvider> variables,
-                 std::unique_ptr<DeviceHAL> device_hal);
-  ~FastbootDevice();
+  Device(std::unique_ptr<Transport> transport,
+         std::unique_ptr<VariableProvider> variables,
+         std::unique_ptr<DeviceHAL> device_hal);
+  ~Device();
 
   void CloseDevice();
   void ExecuteCommands();
@@ -49,14 +49,14 @@ class FastbootDevice {
 
   std::vector<char>& download_data() { return download_data_; }
   Transport* get_transport() { return transport_.get(); }
-  DeviceVariableProvider* get_variables() { return variables_.get(); }
+  VariableProvider* get_variables() { return variables_.get(); }
   DeviceHAL* device_hal() { return device_hal_.get(); }
 
  private:
   const std::unordered_map<std::string, internal::CommandHandler> kCommandMap;
 
   std::unique_ptr<Transport> transport_;
-  std::unique_ptr<DeviceVariableProvider> variables_;
+  std::unique_ptr<VariableProvider> variables_;
   std::unique_ptr<DeviceHAL> device_hal_;
   std::vector<char> download_data_;
 };

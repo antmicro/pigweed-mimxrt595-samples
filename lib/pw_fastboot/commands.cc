@@ -27,7 +27,7 @@
 
 namespace pw::fastboot::internal {
 
-bool GetVarHandler(FastbootDevice* device,
+bool GetVarHandler(Device* device,
                    const std::vector<std::string>& args) {
   if (args.size() < 2) {
     return device->WriteFail("Missing argument");
@@ -58,7 +58,7 @@ bool GetVarHandler(FastbootDevice* device,
   return device->WriteOkay(message);
 }
 
-bool OemCmdHandler(FastbootDevice* device,
+bool OemCmdHandler(Device* device,
                    const std::vector<std::string>& args) {
   if (!device->device_hal()->OemCommand(device, args[0])) {
     return device->WriteFail("Unable to do OEM command " + args[0]);
@@ -66,7 +66,7 @@ bool OemCmdHandler(FastbootDevice* device,
   return device->WriteOkay("");
 }
 
-bool DownloadHandler(FastbootDevice* device,
+bool DownloadHandler(Device* device,
                      const std::vector<std::string>& args) {
   if (args.size() < 2) {
     return device->WriteFail("size argument unspecified");
@@ -104,7 +104,7 @@ bool DownloadHandler(FastbootDevice* device,
   return device->WriteFail("Couldn't download data");
 }
 
-bool ShutDownHandler(FastbootDevice* device,
+bool ShutDownHandler(Device* device,
                      const std::vector<std::string>& /* args */) {
   auto result = device->WriteInfo("Shutting down");
   if (!device->device_hal()->ShutDown(device)) {
@@ -114,7 +114,7 @@ bool ShutDownHandler(FastbootDevice* device,
   return result;
 }
 
-bool RebootHandler(FastbootDevice* device,
+bool RebootHandler(Device* device,
                    const std::vector<std::string>& /* args */) {
   auto result = device->WriteInfo("Rebooting");
   if (!device->device_hal()->Reboot(device, RebootType::ToSoftware)) {
@@ -124,7 +124,7 @@ bool RebootHandler(FastbootDevice* device,
   return result;
 }
 
-bool RebootBootloaderHandler(FastbootDevice* device,
+bool RebootBootloaderHandler(Device* device,
                              const std::vector<std::string>& /* args */) {
   auto result = device->WriteInfo("Rebooting to bootloader");
   if (!device->device_hal()->Reboot(device, RebootType::ToBootloader)) {
@@ -134,7 +134,7 @@ bool RebootBootloaderHandler(FastbootDevice* device,
   return result;
 }
 
-bool RebootFastbootHandler(FastbootDevice* device,
+bool RebootFastbootHandler(Device* device,
                            const std::vector<std::string>& /* args */) {
   auto result = device->WriteInfo("Rebooting to fastboot");
   if (!device->device_hal()->Reboot(device, RebootType::ToFastboot)) {
@@ -144,7 +144,7 @@ bool RebootFastbootHandler(FastbootDevice* device,
   return result;
 }
 
-bool RebootRecoveryHandler(FastbootDevice* device,
+bool RebootRecoveryHandler(Device* device,
                            const std::vector<std::string>& /* args */) {
   auto result = device->WriteInfo("Rebooting to recovery");
   if (!device->device_hal()->Reboot(device, RebootType::ToRecovery)) {
@@ -154,7 +154,7 @@ bool RebootRecoveryHandler(FastbootDevice* device,
   return result;
 }
 
-bool FlashHandler(FastbootDevice* device,
+bool FlashHandler(Device* device,
                   const std::vector<std::string>& args) {
   if (args.size() < 2) {
     return device->WriteFail("Invalid arguments");

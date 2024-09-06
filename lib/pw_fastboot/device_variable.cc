@@ -23,14 +23,14 @@
 
 namespace pw::fastboot {
 
-static bool GetVersion(FastbootDevice* /* device */,
+static bool GetVersion(Device* /* device */,
                        const std::vector<std::string>& /* args */,
                        std::string* message) {
   *message = FB_PROTOCOL_VERSION;
   return true;
 }
 
-static void GetAllVars(FastbootDevice* device,
+static void GetAllVars(Device* device,
                        const std::string& name,
                        const SimpleVariable& handlers) {
   if (!handlers.get_all_args) {
@@ -55,21 +55,21 @@ static void GetAllVars(FastbootDevice* device,
   }
 }
 
-static bool GetVarAll(FastbootDevice* device) {
+static bool GetVarAll(Device* device) {
   for (const auto& [name, handlers] : device->get_variables()->variables()) {
     GetAllVars(device, name, handlers);
   }
   return true;
 }
 
-DeviceVariableProvider::DeviceVariableProvider() {
+VariableProvider::VariableProvider() {
   // Register some basic fastboot variables (protocol version
   // and the "all" meta-variable)
   RegisterVariable(FB_VAR_VERSION, GetVersion, nullptr);
   RegisterSpecialVariable(FB_VAR_ALL, GetVarAll);
 }
 
-bool DeviceVariableProvider::RegisterVariable(std::string name,
+bool VariableProvider::RegisterVariable(std::string name,
                                               GetVarCb get,
                                               GetVarAllCb get_all_args) {
   auto it = simple_vars_.emplace(
@@ -77,7 +77,7 @@ bool DeviceVariableProvider::RegisterVariable(std::string name,
   return it.second;
 }
 
-bool DeviceVariableProvider::RegisterSpecialVariable(std::string name,
+bool VariableProvider::RegisterSpecialVariable(std::string name,
                                                      GetSpecialVarCb get) {
   auto it = special_vars_.emplace(std::make_pair(name, SpecialVariable{get}));
   return it.second;

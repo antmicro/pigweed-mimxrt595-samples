@@ -21,17 +21,17 @@
 
 namespace pw::fastboot {
 
-class FastbootDevice;
+class Device;
 
 // Callback used for simple variables that return a string
-using GetVarCb = std::function<bool(
-    FastbootDevice*, const std::vector<std::string>&, std::string*)>;
+using GetVarCb =
+    std::function<bool(Device*, const std::vector<std::string>&, std::string*)>;
 // Callback to retrieve all possible argument combinations, for getvar all.
 using GetVarAllCb =
-    std::function<std::vector<std::vector<std::string>>(FastbootDevice*)>;
+    std::function<std::vector<std::vector<std::string>>(Device*)>;
 // Callback used for special variables that contain multiline strings. These
 // should be excluded from getvar all (example: log output)
-using GetSpecialVarCb = std::function<bool(FastbootDevice* device)>;
+using GetSpecialVarCb = std::function<bool(Device* device)>;
 
 struct SimpleVariable {
   SimpleVariable() = default;
@@ -50,9 +50,9 @@ struct SpecialVariable {
   GetSpecialVarCb get;
 };
 
-class DeviceVariableProvider {
+class VariableProvider {
  public:
-  DeviceVariableProvider();
+  VariableProvider();
   bool RegisterVariable(std::string name,
                         GetVarCb get,
                         GetVarAllCb get_all_args = nullptr);

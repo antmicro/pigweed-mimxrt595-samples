@@ -30,9 +30,9 @@ using std::string_literals::operator""s;
 
 namespace pw::fastboot {
 
-FastbootDevice::FastbootDevice(
+Device::Device(
     std::unique_ptr<Transport> transport,
-    std::unique_ptr<DeviceVariableProvider> variables,
+    std::unique_ptr<VariableProvider> variables,
     std::unique_ptr<DeviceHAL> device_hal)
     : kCommandMap({
           {FB_CMD_DOWNLOAD, internal::DownloadHandler},
@@ -49,11 +49,11 @@ FastbootDevice::FastbootDevice(
       variables_(std::move(variables)),
       device_hal_(std::move(device_hal)) {}
 
-FastbootDevice::~FastbootDevice() { CloseDevice(); }
+Device::~Device() { CloseDevice(); }
 
-void FastbootDevice::CloseDevice() { transport_->Close(); }
+void Device::CloseDevice() { transport_->Close(); }
 
-bool FastbootDevice::WriteStatus(FastbootResult result,
+bool Device::WriteStatus(FastbootResult result,
                                  const std::string& message) {
   // "FAIL", "OKAY", "INFO", "DATA"
   constexpr size_t kNumResponseTypes = 4;
@@ -94,11 +94,11 @@ bool FastbootDevice::WriteStatus(FastbootResult result,
   return true;
 }
 
-bool FastbootDevice::HandleData(bool read, std::vector<char>* data) {
+bool Device::HandleData(bool read, std::vector<char>* data) {
   return HandleData(read, data->data(), data->size());
 }
 
-bool FastbootDevice::HandleData(bool read, char* data, uint64_t size) {
+bool Device::HandleData(bool read, char* data, uint64_t size) {
   auto read_write_data_size = read ? this->get_transport()->Read(data, size)
                                    : this->get_transport()->Write(data, size);
   if (read_write_data_size == -1) {
@@ -115,7 +115,7 @@ bool FastbootDevice::HandleData(bool read, char* data, uint64_t size) {
   return true;
 }
 
-void FastbootDevice::ExecuteCommands() {
+void Device::ExecuteCommands() {
   char command[FB_RESPONSE_SZ + 1];
   for (;;) {
     auto bytes_read = transport_->Read(command, FB_RESPONSE_SZ);
@@ -152,15 +152,15 @@ void FastbootDevice::ExecuteCommands() {
   }
 }
 
-bool FastbootDevice::WriteOkay(const std::string& message) {
+bool Device::WriteOkay(const std::string& message) {
   return WriteStatus(FastbootResult::OKAY, message);
 }
 
-bool FastbootDevice::WriteFail(const std::string& message) {
+bool Device::WriteFail(const std::string& message) {
   return WriteStatus(FastbootResult::FAIL, message);
 }
 
-bool FastbootDevice::WriteInfo(const std::string& message) {
+bool Device::WriteInfo(const std::string& message) {
   return WriteStatus(FastbootResult::INFO, message);
 }
 

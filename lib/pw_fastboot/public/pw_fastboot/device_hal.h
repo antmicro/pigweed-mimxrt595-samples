@@ -21,7 +21,7 @@
 
 namespace pw::fastboot {
 
-class FastbootDevice;
+class Device;
 
 enum class RebootType { ToSoftware, ToRecovery, ToBootloader, ToFastboot };
 
@@ -29,15 +29,15 @@ class DeviceHAL {
  public:
   virtual ~DeviceHAL() = default;
 
-  virtual bool Flash(FastbootDevice*, std::string /*partition*/) {
+  virtual bool Flash(Device*, std::string /*partition*/) {
     return false;
   }
-  virtual bool Reboot(FastbootDevice*, RebootType) { return false; }
-  virtual bool ShutDown(FastbootDevice*) { return false; }
-  virtual bool OemCommand(FastbootDevice*, std::string /*command*/) {
+  virtual bool Reboot(Device*, RebootType) { return false; }
+  virtual bool ShutDown(Device*) { return false; }
+  virtual bool OemCommand(Device*, std::string /*command*/) {
     return false;
   }
-  virtual bool IsDeviceLocked(FastbootDevice*) { return false; }
+  virtual bool IsDeviceLocked(Device*) { return false; }
 
  private:
 };
