@@ -49,7 +49,7 @@ ssize_t FastbootReceivePacket(pw::ByteSpan);
 /* Implementation of the Transport interface for using fastboot
  * with USB on MIMXRT595-EVK devboard.
  */
-class UsbTransport : public Transport {
+class UsbTransport : public pw::fastboot::Transport {
  public:
   UsbTransport() { fastboot::mimxrt595evk::UsbTransportInit(); }
 

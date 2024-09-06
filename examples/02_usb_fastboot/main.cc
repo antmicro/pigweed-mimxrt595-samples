@@ -9,7 +9,7 @@
 #include <string>
 
 static void FastbootProtocolLoop() {
-    auto variables = std::make_unique<DeviceVariableProvider>();
+    auto variables = std::make_unique<pw::fastboot::VariableProvider>();
     variables->RegisterVariable("test1", [](auto, auto, std::string* message) -> bool {
         *message = "VARIABLE1";
         return true;
@@ -18,16 +18,16 @@ static void FastbootProtocolLoop() {
         *message = "TEST-VARIABLE-2";
         return true;
     });
-    variables->RegisterSpecialVariable("test3", [](FastbootDevice* device) -> bool {
+    variables->RegisterSpecialVariable("test3", [](pw::fastboot::Device* device) -> bool {
         device->WriteInfo("This is an example of a special/multiline fastboot variable.");
         device->WriteInfo("This can be used for example to dump logs.");
         device->WriteInfo("To write a line, call device->WriteInfo.");
         device->WriteInfo("Special variables are not displayed in output of fastboot getvar all.");
         return true;
     });
-    FastbootDevice device {std::make_unique<fastboot::mimxrt595evk::UsbTransport>(),
+    pw::fastboot::Device device {std::make_unique<fastboot::mimxrt595evk::UsbTransport>(),
                            std::move(variables),
-                           std::make_unique<DeviceHAL>()};
+                           std::make_unique<pw::fastboot::DeviceHAL>()};
     device.ExecuteCommands();
 }
 
