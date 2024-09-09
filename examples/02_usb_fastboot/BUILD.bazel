@@ -42,7 +42,7 @@ cc_binary(
         "@pigweed//pw_chrono:wrap_time_system_clock",
         "@pigweed//pw_system:pw_system",
         "@pigweed//pw_hex_dump:pw_hex_dump",
-        "@pigweed//pw_malloc_freertos:pw_malloc_freertos",
+        "@pigweed//pw_allocator:bucket_block_allocator",
         "@pigweed//targets/mimxrt595_evk_freertos:boot",
         "//config:init_peripherals",
         "@mcuxpresso_sdk//:sdk",

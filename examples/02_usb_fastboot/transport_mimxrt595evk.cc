@@ -16,9 +16,9 @@ extern "C" {
 
 #include "fastboot.h"
 #include "pw_allocator/allocator.h"
+#include "pw_allocator/bucket_block_allocator.h"
 #include "pw_bytes/span.h"
 #include "pw_hex_dump/hex_dump.h"
-#include "pw_malloc/malloc.h"
 #include "pw_status/status.h"
 
 /* ISR queue size, in packets
@@ -56,6 +56,16 @@ struct Packet {
         offsetof(Packet, data) - (offsetof(Packet, size));
     return reinterpret_cast<Packet*>((uintptr_t)data - back_offset);
   }
+};
+
+/* Convenience class for automatically initializing a Pigweed
+ * allocator with type T using a statically defined arena of
+ * size `BufferSize` bytes.
+ */
+template <typename T, size_t BufferSize>
+struct StaticArenaAllocator {
+  StaticArenaAllocator() { allocator->Init(allocator.as_bytes()); }
+  pw::allocator::WithBuffer<T, BufferSize> allocator;
 };
 
 class PacketAllocator {
@@ -178,7 +188,15 @@ class PointerQueue {
   QueueHandle_t m_queue;
 };
 
-static PacketAllocator s_packet_allocator{*pw::malloc::GetSystemAllocator()};
+// NOTE: Do NOT use any global allocators for s_packet_allocator!
+// The packet allocator will be called in order to allocate space
+// for incoming packets and free those that have already been sent.
+// All Alloc/Free calls must be protected in a critical section,
+// as they are also called from an ISR! This cannot be done if a
+// global allocator is used.
+static StaticArenaAllocator<pw::allocator::BucketBlockAllocator<>, 0x10000>
+    s_bytes_allocator{};
+static PacketAllocator s_packet_allocator{*s_bytes_allocator.allocator};
 static PointerQueue<Packet> s_packets_in{ISR_PACKET_QUEUE_SIZE};
 static PointerQueue<Packet> s_packets_out{ISR_PACKET_QUEUE_SIZE};
 
