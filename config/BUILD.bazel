@@ -49,4 +49,11 @@ cc_library(
     alwayslink = 1,
 )
 
+cc_library(
+  name = "pw_function_config_override",
+  defines = [
+    "PW_FUNCTION_ENABLE_DYNAMIC_ALLOCATION=1",
+  ],
+)
+
 exports_files(["app_bluetooth_config.h"])

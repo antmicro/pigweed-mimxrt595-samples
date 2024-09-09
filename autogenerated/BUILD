@@ -800,7 +800,6 @@ cc_library(
         "FSL_SDK_DRIVER_QUICK_ACCESS_ENABLE=1",
         "SDK_DEBUGCONSOLE=1",
         "SDK_OS_FREE_RTOS",
-        "PW_FUNCTION_ENABLE_DYNAMIC_ALLOCATION",
         "__STDC_FORMAT_MACROS",
         "_GLIBCXX_HAVE_INTTYPES_H",
         "__int64_t_defined",
