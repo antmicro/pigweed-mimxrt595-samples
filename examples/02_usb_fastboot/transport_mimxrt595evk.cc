@@ -281,20 +281,26 @@ ssize_t fastboot::mimxrt595evk::FastbootSendPacket(pw::ConstByteSpan to_send) {
   HexdumpWithAscii((uint8_t*)packet->data, packet->size);
   const volatile auto size = packet->size;
 
+  // Critical section required to make UsbEnqueueFastbootPacket
+  // and s_packets_out.Queue operations atomic.
+  taskENTER_CRITICAL();
   const auto error = UsbEnqueueFastbootPacket(packet);
   // If there is a packet primed already, add the new one to the ISR queue
   // It will be picked up automatically after the existing one is already
   // transmitted to the host.
   if (error == kStatus_USB_Busy) {
     s_packets_out.Queue(packet);
+    taskEXIT_CRITICAL();
     PW_LOG_DEBUG("FastbootSendPacket: queued packet=%p (USB busy)", packet);
     return size;
   } else if (error != kStatus_USB_Success) {
     s_packet_allocator.Free(packet);
+    taskEXIT_CRITICAL();
     PW_LOG_ERROR("FastbootSendPacket failed: queueing packet failed (%d)",
                  error);
     return -2;
   }
+  taskEXIT_CRITICAL();
   // Do not use `packet` from this point on! Use-after-free may occur if
   // an ISR happens immediately after queuing, and the ISR frees the
   // packet already.
