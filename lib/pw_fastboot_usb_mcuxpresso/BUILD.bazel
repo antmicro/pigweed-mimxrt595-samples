@@ -1,0 +1,47 @@
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "third_party",
+    srcs = [
+        "third_party/usb_device_cdc_acm.c",
+        "third_party/usb_device_ch9.c",
+        "third_party/usb_device_class.c",
+        "third_party/usb_device_descriptor.c",
+        "third_party/virtual_com.c",
+    ],
+    hdrs = [
+        "third_party/fastboot.h",
+        "third_party/usb_device_cdc_acm.h",
+        "third_party/usb_device_ch9.h",
+        "third_party/usb_device_class.h",
+        "third_party/usb_device_config.h",
+        "third_party/usb_device_descriptor.h",
+        "third_party/virtual_com.h",
+    ],
+    includes = [
+        "third_party",
+    ],
+    deps = [
+        "@mcuxpresso_sdk//:sdk",
+    ],
+)
+
+cc_library(
+    name = "pw_fastboot_usb_mcuxpresso",
+    srcs = [
+        "packet_mimxrt595evk.cc",
+        "private/packet_mimxrt595evk.h",
+    ],
+    hdrs = [
+        "public/pw_fastboot_usb_mcuxpresso/packet_mimxrt595evk.h",
+        "public/pw_fastboot_usb_mcuxpresso/transport.h",
+    ],
+    includes = [
+        "public/",
+    ],
+    deps = [
+        ":third_party",
+        "//lib/pw_fastboot",
+        "//lib/pw_fastboot_usb",
+    ],
+)

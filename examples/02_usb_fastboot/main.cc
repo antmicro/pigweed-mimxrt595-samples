@@ -1,7 +1,7 @@
 #include "pw_fastboot/device_hal.h"
 #include "pw_fastboot/device_variable.h"
 #include "pw_fastboot/transport.h"
-#include "transport_mimxrt595evk.h"
+#include "pw_fastboot_usb_mcuxpresso/transport.h"
 #include "pw_thread/detached_thread.h"
 #include "pw_fastboot/fastboot_device.h"
 #include <cstdio>
@@ -25,7 +25,7 @@ static void FastbootProtocolLoop() {
         device->WriteInfo("Special variables are not displayed in output of fastboot getvar all.");
         return true;
     });
-    pw::fastboot::Device device {std::make_unique<fastboot::mimxrt595evk::UsbTransport>(),
+    pw::fastboot::Device device {pw::fastboot::CreateMimxrt595UsbTransport(),
                            std::move(variables),
                            std::make_unique<pw::fastboot::DeviceHAL>()};
     device.ExecuteCommands();
