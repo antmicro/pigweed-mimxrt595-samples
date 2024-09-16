@@ -15,7 +15,6 @@ cc_binary(
         "//config:init_peripherals",
         "@mcuxpresso_sdk//:sdk",
         "//config:config",
-        "//lib/pw_fastboot",
         "//lib/pw_fastboot_usb_mcuxpresso",
     ],
 )
