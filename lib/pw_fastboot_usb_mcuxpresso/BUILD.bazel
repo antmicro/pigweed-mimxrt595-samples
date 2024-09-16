@@ -41,7 +41,7 @@ cc_library(
     ],
     deps = [
         ":third_party",
-        "//lib/pw_fastboot",
-        "//lib/pw_fastboot_usb",
+        "@pigweed//pw_fastboot",
+        "@pigweed//pw_fastboot_usb",
     ],
 )
