@@ -1,28 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
 cc_library(
-    name = "config",
-    hdrs = [
-        "wifi_config.h",
-        "usb_host_config.h",
-        "board.h",
-        "ffconf.h",
-        "clock_config.h",
-        "edgefast_bluetooth_config.h",
-        "wifi_bt_module_config.h",
-        "peripherals.h",
-        "app_bluetooth_config.h",
-        "sdmmc_config.h",
-        "pin_mux.h",
-        "wifi_bt_config.h",
-    ],
-    includes = [ "." ],
-    copts = [
-        "-include", "app_bluetooth_config.h",
-    ],
-)
-
-cc_library(
     name = "init_peripherals",
     hdrs = [
         "wifi_bt_config.h",
@@ -37,14 +15,14 @@ cc_library(
         "clock_config.c",
         "peripherals.c",
         "board.c",
+        "@pigweed//third_party/mcuxpresso:config/app_bluetooth_config.h",
     ],
     includes = [ "." ],
     deps = [
-        ":config",
-        "@mcuxpresso_sdk//:sdk",
+        "@pigweed//targets:mcuxpresso_sdk",
     ],
     copts = [
-        "-include", "app_bluetooth_config.h",
+        "-include", "$(location @pigweed//third_party/mcuxpresso:config/app_bluetooth_config.h)"
     ],
     alwayslink = 1,
 )
@@ -55,5 +33,3 @@ cc_library(
     "PW_FUNCTION_ENABLE_DYNAMIC_ALLOCATION=1",
   ],
 )
-
-exports_files(["app_bluetooth_config.h"])
