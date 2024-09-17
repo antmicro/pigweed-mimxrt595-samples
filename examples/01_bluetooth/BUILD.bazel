@@ -44,8 +44,7 @@ cc_binary(
         "@pigweed//pw_bluetooth_sapphire_mcuxpresso:bluetooth_sapphire_mcuxpresso",
         "@pigweed//targets/mimxrt595_evk_freertos:boot",
         "//config:init_peripherals",
-        "@mcuxpresso_sdk//:sdk",
-        "//config:config",
+        "@pigweed//third_party/mcuxpresso:mcuxpresso_sdk",
     ],
 )
 

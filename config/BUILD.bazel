@@ -1,28 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
 cc_library(
-    name = "config",
-    hdrs = [
-        "wifi_config.h",
-        "usb_host_config.h",
-        "board.h",
-        "ffconf.h",
-        "clock_config.h",
-        "edgefast_bluetooth_config.h",
-        "wifi_bt_module_config.h",
-        "peripherals.h",
-        "app_bluetooth_config.h",
-        "sdmmc_config.h",
-        "pin_mux.h",
-        "wifi_bt_config.h",
-    ],
-    includes = [ "." ],
-    copts = [
-        "-include", "app_bluetooth_config.h",
-    ],
-)
-
-cc_library(
     name = "init_peripherals",
     hdrs = [
         "wifi_bt_config.h",
@@ -37,14 +15,45 @@ cc_library(
         "clock_config.c",
         "peripherals.c",
         "board.c",
+        "@pigweed//third_party/mcuxpresso:app_bluetooth_config.h",
     ],
     includes = [ "." ],
+    defines = [
+        "CPU_MIMXRT595SFFOC_cm33",
+        "SERIAL_PORT_TYPE_UART=1",
+        "CFG_BLE=\"\"",
+        "BOOT_HEADER_ENABLE=1",
+        "LFS_NO_INTRINSICS=1",
+        "LFS_NO_ERROR=1",
+        "FSL_OSA_TASK_ENABLE=1",
+        "FSL_OSA_MAIN_FUNC_ENABLE=0",
+        "LOG_ENABLE_ASYNC_MODE=1",
+        "LOG_MAX_ARGUMENT_COUNT=10",
+        "LOG_ENABLE_OVERWRITE=0",
+        "SDIO_ENABLED=",
+        "CONFIG_ARM=1",
+        "DEBUG_CONSOLE_TRANSFER_NON_BLOCKING=1",
+        "SERIAL_PORT_TYPE_UART=1",
+        "MBEDTLS_CONFIG_FILE=\\\"ksdk_mbedtls_config.h\\\"",
+        "DEBUG_CONSOLE_DISABLE_RTOS_SYNCHRONIZATION",
+        "FSL_RTOS_FREE_RTOS",
+        "FSL_SDK_DRIVER_QUICK_ACCESS_ENABLE=1",
+        "SDK_DEBUGCONSOLE=1",
+        "SDK_OS_FREE_RTOS",
+        "PW_FUNCTION_ENABLE_DYNAMIC_ALLOCATION",
+        "__STDC_FORMAT_MACROS",
+        "_GLIBCXX_HAVE_INTTYPES_H",
+        "__int64_t_defined",
+        # USB config
+        "USB_STACK_USE_DEDICATED_RAM=1",
+        "FSL_OSA_BM_TASK_ENABLE=0",
+        "FSL_OSA_BM_TIMER_CONFIG=0",
+    ],
     deps = [
-        ":config",
-        "@mcuxpresso_sdk//:sdk",
+        "@pigweed//targets:mcuxpresso_sdk",
     ],
     copts = [
-        "-include", "app_bluetooth_config.h",
+        "-include", "$(execpath @pigweed//third_party/mcuxpresso:app_bluetooth_config.h)"
     ],
     alwayslink = 1,
 )
@@ -55,5 +64,3 @@ cc_library(
     "PW_FUNCTION_ENABLE_DYNAMIC_ALLOCATION=1",
   ],
 )
-
-exports_files(["app_bluetooth_config.h"])

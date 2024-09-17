@@ -12,9 +12,8 @@ cc_binary(
         "@pigweed//pw_chrono:wrap_time_system_clock",
         "@pigweed//pw_system:pw_system",
         "@pigweed//targets/mimxrt595_evk_freertos:boot",
+        "@pigweed//third_party/mcuxpresso:mcuxpresso_sdk",
         "//config:init_peripherals",
-        "@mcuxpresso_sdk//:sdk",
-        "//config:config",
         "//lib/pw_fastboot_usb_mcuxpresso",
     ],
 )
