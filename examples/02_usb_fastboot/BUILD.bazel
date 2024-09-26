@@ -13,6 +13,8 @@ cc_binary(
         "@pigweed//pw_system:pw_system",
         "@pigweed//targets/mimxrt595_evk_freertos:boot",
         "@pigweed//third_party/mcuxpresso:mcuxpresso_sdk",
+        "@pigweed//pw_digital_io_mcuxpresso",
+        "@pigweed//pw_log",
         "//config:init_peripherals",
         "//lib/pw_fastboot_usb_mcuxpresso",
     ],
