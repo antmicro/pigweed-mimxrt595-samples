@@ -16,6 +16,7 @@ cc_binary(
         "@pigweed//pw_log",
         "//config:init_peripherals",
         "//lib/pw_fastboot_usb_mcuxpresso",
+        "//targets/mimxrt595_evk_freertos:fastboot_defines"
     ],
 )
 

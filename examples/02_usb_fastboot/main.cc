@@ -36,10 +36,49 @@ static bool IsFastbootTriggered() {
 }
 
 [[noreturn]] static void JumpToUser() {
-  PW_LOG_WARN("UNIMPLEMENTED: Bootloader would jump to user application now!");
-  PW_LOG_WARN("Hold SW1 / P0_25 GPIO low to boot into fastboot.");
-  while (true)
-    ;
+  asm volatile("cpsid if");
+
+  SYSCTL0->PDRUNCFG0_CLR = SYSCTL0_PDRUNCFG0_LPOSC_PD_MASK;
+  CLOCK_AttachClk(kLPOSC_to_WDT0_CLK);
+  BOARD_BootClockRUN();
+#if !defined(FSL_FEATURE_WWDT_HAS_NO_PDCFG) || (!FSL_FEATURE_WWDT_HAS_NO_PDCFG)
+  POWER_DisablePD(kPDRUNCFG_PD_LPOSC);
+#endif
+
+  CLOCK_EnableClock(kCLOCK_Wwdt0);
+  RESET_PeripheralReset(kWWDT0_RST_SHIFT_RSTn);
+  WWDT0->TC = 0xFF;  // minimum value is 0xFF
+  WWDT0->MOD = 0x3;  // enabled, will reset on expiration (not yet running)
+  WWDT0->WINDOW = 0xFF;
+  WWDT0->WARNINT = 0xFF;
+  WWDT0->FEED = 0xAA;
+  WWDT0->FEED = 0x55;  // watchdog is now running
+  while (true) {
+    // wait until the watchdog resets the board
+  }
+}
+
+extern "C" {
+// This function is called from pw_boot_PreStaticMemoryInit, after CMSIS'
+// SystemInit completes. This is slightly unsafe, as we need the boot state
+// to be as close to out-of-reset as possible when jumping to the user code.
+// However, SystemInit currently only performs very basic cache configuration
+// (as opposed to initializing entire peripherals at a time), so at the moment
+// this is fine.
+void SystemInitHook() {
+  // Check if we should jump to the user application
+  // This is triggered if the board was reset by WDT0
+  if (RSTCTL0->SYSRSTSTAT & RSTCTL0_SYSRSTSTAT_WDT0_RESET(1)) {
+    RSTCTL0->SYSRSTSTAT = RSTCTL0_SYSRSTSTAT_WDT0_RESET(1);
+    struct vector_table {
+      std::size_t msp;
+      std::size_t reset;
+    };
+    auto* vt =
+        reinterpret_cast<struct vector_table*>(FASTBOOT_APP_VECTOR_TABLE);
+    (reinterpret_cast<void (*)(void)>(vt->reset))();
+  }
+}
 }
 
 static void FastbootProtocolLoop() {
