@@ -1,5 +1,5 @@
 
-load("@pigweed//targets/mimxrt595_evk_freertos:binary.bzl", "mimxrt595_binary")
+load("//targets/mimxrt595_evk_freertos:transition.bzl", "mimxrt595_binary")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -11,7 +11,6 @@ cc_binary(
     deps = [
         "@pigweed//pw_chrono:wrap_time_system_clock",
         "@pigweed//pw_system:pw_system",
-        "@pigweed//targets/mimxrt595_evk_freertos:boot",
         "@pigweed//third_party/mcuxpresso:mcuxpresso_sdk",
         "@pigweed//pw_digital_io_mcuxpresso",
         "@pigweed//pw_log",

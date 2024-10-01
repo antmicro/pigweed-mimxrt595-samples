@@ -12,7 +12,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-load("@pigweed//targets/mimxrt595_evk_freertos:binary.bzl", "mimxrt595_binary")
+load("//targets/mimxrt595_evk_freertos:transition.bzl", "mimxrt595_binary")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -42,7 +42,6 @@ cc_binary(
         "@pigweed//pw_stream_uart_mcuxpresso:pw_stream_uart_mcuxpresso",
         "@pigweed//pw_async_basic:dispatcher",
         "@pigweed//pw_bluetooth_sapphire_mcuxpresso:bluetooth_sapphire_mcuxpresso",
-        "@pigweed//targets/mimxrt595_evk_freertos:boot",
         "//config:init_peripherals",
         "@pigweed//third_party/mcuxpresso:mcuxpresso_sdk",
     ],
