@@ -1,0 +1,56 @@
+# Copyright 2023 The Pigweed Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not
+# use this file except in compliance with the License. You may obtain a copy of
+# the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
+
+load("//targets/mimxrt595_evk_freertos:transition.bzl", "mimxrt595_binary")
+load("@pigweed//third_party/mcuxpresso:mcuxpresso_sdk.bzl", "mcuxpresso_sdk")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+  name = "config_overrides",
+  defines = [
+     "PW_THREAD_FREERTOS_CONFIG_DEFAULT_STACK_SIZE_WORDS=2048",
+  ],
+)
+
+cc_binary(
+    name = "bluetooth_audio",
+    srcs = ["main.cc"],
+    deps = [
+        "@pigweed//pw_chrono:system_clock",
+        "@pigweed//pw_chrono:system_timer",
+        "@pigweed//pw_chrono:wrap_time_system_clock",
+        "@pigweed//pw_log",
+        "@pigweed//pw_sync:thread_notification",
+        "@pigweed//pw_system:pw_system",
+        "@pigweed//pw_system:work_queue",
+        "@pigweed//pw_bluetooth:pw_bluetooth",
+        "@pigweed//pw_bluetooth_hci:pw_bluetooth_hci",
+        "@pigweed//pw_bluetooth_sapphire/host:stack",
+        "@pigweed//pw_intrusive_ptr:pw_intrusive_ptr",
+        "@pigweed//pw_bluetooth:emboss_hci_commands",
+        "@pigweed//pw_stream_uart_mcuxpresso:pw_stream_uart_mcuxpresso",
+        "@pigweed//pw_async_basic:dispatcher",
+        "@pigweed//pw_bluetooth_sapphire_mcuxpresso:bluetooth_sapphire_mcuxpresso",
+        "//examples/04_bluetooth_audio/config:init_peripherals",
+        "@pigweed//third_party/mcuxpresso:mcuxpresso_sdk",
+        "@pigweed//pw_random",
+    ],
+)
+
+mimxrt595_binary(
+    name = "bluetooth_audio.elf",
+    binary = ":bluetooth_audio",
+)
+
