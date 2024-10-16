@@ -30,6 +30,7 @@ refresh_compile_commands(
     targets = {
       "//examples/01_bluetooth:bluetooth.elf": "",
       "//examples/02_usb_fastboot:usb_fastboot.elf": "",
+      "//examples/03_user_hello:user_hello.elf": ""
     },
     # No need to add flags already in .bazelrc. They're automatically picked up.
     # If you don't need flags, a list of targets is also okay, as is a single target string.

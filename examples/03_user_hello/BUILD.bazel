@@ -1,0 +1,23 @@
+load("//targets/mimxrt595_evk_freertos_user:transition.bzl", "mimxrt595_user_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_binary(
+    name = "user_hello",
+    srcs = [
+        "main.cc",
+    ],
+    deps = [
+        "//config:init_peripherals",
+        "@pigweed//pw_assert",
+        "@pigweed//pw_chrono:wrap_time_system_clock",
+        "@pigweed//pw_log",
+        "@pigweed//pw_system",
+        "@pigweed//third_party/mcuxpresso:mcuxpresso_sdk",
+    ],
+)
+
+mimxrt595_user_binary(
+    name = "user_hello.elf",
+    binary = ":user_hello",
+)
