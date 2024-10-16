@@ -21,6 +21,7 @@ build-pigweed:
     - git submodule update --init --recursive
     - bazelisk build //examples/01_bluetooth:bluetooth.elf
     - bazelisk build //examples/02_usb_fastboot:usb_fastboot.elf
+    - bazelisk build //examples/03_user_hello:user_hello.elf
     - mkdir out
     - cp -Lr bazel-bin/examples/* out
   artifacts:
