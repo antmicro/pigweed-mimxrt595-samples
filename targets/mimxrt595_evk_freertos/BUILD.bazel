@@ -2,6 +2,12 @@ package(default_visibility = ["//visibility:public"])
 
 cc_library(
     name = "fastboot_defines",
+    hdrs = [
+        "bootloader.h",
+    ],
+    includes = [
+        ".",
+    ],
     defines = [
         # 0x08001000 + 0x80000
         "FASTBOOT_APP_VECTOR_TABLE=0x08081000",
