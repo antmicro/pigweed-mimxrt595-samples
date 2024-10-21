@@ -2,9 +2,6 @@
 #include <memory>
 #include <string>
 
-#include "board.h"
-#include "pw_digital_io/digital_io.h"
-#include "pw_digital_io_mcuxpresso/digital_io.h"
 #include "pw_fastboot/device_hal.h"
 #include "pw_fastboot/device_variable.h"
 #include "pw_fastboot/fastboot_device.h"
@@ -12,6 +9,9 @@
 #include "pw_log/log.h"
 #include "pw_status/status.h"
 #include "pw_thread/detached_thread.h"
+
+// Enable entering of fastboot using SW1
+#define FASTBOOT_ENABLE_GPIO (1)
 
 enum class BootMode : std::uint32_t {
   User = 1,
@@ -34,6 +34,14 @@ struct BootData {
 };
 #define BOOTDATA reinterpret_cast<BootData*>(FASTBOOT_BOOT_DATA_BASE)
 
+#if defined(FASTBOOT_ENABLE_GPIO) && FASTBOOT_ENABLE_GPIO > 0
+
+#include "board.h"
+#include "config/pin_mux.h"
+#include "fsl_power.h"
+#include "pw_digital_io/digital_io.h"
+#include "pw_digital_io_mcuxpresso/digital_io.h"
+
 static bool IsGpioLow(pw::digital_io::DigitalIn& pin) {
   if (const auto err = pin.Enable(); err != PW_STATUS_OK) {
     PW_LOG_ERROR("Failed to enable GPIO with status: %d", err.code());
@@ -51,18 +59,19 @@ static bool IsGpioLow(pw::digital_io::DigitalIn& pin) {
 }
 
 static bool IsFastbootTriggered() {
+  BOARD_InitBUTTONPins();
   pw::digital_io::McuxpressoDigitalIn in{
       BOARD_SW1_GPIO, BOARD_SW1_GPIO_PORT, BOARD_SW1_GPIO_PIN};
   return IsGpioLow(in);
 }
 
-[[noreturn]] static void JumpToUser() {
+[[noreturn]] static void ResetBoard() {
   asm volatile("cpsid if");
 
-  BOOTDATA->set(BootMode::User);
   SYSCTL0->PDRUNCFG0_CLR = SYSCTL0_PDRUNCFG0_LPOSC_PD_MASK;
   CLOCK_AttachClk(kLPOSC_to_WDT0_CLK);
-  BOARD_BootClockRUN();
+  POWER_DisablePD(kPDRUNCFG_PD_LPOSC); /* Power on LPOSC (1MHz) */
+  CLOCK_EnableLpOscClk();              /* Wait until LPOSC stable */
 #if !defined(FSL_FEATURE_WWDT_HAS_NO_PDCFG) || (!FSL_FEATURE_WWDT_HAS_NO_PDCFG)
   POWER_DisablePD(kPDRUNCFG_PD_LPOSC);
 #endif
@@ -79,6 +88,7 @@ static bool IsFastbootTriggered() {
     // wait until the watchdog resets the board
   }
 }
+#endif
 
 extern "C" {
 // This function is called from pw_boot_PreStaticMemoryInit, after CMSIS'
@@ -88,12 +98,21 @@ extern "C" {
 // (as opposed to initializing entire peripherals at a time), so at the moment
 // this is fine.
 void SystemInitHook() {
+#if defined(FASTBOOT_ENABLE_GPIO) && FASTBOOT_ENABLE_GPIO > 0
   // For debugging, forcing fastboot using GPIO is very handy, but requires
-  // that we fully boot into the bootloader application. If GPIO is not
-  // required, this can instead default to user boot. The benefit is that it
-  // also removes the extra reset required to boot the user app.
+  // that we perform a lot of clock initialization that may affect the user
+  // application later. This sets the boot mode in BOOTDATA using the GPIO
+  // state and resets the board to ensure sane state.
+  if (!BOOTDATA->valid()) {
+    const auto fastboot_gpio_triggered = IsFastbootTriggered();
+    BOOTDATA->set(fastboot_gpio_triggered ? BootMode::Fastboot
+                                          : BootMode::User);
+    ResetBoard();
+  }
+#endif
+
   const auto boot_mode =
-      BOOTDATA->valid() ? BOOTDATA->boot_mode : BootMode::Fastboot;
+      BOOTDATA->valid() ? BOOTDATA->boot_mode : BootMode::User;
   BOOTDATA->clear();
 
   switch (boot_mode) {
@@ -156,14 +175,10 @@ static void FastbootProtocolLoop() {
 namespace pw::system {
 
 void UserAppInit() {
-  if (IsFastbootTriggered()) {
-    // Start new thread as WorkQueue thread stack is limited to 512.
-    pw::thread::DetachedThread(
-        pw::thread::freertos::Options().set_name("fastboot"),
-        FastbootProtocolLoop);
-    return;
-  }
-  JumpToUser();
+  // Start new thread as WorkQueue thread stack is limited to 512.
+  pw::thread::DetachedThread(
+      pw::thread::freertos::Options().set_name("fastboot"),
+      FastbootProtocolLoop);
 }
 
 }  // namespace pw::system
