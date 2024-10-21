@@ -5,5 +5,8 @@ cc_library(
     defines = [
         # 0x08001000 + 0x80000
         "FASTBOOT_APP_VECTOR_TABLE=0x08081000",
+        # must be located within SRAM partition 0 to retain
+        # data across resets
+        "FASTBOOT_BOOT_DATA_BASE=0x20007F00",
     ],
 )

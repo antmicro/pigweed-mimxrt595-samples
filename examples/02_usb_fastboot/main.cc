@@ -13,6 +13,27 @@
 #include "pw_status/status.h"
 #include "pw_thread/detached_thread.h"
 
+enum class BootMode : std::uint32_t {
+  User = 1,
+  Fastboot = 2,
+};
+struct BootData {
+  static constexpr std::uint32_t BOOTLOADER_DATA_MAGIC =
+      0x54534146;  // `FAST` string, little-endian
+  std::uint32_t magic;
+  BootMode boot_mode;
+
+  constexpr bool valid() const { return magic == BOOTLOADER_DATA_MAGIC; }
+
+  constexpr void set(BootMode mode) {
+    magic = BOOTLOADER_DATA_MAGIC;
+    boot_mode = mode;
+  }
+
+  constexpr void clear() { magic = 0x0; }
+};
+#define BOOTDATA reinterpret_cast<BootData*>(FASTBOOT_BOOT_DATA_BASE)
+
 static bool IsGpioLow(pw::digital_io::DigitalIn& pin) {
   if (const auto err = pin.Enable(); err != PW_STATUS_OK) {
     PW_LOG_ERROR("Failed to enable GPIO with status: %d", err.code());
@@ -38,6 +59,7 @@ static bool IsFastbootTriggered() {
 [[noreturn]] static void JumpToUser() {
   asm volatile("cpsid if");
 
+  BOOTDATA->set(BootMode::User);
   SYSCTL0->PDRUNCFG0_CLR = SYSCTL0_PDRUNCFG0_LPOSC_PD_MASK;
   CLOCK_AttachClk(kLPOSC_to_WDT0_CLK);
   BOARD_BootClockRUN();
@@ -66,17 +88,38 @@ extern "C" {
 // (as opposed to initializing entire peripherals at a time), so at the moment
 // this is fine.
 void SystemInitHook() {
-  // Check if we should jump to the user application
-  // This is triggered if the board was reset by WDT0
-  if (RSTCTL0->SYSRSTSTAT & RSTCTL0_SYSRSTSTAT_WDT0_RESET(1)) {
-    RSTCTL0->SYSRSTSTAT = RSTCTL0_SYSRSTSTAT_WDT0_RESET(1);
-    struct vector_table {
-      std::size_t msp;
-      std::size_t reset;
-    };
-    auto* vt =
-        reinterpret_cast<struct vector_table*>(FASTBOOT_APP_VECTOR_TABLE);
-    (reinterpret_cast<void (*)(void)>(vt->reset))();
+  // For debugging, forcing fastboot using GPIO is very handy, but requires
+  // that we fully boot into the bootloader application. If GPIO is not
+  // required, this can instead default to user boot. The benefit is that it
+  // also removes the extra reset required to boot the user app.
+  const auto boot_mode =
+      BOOTDATA->valid() ? BOOTDATA->boot_mode : BootMode::Fastboot;
+  BOOTDATA->clear();
+
+  switch (boot_mode) {
+    default:
+    case BootMode::Fastboot: {
+      // Return to pw_boot_cortex_m, which will initialize the fastboot
+      // application
+      return;
+    }
+    case BootMode::User: {
+      // Jump to the user application
+      struct vector_table {
+        std::size_t msp;
+        std::size_t reset;
+      };
+      auto* vt =
+          reinterpret_cast<struct vector_table*>(FASTBOOT_APP_VECTOR_TABLE);
+      (reinterpret_cast<void (*)(void)>(vt->reset))();
+      // If this returns, the user app was corrupted. This will
+      // never happen in regular circumstances, as the very first thing
+      // the app must do is relocate the VTOR and configure its own
+      // stack pointer.
+      while (true) {
+        // explicit hang
+      }
+    }
   }
 }
 }
