@@ -1,0 +1,42 @@
+
+module(
+    name = "pigweed-samples",
+    version = "0.0.1",
+)
+
+bazel_dep(name = "bazel_skylib", version = "1.7.1")
+bazel_dep(name = "freertos", version = "10.5.1.bcr.2")
+bazel_dep(name = "nanopb", repo_name = "com_github_nanopb_nanopb")
+bazel_dep(name = "pico-sdk", version = "2.0.0")
+bazel_dep(name = "pigweed")
+bazel_dep(name = "platforms", version = "0.0.10")
+bazel_dep(name = "pw_toolchain")
+bazel_dep(name = "rules_cc", version = "0.0.10")
+bazel_dep(name = "rules_fuzzing", version = "0.5.2")
+bazel_dep(name = "rules_python", version = "0.36.0")
+
+local_path_override(
+    module_name = "pigweed",
+    path = "third_party/pigweed",
+)
+local_path_override(
+    module_name = "pw_toolchain",
+    path = "third_party/pigweed/pw_toolchain_bazel",
+)
+git_override(
+    module_name = "nanopb",
+    commit = "7c6c581bc6f7406a4f01c3b9853251ff0a68458b",
+    remote = "https://github.com/nanopb/nanopb.git",
+)
+python = use_extension("@rules_python//python/extensions:python.bzl", "python")
+python.toolchain(
+    # Allows building as root in a docker container. Required by oss-fuzz.
+    ignore_root_user_error = True,
+    is_default = True,
+    python_version = "3.11",
+)
+register_toolchains(
+    "@pigweed//pw_toolchain/arm_gcc:arm_gcc_cc_toolchain_cortex-m33",
+    "@pigweed//pw_toolchain/host_clang:host_cc_toolchain_linux",
+    dev_dependency = True,
+)
