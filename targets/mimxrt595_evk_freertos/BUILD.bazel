@@ -9,8 +9,12 @@ cc_library(
         ".",
     ],
     defines = [
-        # 0x08001000 + 0x80000
-        "FASTBOOT_APP_VECTOR_TABLE=0x08081000",
+        # First 0x1000 bytes are reserved for flash configuration
+        'FASTBOOT_FLASH_SIZE="(0x200000 - 0x1000)"',
+        'FASTBOOT_BOOTLOADER_BEGIN=0x08001000',
+        'FASTBOOT_BOOTLOADER_SIZE=0x80000',
+        'FASTBOOT_APP_VECTOR_TABLE="(FASTBOOT_BOOTLOADER_BEGIN + FASTBOOT_BOOTLOADER_SIZE)"',
+        'FASTBOOT_APP_SIZE="(FASTBOOT_FLASH_SIZE - FASTBOOT_BOOTLOADER_SIZE)"',
         # must be located within SRAM partition 0 to retain
         # data across resets
         "FASTBOOT_BOOT_DATA_BASE=0x20007F00",
