@@ -152,8 +152,12 @@ void UserAppInit() {
     default:
     case BootMode::Fastboot: {
       // Start new thread as WorkQueue thread stack is limited to 512.
+      // Fastboot thread must also be higher priority than other tasks
+      // running in the system to ensure USB data is always processed.
       pw::thread::DetachedThread(
-          pw::thread::freertos::Options().set_name("fastboot"),
+          pw::thread::freertos::Options()
+              .set_name("fastboot")
+              .set_priority(PW_THREAD_FREERTOS_CONFIG_MAXIMUM_PRIORITY - 1),
           FastbootProtocolLoop);
       return;
     }
