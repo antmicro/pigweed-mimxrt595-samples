@@ -33,3 +33,75 @@ cc_library(
     target_compatible_with = ["@pigweed//targets/mimxrt595_evk_freertos:freertos_config_cv"],
     deps = ["@pigweed//third_party/freertos:config_assert"],
 )
+
+load(
+    "@pigweed//pw_build:pigweed.bzl",
+    "pw_linker_script",
+)
+
+cc_library(
+    name = "bootloader_linker_script_defines",
+    defines = [
+        "PW_BOOT_VECTOR_TABLE_BEGIN=FASTBOOT_BOOTLOADER_BEGIN",
+        "PW_BOOT_VECTOR_TABLE_SIZE=0x180",
+        'PW_BOOT_FLASH_BEGIN="(PW_BOOT_VECTOR_TABLE_BEGIN + PW_BOOT_VECTOR_TABLE_SIZE)"',
+        'PW_BOOT_FLASH_SIZE="(FASTBOOT_BOOTLOADER_SIZE - PW_BOOT_VECTOR_TABLE_SIZE)"',
+        # RAM
+        "PW_BOOT_HEAP_SIZE=200K",
+        "PW_BOOT_MIN_STACK_SIZE=1K",
+        # Configure load-to-RAM image
+        # Reduce available SRAM and set the image base
+        'PW_BOOT_RAM_BEGIN="(0x20080000 + FASTBOOT_BOOTLOADER_SIZE)"',
+        'PW_BOOT_RAM_SIZE="(0x00280000 - FASTBOOT_BOOTLOADER_SIZE)"',
+        "MIMXRT595_IMAGE_BASE=0x20080000",
+    ],
+    deps = [
+        ":fastboot_defines"
+    ]
+)
+
+pw_linker_script(
+    name = "bootloader_flash_linker_script",
+    linker_script = "@pigweed//targets/mimxrt595_evk_freertos:mimxrt595_flash.ld",
+    deps = [
+        ":bootloader_linker_script_defines",
+    ]
+)
+
+cc_library(
+    name = "bootloader_boot",
+    srcs = [
+        "@pigweed//targets/mimxrt595_evk_freertos:boot.cc",
+        "@pigweed//targets/mimxrt595_evk_freertos:vector_table.c",
+    ],
+    defines = [
+        "PW_MALLOC_ACTIVE=1",
+    ],
+    target_compatible_with = [
+        "@pigweed//pw_build/constraints/board:mimxrt595_evk",
+        "@platforms//cpu:armv8-m",
+    ],
+    deps = [
+        "@pigweed//pw_boot",
+        "@pigweed//pw_boot_cortex_m",
+        "@pigweed//pw_malloc",
+        "@pigweed//pw_preprocessor",
+        "@pigweed//pw_sys_io_mcuxpresso",
+        "@pigweed//pw_system:init",
+        "@pigweed//targets:mcuxpresso_sdk",
+        "@pigweed//third_party/freertos:support",
+    ],
+    alwayslink = 1,
+)
+
+cc_library(
+    name = "bootloader_extra_platform_libs",
+    deps = [
+        # TODO: Replace locally defined target with one from pigweed
+        ":bootloader_boot",
+        ":bootloader_flash_linker_script",
+        "@pigweed//pw_tokenizer:linker_script",
+        "@pigweed//pw_toolchain/arm_gcc:arm_none_eabi_gcc_support",
+    ],
+)
+
