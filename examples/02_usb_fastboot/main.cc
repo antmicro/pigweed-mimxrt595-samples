@@ -14,6 +14,16 @@
 
 // Enable entering of fastboot using SW1
 #define FASTBOOT_ENABLE_GPIO (1)
+// Enable usage of flash remapping for booting the user application
+#define FASTBOOT_ENABLE_FLASH_REMAP (1)
+
+// When remapping is enabled, the jump will target the start of flash
+// instead of the application slot.
+#if defined(FASTBOOT_ENABLE_FLASH_REMAP) && FASTBOOT_ENABLE_FLASH_REMAP > 0
+#define USER_APP_VTOR FASTBOOT_BOOTLOADER_BEGIN
+#else
+#define USER_APP_VTOR FASTBOOT_APP_VECTOR_TABLE
+#endif
 
 #if defined(FASTBOOT_ENABLE_GPIO) && FASTBOOT_ENABLE_GPIO > 0
 
@@ -42,6 +52,38 @@ static bool IsFastbootTriggered() {
   pw::digital_io::McuxpressoDigitalIn in{
       BOARD_SW1_GPIO, BOARD_SW1_GPIO_PORT, BOARD_SW1_GPIO_PIN};
   return IsGpioLow(in);
+}
+
+#endif
+
+#if defined(FASTBOOT_ENABLE_FLASH_REMAP) && FASTBOOT_ENABLE_FLASH_REMAP > 0
+
+// The following registers are not documented in the Reference Manual
+// of the i.MX RT500. They can be found in the MCUboot port available
+// in the SDK examples, see:
+//   https://github.com/nxp-mcuxpresso/mcux-sdk-examples/blob/5a158afe9cdb70ca449667ed71490afd29655710/evkmimxrt595/ota_examples/mcuboot_opensource/sblconfig.h
+
+static constexpr const uint32_t kFlashRemapStartRegister = 0x40134420;
+static constexpr const uint32_t kFlashRemapEndRegister = 0x40134424;
+static constexpr const uint32_t kFlashRemapOffsetRegister = 0x40134428;
+
+// Enable remapping of the FlexSPI0 flash.
+//
+// Start and end parameters define a window located within the flash,
+// to which a specified offset is applied. The size of the window
+// (end_addr - start_addr) MUST be a multiple of 4096, otherwise the
+// remap will fail. Accesses to memory within the window will behave
+// as if they were actually addressed to `ptr + off`.
+static void Mimxrt595EnableRemap(uint32_t start_addr,
+                                 uint32_t end_addr,
+                                 uint32_t off) {
+  __DMB();
+  *((volatile uint32_t*)kFlashRemapEndRegister) = end_addr;
+  *((volatile uint32_t*)kFlashRemapOffsetRegister) = off;
+  // Bit 0 - enable remapping
+  *((volatile uint32_t*)kFlashRemapStartRegister) = start_addr | 0x1;
+  __DSB();
+  __ISB();
 }
 
 #endif
@@ -162,6 +204,14 @@ void UserAppInit() {
       return;
     }
     case BootMode::User: {
+#if defined(FASTBOOT_ENABLE_FLASH_REMAP) && FASTBOOT_ENABLE_FLASH_REMAP > 0
+      constexpr uint32_t start = FASTBOOT_BOOTLOADER_BEGIN;
+      constexpr uint32_t end = start + FASTBOOT_APP_SIZE;
+      constexpr uint32_t offset =
+          FASTBOOT_APP_VECTOR_TABLE - FASTBOOT_BOOTLOADER_BEGIN;
+      Mimxrt595EnableRemap(start, end, offset);
+#endif
+
       // Make sure that interrupts are disabled and the bootloader
       // won't cause any spurious interrupts for the user application
       // which it may not be able to handle. This also re-disables
@@ -174,8 +224,7 @@ void UserAppInit() {
         std::size_t msp;
         std::size_t reset;
       };
-      auto* vt =
-          reinterpret_cast<struct vector_table*>(FASTBOOT_APP_VECTOR_TABLE);
+      auto* vt = reinterpret_cast<struct vector_table*>(USER_APP_VTOR);
       (reinterpret_cast<void (*)(void)>(vt->reset))();
       // If this returns, the user app was corrupted. This will
       // never happen in regular circumstances, as the very first thing
