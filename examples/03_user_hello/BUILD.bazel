@@ -1,4 +1,4 @@
-load("//targets/mimxrt595_evk_freertos_user:transition.bzl", "mimxrt595_user_binary")
+load("//targets/mimxrt595_evk_freertos:transition.bzl", "mimxrt595_binary")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -18,7 +18,7 @@ cc_binary(
     ],
 )
 
-mimxrt595_user_binary(
+mimxrt595_binary(
     name = "user_hello.elf",
     binary = ":user_hello",
 )
