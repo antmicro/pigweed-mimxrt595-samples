@@ -1,5 +1,5 @@
 
-load("//targets/mimxrt595_evk_freertos:transition.bzl", "mimxrt595_binary")
+load("//targets/mimxrt595_evk_freertos:transition_bootloader.bzl", "mimxrt595_bootloader_binary")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -20,7 +20,7 @@ cc_binary(
     ],
 )
 
-mimxrt595_binary(
+mimxrt595_bootloader_binary(
     name = "usb_fastboot.elf",
     binary = ":usb_fastboot",
 )
