@@ -7,6 +7,8 @@ cc_binary(
     name = "usb_fastboot",
     srcs = [
         "main.cc",
+        "flash.h",
+        "flash.cc",
     ],
     deps = [
         "@pigweed//pw_chrono:wrap_time_system_clock",
@@ -16,7 +18,9 @@ cc_binary(
         "@pigweed//pw_log",
         "//config:init_peripherals",
         "//lib/pw_fastboot_usb_mcuxpresso",
-        "//targets/mimxrt595_evk_freertos:fastboot_defines"
+        "//targets/mimxrt595_evk_freertos:fastboot_defines",
+        "@pigweed//pw_flash",
+        "@pigweed//pw_flash_mcuxpresso",
     ],
 )
 

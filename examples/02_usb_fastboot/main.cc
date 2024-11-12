@@ -4,6 +4,7 @@
 
 #include "board.h"
 #include "bootloader.h"
+#include "flash.h"
 #include "pw_fastboot/device_hal.h"
 #include "pw_fastboot/device_variable.h"
 #include "pw_fastboot/fastboot_device.h"
@@ -88,6 +89,17 @@ static void Mimxrt595EnableRemap(uint32_t start_addr,
 
 #endif
 
+class BootloaderHal : public pw::fastboot::DeviceHAL {
+ public:
+  constexpr BootloaderHal() = default;
+
+  bool Flash(pw::fastboot::Device* device, std::string name) {
+    return bootloader::DoFlash(device, name);
+  }
+
+ private:
+};
+
 static void FastbootProtocolLoop() {
   auto variables = std::make_unique<pw::fastboot::VariableProvider>();
   variables->RegisterVariable("test1",
@@ -113,7 +125,7 @@ static void FastbootProtocolLoop() {
       });
   pw::fastboot::Device device{pw::fastboot::CreateMimxrt595UsbTransport(),
                               std::move(variables),
-                              std::make_unique<pw::fastboot::DeviceHAL>()};
+                              std::make_unique<BootloaderHal>()};
   device.ExecuteCommands();
 }
 
