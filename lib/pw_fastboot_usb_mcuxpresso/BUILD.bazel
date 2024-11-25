@@ -18,6 +18,9 @@ cc_library(
         "third_party/usb_device_descriptor.h",
         "third_party/virtual_com.h",
     ],
+    copts = [
+        "-mno-unaligned-access",
+    ],
     includes = [
         "third_party",
     ],
