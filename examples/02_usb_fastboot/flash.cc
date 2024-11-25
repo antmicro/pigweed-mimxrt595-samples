@@ -5,6 +5,7 @@
 #include <optional>
 
 #include "pw_bytes/span.h"
+#include "pw_fastboot/commands.h"
 #include "pw_flash/flash.h"
 #include "pw_flash_mcuxpresso/flash.h"
 #include "pw_log/log.h"
@@ -52,11 +53,11 @@ static bool WritePartition(pw::flash::Flash& flash,
   return true;
 }
 
-bool bootloader::DoFlash(pw::fastboot::Device* device, std::string name) {
+pw::fastboot::CommandResult bootloader::DoFlash(pw::fastboot::Device* device,
+                                                std::string name) {
   auto maybe_part = FindPartitionByName(name);
   if (!maybe_part.has_value()) {
-    device->WriteFail("partition does not exist");
-    return false;
+    return pw::fastboot::CommandResult::Failed("partition does not exist");
   }
   auto partition = maybe_part.value();
 
@@ -66,20 +67,17 @@ bool bootloader::DoFlash(pw::fastboot::Device* device, std::string name) {
 
   auto flash = pw::flash::McuxpressoFlash();
   if (!flash.Initialize().ok()) {
-    device->WriteFail("flash init failed");
-    return false;
+    return pw::fastboot::CommandResult::Failed("flash init failed");
   }
 
   if (!ErasePartition(flash, partition, image)) {
-    device->WriteFail("erase failed");
-    return false;
+    return pw::fastboot::CommandResult::Failed("erase failed");
   }
 
   if (!WritePartition(flash, partition, image)) {
-    device->WriteFail("write failed");
-    return false;
+    return pw::fastboot::CommandResult::Failed("write failed");
   }
 
   PW_LOG_INFO("Flashing completed!");
-  return true;
+  return pw::fastboot::CommandResult::Okay();
 }

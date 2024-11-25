@@ -1,6 +1,7 @@
 #include "board.h"
 #include "bootloader.h"
 #include "flash.h"
+#include "pw_fastboot/commands.h"
 #include "pw_fastboot/device_hal.h"
 #include "pw_fastboot/device_variable.h"
 #include "pw_fastboot/fastboot_device.h"
@@ -98,9 +99,26 @@ class BootloaderHal : public pw::fastboot::DeviceHAL {
  public:
   constexpr BootloaderHal() = default;
 
-  bool Flash(pw::fastboot::Device* device, std::string name) {
+  pw::fastboot::CommandResult Flash(pw::fastboot::Device* device,
+                                    std::string name) override {
     return bootloader::DoFlash(device, name);
   }
+
+  pw::fastboot::CommandResult Reboot(pw::fastboot::Device*,
+                                     pw::fastboot::RebootType) override {
+    return pw::fastboot::CommandResult::Failed("Command unimplemented!");
+  }
+
+  pw::fastboot::CommandResult ShutDown(pw::fastboot::Device*) override {
+    return pw::fastboot::CommandResult::Failed("Command unimplemented!");
+  }
+
+  pw::fastboot::CommandResult OemCommand(pw::fastboot::Device*,
+                                         std::string /*command*/) override {
+    return pw::fastboot::CommandResult::Failed("Command unimplemented!");
+  }
+
+  bool IsDeviceLocked(pw::fastboot::Device*) override { return false; }
 
  private:
 };

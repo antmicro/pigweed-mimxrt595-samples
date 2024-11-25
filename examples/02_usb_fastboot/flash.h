@@ -1,5 +1,6 @@
 #pragma once
 #include "pw_bytes/span.h"
+#include "pw_fastboot/commands.h"
 #include "pw_fastboot/fastboot_device.h"
 
 namespace bootloader {
@@ -10,6 +11,6 @@ struct Partition {
   char name[16];
 };
 
-bool DoFlash(pw::fastboot::Device*, std::string);
+pw::fastboot::CommandResult DoFlash(pw::fastboot::Device*, std::string);
 
 }  // namespace bootloader
