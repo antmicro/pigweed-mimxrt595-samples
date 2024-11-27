@@ -1,3 +1,7 @@
+#include <cstdio>
+#include <memory>
+#include <string>
+
 #include "board.h"
 #include "bootloader.h"
 #include "flash.h"
@@ -9,15 +13,6 @@
 #include "pw_log/log.h"
 #include "pw_status/status.h"
 #include "pw_thread/detached_thread.h"
-#include "wchar.h"
-
-//TODO; temporary add dummy implementation of swprintf to avoid linking error
-//currently pw_fastboot is using `stringutils` lib that includes `sstream` that has wide char support
-//instead we should use `cpp-string` lib from `pw_bluetooth_sapphire` that doesn't have wide char support
-int swprintf(wchar_t* __restrict, size_t, const wchar_t* __restrict, ...) {
-  PW_LOG_CRITICAL("swprintf is not supported in this build");
-  return 0;
-}
 
 // Enable entering of fastboot using SW1
 #define FASTBOOT_ENABLE_GPIO (1)
