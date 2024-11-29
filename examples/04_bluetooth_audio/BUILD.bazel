@@ -13,21 +13,15 @@
 # the License.
 
 load("//targets/mimxrt595_evk_freertos:transition.bzl", "mimxrt595_binary")
-load("@pigweed//third_party/mcuxpresso:mcuxpresso_sdk.bzl", "mcuxpresso_sdk")
 load("@pigweed//pw_fastboot:binary.bzl", "pw_fastboot_binary")
 
 package(default_visibility = ["//visibility:public"])
 
-cc_library(
-  name = "config_overrides",
-  defines = [
-     "PW_THREAD_FREERTOS_CONFIG_DEFAULT_STACK_SIZE_WORDS=2048",
-  ],
-)
-
 cc_binary(
     name = "bluetooth_audio",
-    srcs = ["main.cc"],
+    srcs = [
+        "main.cc",
+    ],
     deps = [
         "@pigweed//pw_chrono:system_clock",
         "@pigweed//pw_chrono:system_timer",
@@ -47,6 +41,10 @@ cc_binary(
         "//examples/04_bluetooth_audio/config:init_peripherals",
         "@pigweed//third_party/mcuxpresso:mcuxpresso_sdk",
         "@pigweed//pw_random",
+        "//examples/04_bluetooth_audio/zephyr_bt_profiles_port:a2dp_profile",
+    ],
+    copts = [
+        "-Wno-missing-field-initializers",
     ],
     copts = [
         "-Wno-changes-meaning",
