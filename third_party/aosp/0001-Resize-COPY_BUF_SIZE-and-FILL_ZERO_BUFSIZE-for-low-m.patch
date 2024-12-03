@@ -1,0 +1,40 @@
+From 5bfbd5760bd1d16aba6c92fa011cce4e22535fb7 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C5=81ukasz=20K=C4=99dziora?= <lkedziora@antmicro.com>
+Date: Fri, 29 Nov 2024 14:57:00 +0100
+Subject: [PATCH] Resize COPY_BUF_SIZE and FILL_ZERO_BUFSIZE for low memory
+ constraints
+
+---
+ libsparse/output_file.cpp | 2 +-
+ libsparse/sparse_read.cpp | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/libsparse/output_file.cpp b/libsparse/output_file.cpp
+index 08312e4d3..f9a6c2fcf 100644
+--- a/libsparse/output_file.cpp
++++ b/libsparse/output_file.cpp
+@@ -54,7 +54,7 @@
+ #define SPARSE_HEADER_LEN (sizeof(sparse_header_t))
+ #define CHUNK_HEADER_LEN (sizeof(chunk_header_t))
+ 
+-#define FILL_ZERO_BUFSIZE (2 * 1024 * 1024)
++#define FILL_ZERO_BUFSIZE (2 * 128 * 1024)
+ 
+ #define container_of(inner, outer_t, elem) ((outer_t*)((char*)(inner)-offsetof(outer_t, elem)))
+ 
+diff --git a/libsparse/sparse_read.cpp b/libsparse/sparse_read.cpp
+index 44f75576d..567d84af4 100644
+--- a/libsparse/sparse_read.cpp
++++ b/libsparse/sparse_read.cpp
+@@ -46,7 +46,7 @@
+ #define SPARSE_HEADER_LEN (sizeof(sparse_header_t))
+ #define CHUNK_HEADER_LEN (sizeof(chunk_header_t))
+ 
+-static constexpr int64_t COPY_BUF_SIZE = 1024 * 1024;
++static constexpr int64_t COPY_BUF_SIZE = 128 * 1024;
+ static char* copybuf;
+ 
+ static std::string ErrorString(int err) {
+-- 
+2.46.1
+
