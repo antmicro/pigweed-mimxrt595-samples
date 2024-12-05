@@ -28,14 +28,14 @@ static std::optional<bootloader::Partition> FindPartitionByName(
     std::string name) {
   auto parts = std::span{kPartitions};
   auto it = std::find_if(
-      parts.begin(), parts.end(), [name](bootloader::Partition const& v) {
+      parts.begin(), parts.end(), [name](const bootloader::Partition& v) {
         return std::strcmp(v.name, name.c_str()) == 0;
       });
   return it != parts.end() ? std::optional{*it} : std::nullopt;
 }
 
 static CommandResult FlashRawImage(pw::flash::Flash& flash,
-                                   bootloader::Partition const& part,
+                                   const bootloader::Partition& part,
                                    pw::ConstByteSpan image) {
   auto err = flash.Erase(pw::flash::Range{part.start, image.size_bytes()});
   if (!err.ok() && !err.IsDataLoss()) {
@@ -69,11 +69,11 @@ static void SparsePrintWrapper(const char* fmt, ...) {
 }
 
 static CommandResult FlashSparseImage(pw::flash::Flash& flash,
-                                      bootloader::Partition const& part,
+                                      const bootloader::Partition& part,
                                       pw::ConstByteSpan image) {
   struct FlashContext {
     pw::flash::Flash& flash;
-    bootloader::Partition const& part;
+    const bootloader::Partition& part;
     pw::ConstByteSpan image;
     // Offset from the start of `part`
     size_t offset;
@@ -86,7 +86,7 @@ static CommandResult FlashSparseImage(pw::flash::Flash& flash,
   // const_cast: libsparse only reads from the buffer, but takes a generic char*
   // ptr instead of const.
   auto* image_ptr =
-      const_cast<char*>(reinterpret_cast<char const*>(image.data()));
+      const_cast<char*>(reinterpret_cast<const char*>(image.data()));
   auto* sparsefile =
       sparse_file_import_buf(image_ptr, image.size(), true, false);
   if (!sparsefile) {
@@ -97,7 +97,7 @@ static CommandResult FlashSparseImage(pw::flash::Flash& flash,
       sparsefile,
       false, /* sparse */
       false, /* crc */
-      [](void* priv, void const* data, size_t len) -> int {
+      [](void* priv, const void* data, size_t len) -> int {
         if (!priv) {
           return -1;
         }
@@ -110,7 +110,7 @@ static CommandResult FlashSparseImage(pw::flash::Flash& flash,
         }
 
         auto chunk =
-            pw::ConstByteSpan{reinterpret_cast<std::byte const*>(data), len};
+            pw::ConstByteSpan{reinterpret_cast<const std::byte*>(data), len};
         auto range =
             pw::flash::Range{ctx.part.start + ctx.offset, chunk.size_bytes()};
 
@@ -141,12 +141,12 @@ static CommandResult FlashSparseImage(pw::flash::Flash& flash,
 }
 
 static CommandResult FlashData(pw::flash::Flash& flash,
-                               bootloader::Partition const& part,
+                               const bootloader::Partition& part,
                                pw::ConstByteSpan image) {
   static constexpr uint32_t kSparseHeaderMagic = 0xed26ff3a;
   const bool is_sparse =
       image.size() >= sizeof(uint32_t) &&
-      *reinterpret_cast<uint32_t const*>(image.data()) == kSparseHeaderMagic;
+      *reinterpret_cast<const uint32_t*>(image.data()) == kSparseHeaderMagic;
 
   PW_LOG_INFO("Image type: %s", is_sparse ? "sparse" : "raw");
   if (is_sparse) {
