@@ -126,7 +126,7 @@ struct bt_avdtp_sep {
 	/** Stream End Point information */
 	struct bt_avdtp_sep_info sep_info;
 	/** Media Transport Channel*/
-	//struct bt_l2cap_br_chan chan;
+	struct bt_l2cap_br_chan chan;
 	/** the endpoint media data */
 	void (*media_data_cb)(struct bt_avdtp_sep *sep,
 				struct net_buf *buf);
@@ -143,6 +143,8 @@ int bt_avdtp_l2cap_recv(struct bt_l2cap_chan *chan, struct net_buf *buf);
 
 int bt_avdtp_l2cap_accept(struct bt_conn *conn, struct bt_l2cap_server *server,
 	struct bt_l2cap_chan **chan);
+
+int bt_avdtp_media_l2cap_recv(struct bt_l2cap_chan* chan, struct net_buf* buf);
 
 #define CONTAINER_OF(ptr, type, field) \
   ((type*)(((char*)(ptr)) - offsetof(type, field)))

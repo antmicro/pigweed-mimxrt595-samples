@@ -97,8 +97,6 @@ void BOARD_WIFI_BT_Enable(bool enable)
 
 void BOARD_WIFI_BT_Config(void *card, sdio_int_t cardInt)
 {
-    (void)card;
-    (void)cardInt;
 #ifdef WIFI_BT_USE_M2_INTERFACE
     s_host.dmaDesBuffer         = s_sdmmcHostDmaBuffer;
     s_host.dmaDesBufferWordsNum = BOARD_SDMMC_HOST_DMA_DESCRIPTOR_BUFFER_SIZE;

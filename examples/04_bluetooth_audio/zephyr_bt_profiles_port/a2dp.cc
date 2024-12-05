@@ -290,6 +290,7 @@ static void bt_a2dp_media_data_callback(
 	struct bt_avdtp_media_hdr *media_hdr;
 	struct bt_a2dp_ep *ep;
 	struct bt_a2dp_stream *stream;
+    //PW_LOG_DEBUG("bt_a2dp_media_data_callback");
 
 	ep = CONTAINER_OF(sep, struct bt_a2dp_ep, sep);
 	if ((ep == NULL) || (ep->stream == NULL)) {

@@ -35,7 +35,6 @@ cc_binary(
         "@pigweed//pw_bluetooth_sapphire/host:stack",
         "@pigweed//pw_intrusive_ptr:pw_intrusive_ptr",
         "@pigweed//pw_bluetooth:emboss_hci_commands",
-        "@pigweed//pw_stream_uart_mcuxpresso:pw_stream_uart_mcuxpresso",
         "@pigweed//pw_async_basic:dispatcher",
         "@pigweed//pw_bluetooth_sapphire_mcuxpresso:bluetooth_sapphire_mcuxpresso",
         "//examples/04_bluetooth_audio/config:init_peripherals",

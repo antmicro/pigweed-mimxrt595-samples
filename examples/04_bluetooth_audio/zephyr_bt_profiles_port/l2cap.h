@@ -178,9 +178,9 @@ struct bt_l2cap_chan;
 ///** @brief L2CAP Channel structure. */
 struct bt_l2cap_chan {
 	///** Channel connection reference */
-	//struct bt_conn			*conn;
+	struct bt_conn			*conn;
 	///** Channel operations reference */
-	//const struct bt_l2cap_chan_ops	*ops;
+	const struct bt_l2cap_chan_ops	*ops;
 	//sys_snode_t			node;
 	//bt_l2cap_chan_destroy_t		destroy;
 
@@ -273,211 +273,211 @@ struct bt_l2cap_chan {
 // */
 //#define BT_L2CAP_LE_CHAN(_ch) CONTAINER_OF(_ch, struct bt_l2cap_le_chan, chan)
 //
-///** @brief BREDR L2CAP Endpoint structure. */
-//struct bt_l2cap_br_endpoint {
-//	/** Endpoint Channel Identifier (CID) */
-//	uint16_t				cid;
-//	/** Endpoint Maximum Transmission Unit */
-//	uint16_t				mtu;
-//};
-//
-///** @brief BREDR L2CAP Channel structure. */
-//struct bt_l2cap_br_chan {
-//	/** Common L2CAP channel reference object */
-//	struct bt_l2cap_chan		chan;
-//	/** Channel Receiving Endpoint */
-//	struct bt_l2cap_br_endpoint	rx;
-//	/** Channel Transmission Endpoint */
-//	struct bt_l2cap_br_endpoint	tx;
-//	/* For internal use only */
-//	atomic_t			flags[1];
-//
-//	bt_l2cap_chan_state_t		state;
-//	/** Remote PSM to be connected */
-//	uint16_t			psm;
-//	/** Helps match request context during CoC */
-//	uint8_t				ident;
-//	bt_security_t			required_sec_level;
-//
-//	/* Response Timeout eXpired (RTX) timer */
-//	struct k_work_delayable		rtx_work;
-//	struct k_work_sync		rtx_sync;
-//
-//	/** @internal To be used with @ref bt_conn.upper_data_ready */
-//	sys_snode_t			_pdu_ready;
-//	/** @internal To be used with @ref bt_conn.upper_data_ready */
-//	atomic_t			_pdu_ready_lock;
-//	/** @internal Queue of net bufs not yet sent to lower layer */
-//	struct k_fifo			_pdu_tx_queue;
-//};
-//
+/** @brief BREDR L2CAP Endpoint structure. */
+struct bt_l2cap_br_endpoint {
+	/** Endpoint Channel Identifier (CID) */
+	uint16_t				cid;
+	/** Endpoint Maximum Transmission Unit */
+	uint16_t				mtu;
+};
+
+/** @brief BREDR L2CAP Channel structure. */
+struct bt_l2cap_br_chan {
+	/** Common L2CAP channel reference object */
+	struct bt_l2cap_chan		chan;
+	/** Channel Receiving Endpoint */
+	struct bt_l2cap_br_endpoint	rx;
+	/** Channel Transmission Endpoint */
+	struct bt_l2cap_br_endpoint	tx;
+	/* For internal use only */
+	//atomic_t			flags[1];
+
+	//bt_l2cap_chan_state_t		state;
+	/** Remote PSM to be connected */
+	uint16_t			psm;
+	/** Helps match request context during CoC */
+	uint8_t				ident;
+	//bt_security_t			required_sec_level;
+
+	/* Response Timeout eXpired (RTX) timer */
+	//struct k_work_delayable		rtx_work;
+	//struct k_work_sync		rtx_sync;
+
+	/** @internal To be used with @ref bt_conn.upper_data_ready */
+	//sys_snode_t			_pdu_ready;
+	/** @internal To be used with @ref bt_conn.upper_data_ready */
+	//atomic_t			_pdu_ready_lock;
+	/** @internal Queue of net bufs not yet sent to lower layer */
+	//struct k_fifo			_pdu_tx_queue;
+};
+
 ///** @brief L2CAP Channel operations structure.
 // *
 // * The object has to stay valid and constant for the lifetime of the channel.
 // */
-//struct bt_l2cap_chan_ops {
-//	/** @brief Channel connected callback
-//	 *
-//	 *  If this callback is provided it will be called whenever the
-//	 *  connection completes.
-//	 *
-//	 *  @param chan The channel that has been connected
-//	 */
-//	void (*connected)(struct bt_l2cap_chan *chan);
-//
-//	/** @brief Channel disconnected callback
-//	 *
-//	 *  If this callback is provided it will be called whenever the
-//	 *  channel is disconnected, including when a connection gets
-//	 *  rejected.
-//	 *
-//	 *  @param chan The channel that has been Disconnected
-//	 */
-//	void (*disconnected)(struct bt_l2cap_chan *chan);
-//
-//	/** @brief Channel encrypt_change callback
-//	 *
-//	 *  If this callback is provided it will be called whenever the
-//	 *  security level changed (indirectly link encryption done) or
-//	 *  authentication procedure fails. In both cases security initiator
-//	 *  and responder got the final status (HCI status) passed by
-//	 *  related to encryption and authentication events from local host's
-//	 *  controller.
-//	 *
-//	 *  @param chan The channel which has made encryption status changed.
-//	 *  @param status HCI status of performed security procedure caused
-//	 *  by channel security requirements. The value is populated
-//	 *  by HCI layer and set to 0 when success and to non-zero (reference to
-//	 *  HCI Error Codes) when security/authentication failed.
-//	 */
-//	void (*encrypt_change)(struct bt_l2cap_chan *chan, uint8_t hci_status);
-//
-//	/** @brief Channel alloc_seg callback
-//	 *
-//	 *  If this callback is provided the channel will use it to allocate
-//	 *  buffers to store segments. This avoids wasting big SDU buffers with
-//	 *  potentially much smaller PDUs. If this callback is supplied, it must
-//	 *  return a valid buffer.
-//	 *
-//	 *  @param chan The channel requesting a buffer.
-//	 *
-//	 *  @return Allocated buffer.
-//	 */
-//	struct net_buf *(*alloc_seg)(struct bt_l2cap_chan *chan);
-//
-//	/** @brief Channel alloc_buf callback
-//	 *
-//	 *  If this callback is provided the channel will use it to allocate
-//	 *  buffers to store incoming data. Channels that requires segmentation
-//	 *  must set this callback.
-//	 *  If the application has not set a callback the L2CAP SDU MTU will be
-//	 *  truncated to @ref BT_L2CAP_SDU_RX_MTU.
-//	 *
-//	 *  @param chan The channel requesting a buffer.
-//	 *
-//	 *  @return Allocated buffer.
-//	 */
-//	struct net_buf *(*alloc_buf)(struct bt_l2cap_chan *chan);
-//
-//	/** @brief Channel recv callback
-//	 *
-//	 *  @param chan The channel receiving data.
-//	 *  @param buf Buffer containing incoming data.
-//	 *
-//	 *  @note This callback is mandatory, unless
-//	 *  @kconfig{CONFIG_BT_L2CAP_SEG_RECV} is enabled and seg_recv is
-//	 *  supplied.
-//	 *
-//	 *  If the application returns @c -EINPROGRESS, the application takes
-//	 *  ownership of the reference in @p buf. (I.e. This pointer value can
-//	 *  simply be given to @ref bt_l2cap_chan_recv_complete without any
-//	 *  calls @ref net_buf_ref or @ref net_buf_unref.)
-//	 *
-//	 *  @return 0 in case of success or negative value in case of error.
-//	 *  @return -EINPROGRESS in case where user has to confirm once the data
-//	 *                       has been processed by calling
-//	 *                       @ref bt_l2cap_chan_recv_complete passing back
-//	 *                       the buffer received with its original user_data
-//	 *                       which contains the number of segments/credits
-//	 *                       used by the packet.
-//	 */
-//	int (*recv)(struct bt_l2cap_chan *chan, struct net_buf *buf);
-//
-//	/** @brief Channel sent callback
-//	 *
-//	 *  This callback will be called once the controller marks the SDU
-//	 *  as completed. When the controller does so is implementation
-//	 *  dependent. It could be after the SDU is enqueued for transmission,
-//	 *  or after it is sent on air.
-//	 *
-//	 *  @param chan The channel which has sent data.
-//	 */
-//	void (*sent)(struct bt_l2cap_chan *chan);
-//
-//	/** @brief Channel status callback
-//	 *
-//	 *  If this callback is provided it will be called whenever the
-//	 *  channel status changes.
-//	 *
-//	 *  @param chan The channel which status changed
-//	 *  @param status The channel status
-//	 */
-//	void (*status)(struct bt_l2cap_chan *chan, atomic_t *status);
-//
-//	/* @brief Channel released callback
-//	 *
-//	 * If this callback is set it is called when the stack has release all
-//	 * references to the channel object.
-//	 */
-//	void (*released)(struct bt_l2cap_chan *chan);
-//
-//	/** @brief Channel reconfigured callback
-//	 *
-//	 *  If this callback is provided it will be called whenever peer or
-//	 *  local device requested reconfiguration. Application may check
-//	 *  updated MTU and MPS values by inspecting chan->le endpoints.
-//	 *
-//	 *  @param chan The channel which was reconfigured
-//	 */
-//	void (*reconfigured)(struct bt_l2cap_chan *chan);
-//
-//#if defined(CONFIG_BT_L2CAP_SEG_RECV)
-//	/** @brief Handle L2CAP segments directly
-//	 *
-//	 *  This is an alternative to @ref bt_l2cap_chan_ops.recv. They cannot
-//	 *  be used together.
-//	 *
-//	 *  This is called immediately for each received segment.
-//	 *
-//	 *  Unlike with @ref bt_l2cap_chan_ops.recv, flow control is explicit.
-//	 *  Each time this handler is invoked, the remote has permanently used
-//	 *  up one credit. Use @ref bt_l2cap_chan_give_credits to give credits.
-//	 *
-//	 *  The start of an SDU is marked by `seg_offset == 0`. The end of an
-//	 *  SDU is marked by `seg_offset + seg->len == sdu_len`.
-//	 *
-//	 *  The stack guarantees that:
-//	 *    - The sender had the credit.
-//	 *    - The SDU length does not exceed MTU.
-//	 *    - The segment length does not exceed MPS.
-//	 *
-//	 *  Additionally, the L2CAP protocol is such that:
-//	 *    - Segments come in order.
-//	 *    - SDUs cannot be interleaved or aborted halfway.
-//	 *
-//	 *  @note With this alternative API, the application is responsible for
-//	 *  setting the RX MTU and MPS. The MPS must not exceed @ref BT_L2CAP_RX_MTU.
-//	 *
-//	 *  @param chan The receiving channel.
-//	 *  @param sdu_len Byte length of the SDU this segment is part of.
-//	 *  @param seg_offset The byte offset of this segment in the SDU.
-//	 *  @param seg The segment payload.
-//	 */
-//	void (*seg_recv)(struct bt_l2cap_chan *chan, size_t sdu_len,
-//			 off_t seg_offset, struct net_buf_simple *seg);
-//#endif /* CONFIG_BT_L2CAP_SEG_RECV */
-//};
-//
+struct bt_l2cap_chan_ops {
+	/** @brief Channel connected callback
+	 *
+	 *  If this callback is provided it will be called whenever the
+	 *  connection completes.
+	 *
+	 *  @param chan The channel that has been connected
+	 */
+	void (*connected)(struct bt_l2cap_chan *chan);
+
+	/** @brief Channel disconnected callback
+	 *
+	 *  If this callback is provided it will be called whenever the
+	 *  channel is disconnected, including when a connection gets
+	 *  rejected.
+	 *
+	 *  @param chan The channel that has been Disconnected
+	 */
+	void (*disconnected)(struct bt_l2cap_chan *chan);
+
+	/** @brief Channel encrypt_change callback
+	 *
+	 *  If this callback is provided it will be called whenever the
+	 *  security level changed (indirectly link encryption done) or
+	 *  authentication procedure fails. In both cases security initiator
+	 *  and responder got the final status (HCI status) passed by
+	 *  related to encryption and authentication events from local host's
+	 *  controller.
+	 *
+	 *  @param chan The channel which has made encryption status changed.
+	 *  @param status HCI status of performed security procedure caused
+	 *  by channel security requirements. The value is populated
+	 *  by HCI layer and set to 0 when success and to non-zero (reference to
+	 *  HCI Error Codes) when security/authentication failed.
+	 */
+	void (*encrypt_change)(struct bt_l2cap_chan *chan, uint8_t hci_status);
+
+	/** @brief Channel alloc_seg callback
+	 *
+	 *  If this callback is provided the channel will use it to allocate
+	 *  buffers to store segments. This avoids wasting big SDU buffers with
+	 *  potentially much smaller PDUs. If this callback is supplied, it must
+	 *  return a valid buffer.
+	 *
+	 *  @param chan The channel requesting a buffer.
+	 *
+	 *  @return Allocated buffer.
+	 */
+	struct net_buf *(*alloc_seg)(struct bt_l2cap_chan *chan);
+
+	/** @brief Channel alloc_buf callback
+	 *
+	 *  If this callback is provided the channel will use it to allocate
+	 *  buffers to store incoming data. Channels that requires segmentation
+	 *  must set this callback.
+	 *  If the application has not set a callback the L2CAP SDU MTU will be
+	 *  truncated to @ref BT_L2CAP_SDU_RX_MTU.
+	 *
+	 *  @param chan The channel requesting a buffer.
+	 *
+	 *  @return Allocated buffer.
+	 */
+	struct net_buf *(*alloc_buf)(struct bt_l2cap_chan *chan);
+
+	/** @brief Channel recv callback
+	 *
+	 *  @param chan The channel receiving data.
+	 *  @param buf Buffer containing incoming data.
+	 *
+	 *  @note This callback is mandatory, unless
+	 *  @kconfig{CONFIG_BT_L2CAP_SEG_RECV} is enabled and seg_recv is
+	 *  supplied.
+	 *
+	 *  If the application returns @c -EINPROGRESS, the application takes
+	 *  ownership of the reference in @p buf. (I.e. This pointer value can
+	 *  simply be given to @ref bt_l2cap_chan_recv_complete without any
+	 *  calls @ref net_buf_ref or @ref net_buf_unref.)
+	 *
+	 *  @return 0 in case of success or negative value in case of error.
+	 *  @return -EINPROGRESS in case where user has to confirm once the data
+	 *                       has been processed by calling
+	 *                       @ref bt_l2cap_chan_recv_complete passing back
+	 *                       the buffer received with its original user_data
+	 *                       which contains the number of segments/credits
+	 *                       used by the packet.
+	 */
+	int (*recv)(struct bt_l2cap_chan *chan, struct net_buf *buf);
+
+	/** @brief Channel sent callback
+	 *
+	 *  This callback will be called once the controller marks the SDU
+	 *  as completed. When the controller does so is implementation
+	 *  dependent. It could be after the SDU is enqueued for transmission,
+	 *  or after it is sent on air.
+	 *
+	 *  @param chan The channel which has sent data.
+	 */
+	void (*sent)(struct bt_l2cap_chan *chan);
+
+	/** @brief Channel status callback
+	 *
+	 *  If this callback is provided it will be called whenever the
+	 *  channel status changes.
+	 *
+	 *  @param chan The channel which status changed
+	 *  @param status The channel status
+	 */
+	void (*status)(struct bt_l2cap_chan *chan, /*atomic_t*/uint8_t *status);
+
+	/* @brief Channel released callback
+	 *
+	 * If this callback is set it is called when the stack has release all
+	 * references to the channel object.
+	 */
+	void (*released)(struct bt_l2cap_chan *chan);
+
+	/** @brief Channel reconfigured callback
+	 *
+	 *  If this callback is provided it will be called whenever peer or
+	 *  local device requested reconfiguration. Application may check
+	 *  updated MTU and MPS values by inspecting chan->le endpoints.
+	 *
+	 *  @param chan The channel which was reconfigured
+	 */
+	void (*reconfigured)(struct bt_l2cap_chan *chan);
+
+#if defined(CONFIG_BT_L2CAP_SEG_RECV)
+	/** @brief Handle L2CAP segments directly
+	 *
+	 *  This is an alternative to @ref bt_l2cap_chan_ops.recv. They cannot
+	 *  be used together.
+	 *
+	 *  This is called immediately for each received segment.
+	 *
+	 *  Unlike with @ref bt_l2cap_chan_ops.recv, flow control is explicit.
+	 *  Each time this handler is invoked, the remote has permanently used
+	 *  up one credit. Use @ref bt_l2cap_chan_give_credits to give credits.
+	 *
+	 *  The start of an SDU is marked by `seg_offset == 0`. The end of an
+	 *  SDU is marked by `seg_offset + seg->len == sdu_len`.
+	 *
+	 *  The stack guarantees that:
+	 *    - The sender had the credit.
+	 *    - The SDU length does not exceed MTU.
+	 *    - The segment length does not exceed MPS.
+	 *
+	 *  Additionally, the L2CAP protocol is such that:
+	 *    - Segments come in order.
+	 *    - SDUs cannot be interleaved or aborted halfway.
+	 *
+	 *  @note With this alternative API, the application is responsible for
+	 *  setting the RX MTU and MPS. The MPS must not exceed @ref BT_L2CAP_RX_MTU.
+	 *
+	 *  @param chan The receiving channel.
+	 *  @param sdu_len Byte length of the SDU this segment is part of.
+	 *  @param seg_offset The byte offset of this segment in the SDU.
+	 *  @param seg The segment payload.
+	 */
+	void (*seg_recv)(struct bt_l2cap_chan *chan, size_t sdu_len,
+			 off_t seg_offset, struct net_buf_simple *seg);
+#endif /* CONFIG_BT_L2CAP_SEG_RECV */
+};
+
 ///**
 // *  @brief Headroom needed for outgoing L2CAP PDUs.
 // */
@@ -663,9 +663,9 @@ struct bt_l2cap_chan {
 // *
 // *  @return 0 in case of success or negative value in case of error.
 // */
-//int bt_l2cap_chan_connect(struct bt_conn *conn, struct bt_l2cap_chan *chan,
-//			  uint16_t psm);
-//
+int bt_l2cap_chan_connect(struct bt_conn *conn, struct bt_l2cap_chan *chan,
+			  uint16_t psm);
+
 ///** @brief Disconnect L2CAP channel
 // *
 // *  Disconnect L2CAP channel, if the connection is pending it will be

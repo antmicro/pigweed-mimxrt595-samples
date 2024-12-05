@@ -205,7 +205,7 @@
 #define BOARD_BT_UART_BAUDRATE 3000000
 #define BOARD_BT_UART_CLK_FREQ CLOCK_GetFlexcommClkFreq(0U)
 #define BOARD_BT_UART_FRG_CLK \
-    (const clock_frg_clk_config_t){0, clock_frg_clk_config_t::kCLOCK_FrgMainClk, 255, 0} /*!< Select FRG0 mux as frg_pll */
+    (&(const clock_frg_clk_config_t){0, kCLOCK_FrgMainClk, 255, 0}) /*!< Select FRG0 mux as frg_pll */
 #define BOARD_BT_UART_CLK_ATTACH  kFRG_to_FLEXCOMM0
 #define BOARD_BT_UART_RST         kFC0_RST_SHIFT_RSTn
 #define BOARD_BT_UART_IRQ         FLEXCOMM0_IRQn

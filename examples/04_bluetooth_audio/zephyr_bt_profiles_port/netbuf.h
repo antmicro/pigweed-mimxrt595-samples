@@ -1024,7 +1024,7 @@ typedef struct _snode sys_snode_t;
  * using the net_buf_alloc() API.
  */
 struct net_buf {
-    pw::Vector<uint8_t, 128> data;
+    pw::Vector<uint8_t, 2048> data;
     unsigned int len() const { return data.size(); }
 };
 

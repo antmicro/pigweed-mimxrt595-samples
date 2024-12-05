@@ -130,23 +130,38 @@ enum sep_state {
 //   }
 // }
 //
-// int bt_avdtp_media_l2cap_recv(struct bt_l2cap_chan* chan, struct net_buf*
-// buf) {
-//   /* media data is received */
-//   struct bt_avdtp_sep* sep = CONTAINER_OF(chan, struct bt_avdtp_sep,
-//   chan.chan);
-//
-//   if (sep->media_data_cb != NULL) {
-//     sep->media_data_cb(sep, buf);
-//   }
-//   return 0;
-// }
-//
+static struct bt_avdtp_sep* avdtp_get_sep(uint8_t stream_endpoint_id) {
+  struct bt_avdtp_sep* sep = NULL;
+
+  for (auto s : seps) {
+    if (s->sep_info.id == stream_endpoint_id) {
+      sep = s;
+      break;
+    }
+  }
+
+  return sep;
+}
+
+int bt_avdtp_media_l2cap_recv(struct bt_l2cap_chan* chan, struct net_buf* buf) {
+  (void)chan;
+  /* media data is received */
+  struct bt_avdtp_sep* sep;
+  sep = avdtp_get_sep(1);
+
+  if (sep->media_data_cb != NULL) {
+    sep->media_data_cb(sep, buf);
+  } else {
+    PW_LOG_CRITICAL("Error: No media_data_cb");
+  }
+  return 0;
+}
+
 // static int avdtp_media_connect(struct bt_avdtp* session,
 //                                struct bt_avdtp_sep* sep) {
 //   static const struct bt_l2cap_chan_ops ops = {
-//       .connected = bt_avdtp_media_l2cap_connected,
-//       .disconnected = bt_avdtp_media_l2cap_disconnected,
+//       //.connected = bt_avdtp_media_l2cap_connected,
+//       //.disconnected = bt_avdtp_media_l2cap_disconnected,
 //       .recv = bt_avdtp_media_l2cap_recv};
 //
 //   if (!session) {
@@ -154,9 +169,9 @@ enum sep_state {
 //   }
 //
 //   sep->session = session;
-//   sep->chan.rx.mtu = BT_L2CAP_RX_MTU;
+//   //sep->chan.rx.mtu = BT_L2CAP_RX_MTU;
 //   sep->chan.chan.ops = &ops;
-//   sep->chan.required_sec_level = BT_SECURITY_L2;
+//   //sep->chan.required_sec_level = BT_SECURITY_L2;
 //
 //   return bt_l2cap_chan_connect(
 //       session->br_chan.chan.conn, sep->chan.chan, BT_L2CAP_PSM_AVDTP);
@@ -260,21 +275,6 @@ static void avdtp_discover_handler(struct bt_avdtp* session,
     //	req->func(req);
     // }
   }
-}
-
-static struct bt_avdtp_sep* avdtp_get_sep(uint8_t stream_endpoint_id) {
-  struct bt_avdtp_sep* sep = NULL;
-  PW_LOG_DEBUG("stream_endpoint_id = %d", stream_endpoint_id);
-
-  for (auto s : seps) {
-    PW_LOG_DEBUG("s.sep_info.id = %d", s->sep_info.id);
-    if (s->sep_info.id == stream_endpoint_id) {
-      sep = s;
-      break;
-    }
-  }
-
-  return sep;
 }
 
 // static void avdtp_get_capabilities_handler(struct bt_avdtp *session,
@@ -642,8 +642,8 @@ static void avdtp_open_handler(struct bt_avdtp* session,
       session->current_sep = sep;
       sep->state = AVDTP_OPENING;
       sep->sep_info.inuse = 1u;
-      // TODO: this should be set by `bt_avdtp_media_l2cap_connected` but for simplification,
-      // we can set this here
+      // TODO: this should be set by `bt_avdtp_media_l2cap_connected` but for
+      // simplification, we can set this here
       sep->state = AVDTP_OPEN;
     }
 
@@ -1068,6 +1068,10 @@ int bt_avdtp_l2cap_recv(struct bt_l2cap_chan* chan, struct net_buf* buf) {
     PW_LOG_CRITICAL("Recvd Wrong AVDTP Header");
     return 0;
   }
+  if (AVDTP_GET_SIG_ID(buf->data.data()[1]) == 0x20) {
+    bt_avdtp_media_l2cap_recv(chan, buf);
+    return 0;
+  }
 
   hdr = (struct bt_avdtp_single_sig_hdr*)net_buf_pull_mem(buf, sizeof(*hdr));
   pack_type = AVDTP_GET_PKT_TYPE(hdr->hdr);
@@ -1135,10 +1139,6 @@ int bt_avdtp_l2cap_recv(struct bt_l2cap_chan* chan, struct net_buf* buf) {
       return 0;
     }
   }
-  PW_LOG_DEBUG("Unknown AVDTP Command: 0x%x", sigid);
-  for (unsigned int j = 0; j < buf->len(); j++) {
-    PW_LOG_INFO("Received data: 0x%x", buf->data[j]);
-  }
 
   return 0;
 }
@@ -1178,91 +1178,87 @@ int bt_avdtp_l2cap_recv(struct bt_l2cap_chan* chan, struct net_buf* buf) {
 //	return bt_l2cap_chan_disconnect(&session->br_chan.chan);
 // }
 //
-int bt_avdtp_l2cap_accept(struct bt_conn *conn, struct bt_l2cap_server *server,
-	struct bt_l2cap_chan **chan)
-{
-    (void)server;
-    (void)chan;
-	struct bt_avdtp *session = NULL;
-	int result;
+int bt_avdtp_l2cap_accept(struct bt_conn* conn,
+                          struct bt_l2cap_server* server,
+                          struct bt_l2cap_chan** chan) {
+  (void)server;
+  (void)chan;
+  struct bt_avdtp* session = NULL;
+  int result;
 
-	PW_LOG_DEBUG("conn %p", conn);
-	/* Get the AVDTP session from upper layer */
-	result = event_cb->accept(conn, &session);
-	if (result < 0) {
-		return result;
-	}
+  PW_LOG_DEBUG("conn %p", conn);
+  /* Get the AVDTP session from upper layer */
+  result = event_cb->accept(conn, &session);
+  if (result < 0) {
+    return result;
+  }
 
-	//if (session->signalling_l2cap_connected == 0) {
-	//	static const struct bt_l2cap_chan_ops ops = {
-	//		.connected = bt_avdtp_l2cap_connected,
-	//		.disconnected = bt_avdtp_l2cap_disconnected,
-	//		.recv = bt_avdtp_l2cap_recv,
-	//	};
-	//	session->signalling_l2cap_connected = 1;
-	//	session->br_chan.chan.ops = &ops;
-	//	session->br_chan.rx.mtu = BT_L2CAP_RX_MTU;
-	//	*chan = &session->br_chan.chan;
-	//} else {
-	//	/* get the current opening endpoint */
-	//	if (session->current_sep != NULL) {
-	//		static const struct bt_l2cap_chan_ops ops = {
-	//			.connected = bt_avdtp_media_l2cap_connected,
-	//			.disconnected = bt_avdtp_media_l2cap_disconnected,
-	//			.recv = bt_avdtp_media_l2cap_recv
-	//		};
-	//		session->current_sep->session = session;
-	//		session->current_sep->chan.chan.ops = &ops;
-	//		session->current_sep->chan.rx.mtu = BT_L2CAP_RX_MTU;
-	//		session->current_sep->chan.required_sec_level =
-	//				BT_SECURITY_L2;
-	//		*chan = &session->current_sep->chan.chan;
-	//		session->current_sep = NULL;
-	//	}
-	//}
+  // if (session->signalling_l2cap_connected == 0) {
+  //	static const struct bt_l2cap_chan_ops ops = {
+  //		.connected = bt_avdtp_l2cap_connected,
+  //		.disconnected = bt_avdtp_l2cap_disconnected,
+  //		.recv = bt_avdtp_l2cap_recv,
+  //	};
+  //	session->signalling_l2cap_connected = 1;
+  //	session->br_chan.chan.ops = &ops;
+  //	session->br_chan.rx.mtu = BT_L2CAP_RX_MTU;
+  //	*chan = &session->br_chan.chan;
+  // } else {
+  //	/* get the current opening endpoint */
+  //	if (session->current_sep != NULL) {
+  //		static const struct bt_l2cap_chan_ops ops = {
+  //			.connected = bt_avdtp_media_l2cap_connected,
+  //			.disconnected = bt_avdtp_media_l2cap_disconnected,
+  //			.recv = bt_avdtp_media_l2cap_recv
+  //		};
+  //		session->current_sep->session = session;
+  //				BT_SECURITY_L2;
+  //		*chan = &session->current_sep->chan.chan;
+  //		session->current_sep = NULL;
+  //	}
+  // }
 
-	return 0;
+  return 0;
 }
 
 ///* Application will register its callback */
-int bt_avdtp_register(struct bt_avdtp_event_cb *cb)
-{
-	//LOG_DBG("");
+int bt_avdtp_register(struct bt_avdtp_event_cb* cb) {
+  // LOG_DBG("");
 
-	if (event_cb) {
-		return -EALREADY;
-	}
+  if (event_cb) {
+    return -EALREADY;
+  }
 
-	event_cb = cb;
+  event_cb = cb;
 
-	return 0;
+  return 0;
 }
 
-int bt_avdtp_register_sep(uint8_t media_type, uint8_t role,
-			  struct bt_avdtp_sep *sep)
-{
-	//LOG_DBG("");
+int bt_avdtp_register_sep(uint8_t media_type,
+                          uint8_t role,
+                          struct bt_avdtp_sep* sep) {
+  // LOG_DBG("");
 
-	static uint8_t bt_avdtp_sep = BT_AVDTP_MIN_SEID;
+  static uint8_t bt_avdtp_sep = BT_AVDTP_MIN_SEID;
 
-	if (!sep) {
-		return -EIO;
-	}
+  if (!sep) {
+    return -EIO;
+  }
 
-	if (bt_avdtp_sep == BT_AVDTP_MAX_SEID) {
-		return -EIO;
-	}
+  if (bt_avdtp_sep == BT_AVDTP_MAX_SEID) {
+    return -EIO;
+  }
 
-	sep->sep_info.id = bt_avdtp_sep++;
-	sep->sep_info.inuse = 0U;
-	sep->sep_info.media_type = (bt_avdtp_media_type)media_type;
-	sep->sep_info.tsep = (bt_avdtp_sep_type)role;
-	sep->state = AVDTP_IDLE;
+  sep->sep_info.id = bt_avdtp_sep++;
+  sep->sep_info.inuse = 0U;
+  sep->sep_info.media_type = (bt_avdtp_media_type)media_type;
+  sep->sep_info.tsep = (bt_avdtp_sep_type)role;
+  sep->state = AVDTP_IDLE;
 
-	//sys_slist_append(&seps, &sep->_node);
-    seps.push_back(sep);
+  // sys_slist_append(&seps, &sep->_node);
+  seps.push_back(sep);
 
-	return 0;
+  return 0;
 }
 ///* init function */
 // int bt_avdtp_init(void)

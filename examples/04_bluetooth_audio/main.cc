@@ -13,25 +13,26 @@
 // the License.
 #define PW_LOG_MODULE_NAME "MAIN"
 
-#include <pw_random/xor_shift.h>
-
-#include <memory>
-
+#include "sbc.h"
+#include "BT_jpl_api.h"
+#include "a2dp.h"
+#include "avdtp.h"
+#include "avdtp_internal.h"
+#include "board.h"
+#include "fsl_adapter_audio.h"
+#include "fsl_codec_common.h"
+#include "fsl_wm8904.h"
+#include "netbuf.h"
 #include "pw_async_basic/dispatcher.h"
 #include "pw_bluetooth_sapphire/internal/host/common/random.h"
-#include "pw_bluetooth_sapphire/internal/host/gap/adapter.h"
-#include "pw_bluetooth_sapphire/internal/host/gap/bredr_connection_manager.h"
 #include "pw_bluetooth_sapphire/public/pw_bluetooth_sapphire/internal/host/gap/pairing_delegate.h"
 #include "pw_bluetooth_sapphire_mcuxpresso/controller.h"
 #include "pw_log/log.h"
 #include "pw_thread/detached_thread.h"
 #include "pw_thread_freertos/context.h"
 #include "pw_thread_freertos/options.h"
-#include "sbc.h"
-#include "a2dp.h"
-#include "avdtp.h"
-#include "avdtp_internal.h"
-#include "netbuf.h"
+#include "pw_random/xor_shift.h"
+#include "sbc_api.h"
 
 namespace bt::gap {
 using namespace bt;
@@ -97,7 +98,234 @@ using namespace bt::gap;
 using namespace bt::gatt;
 using namespace bt::sdp;
 
+#define BOARD_CODEC_I2C_INSTANCE 0
+#define DEMO_AUDIO_INSTANCE (3)
+#define EXAMPLE_DMA_INSTANCE (0)
+#define EXAMPLE_TX_CHANNEL (7)
+#define DEMO_AUDIO_DATA_CHANNEL (kHAL_AudioStereo)
+#define DEMO_AUDIO_BIT_WIDTH (kHAL_AudioWordWidth16bits)
+#define DEMO_AUDIO_SAMPLING_RATE (kHAL_AudioSampleRate44100Hz)
+#define A2DP_CODEC_DAC_VOLUME (100U) /* Range: 0 ~ 100 */
+#define A2DP_CODEC_HP_VOLUME (100U)  /* Range: 0 ~ 100 */
+
 static struct bt_a2dp_stream sbc_stream;
+
+hal_audio_dma_config_t audioTxDmaConfig = {
+    .instance = EXAMPLE_DMA_INSTANCE,
+    .channel = EXAMPLE_TX_CHANNEL,
+    .priority = kHAL_AudioDmaChannelPriorityDefault,
+    .enablePreemption = false,
+    .enablePreemptAbility = false,
+    .dmaMuxConfig = NULL,
+    .dmaChannelMuxConfig = NULL,
+};
+
+hal_audio_config_t audioTxConfig = {
+    .dmaConfig = &audioTxDmaConfig,
+    .ipConfig = NULL,
+    .srcClock_Hz = 0,
+    .sampleRate_Hz = (uint32_t)DEMO_AUDIO_SAMPLING_RATE,
+    .fifoWatermark = 0,
+    .masterSlave = kHAL_AudioSlave,
+    .bclkPolarity = kHAL_AudioSampleOnRisingEdge,
+    .frameSyncWidth = kHAL_AudioFrameSyncWidthHalfFrame,
+    .frameSyncPolarity = kHAL_AudioBeginAtFallingEdge,
+    .lineChannels = DEMO_AUDIO_DATA_CHANNEL,
+    .dataFormat = kHAL_AudioDataFormatI2sClassic,
+    .bitWidth = (uint8_t)DEMO_AUDIO_BIT_WIDTH,
+    .instance = DEMO_AUDIO_INSTANCE,
+};
+
+wm8904_config_t wm8904Config = {
+    .master = true,
+    .protocol = kWM8904_ProtocolI2S,
+    .format = {.sampleRate = kWM8904_SampleRate48kHz,
+               .bitWidth = kWM8904_BitWidth16},
+    .recordSource = kWM8904_RecordSourceLineInput,
+    .recordChannelLeft = kWM8904_RecordChannelLeft2,
+    .recordChannelRight = kWM8904_RecordChannelRight2,
+    .playSource = kWM8904_PlaySourceDAC,
+    .slaveAddress = WM8904_I2C_ADDRESS,
+    .i2cConfig = {.codecI2CInstance = BOARD_CODEC_I2C_INSTANCE},
+};
+
+codec_config_t boardCodecConfig = {.codecDevType = kCODEC_WM8904,
+                                   .codecDevConfig = &wm8904Config};
+
+const clock_audio_pll_config_t audioPllConfig = {
+    .audio_pll_src = kCLOCK_AudioPllXtalIn, /* OSC clock */
+    .numerator =
+        5040, /* Numerator of the Audio PLL fractional loop divider is null */
+    .denominator = 13125, /* Denominator of the Audio PLL fractional loop
+                             divider is null */
+    .audio_pll_mult = kCLOCK_AudioPllMult20 /* Divide by 20 */
+};
+
+const clock_audio_pll_config_t audioPllConfig1 = {
+    .audio_pll_src = kCLOCK_AudioPllXtalIn, /* OSC clock */
+    .numerator =
+        5040, /* Numerator of the Audio PLL fractional loop divider is null */
+    .denominator = 27000, /* Denominator of the Audio PLL fractional loop
+                             divider is null */
+    .audio_pll_mult = kCLOCK_AudioPllMult22 /* Divide by 22 */
+};
+
+static HAL_AUDIO_HANDLE_DEFINE(audio_tx_handle);
+static codec_handle_t codec_handle;
+
+static pw::sync::ThreadNotification audio_cond;
+static uint8_t a2dp_sbc_buffer[JPL_SBC_FRAME_SIZE * JPL_SBC_NUM_FRAMES];
+static uint8_t a2dp_pcm_buffer[JPL_PCM_BLOCK_SIZE * JPL_PCM_NUM_BLOCKS];
+static uint8_t a2dp_silence_buffer[JPL_PCM_BLOCK_SIZE];
+static uint8_t* pcm_buffer_ptr = &a2dp_pcm_buffer[0];
+
+static JPL_PARAM jpl_param = {
+    .pcm_num_frames = ((3 * (SBC_MAX_BLOCK_SIZE * SBC_MAX_SUBBAND)) / (16 * 8)),
+    .pod_frames = ((18 * (SBC_MAX_BLOCK_SIZE * SBC_MAX_SUBBAND)) / (16 * 8)),
+    .sbc_param = {.sampling_frequency = 3,  // 48k
+                  .nrof_blocks = 16,
+                  .channel_mode = 3,  // joint stereo
+                  .nrof_channels = 2,
+                  .allocation_method = 0,  // loudness
+                  .nrof_subbands = 8,      // subbands
+                  .bitpool = 35}};
+
+static void frame_remove_task() {
+  while (true) {
+    audio_cond.acquire();
+    BT_jpl_remove_frames(pcm_buffer_ptr, JPL_PCM_BLOCK_SIZE);
+    pcm_buffer_ptr += JPL_PCM_BLOCK_SIZE;
+    if (pcm_buffer_ptr >=
+        a2dp_pcm_buffer + sizeof(a2dp_pcm_buffer)) {
+      pcm_buffer_ptr = a2dp_pcm_buffer;
+    }
+  }
+}
+
+static void tx_callback(hal_audio_handle_t handle,
+                        hal_audio_status_t completionStatus,
+                        void* callbackParam) {
+  (void)handle;
+  (void)callbackParam;
+  (void)completionStatus;
+  audio_cond.release();
+}
+
+uint32_t BOARD_SwitchAudioFreq(uint32_t sampleRate) {
+  CLOCK_DeinitAudioPll();
+
+  if (0U == sampleRate) {
+    /* Disable MCLK output */
+    SYSCTL1->MCLKPINDIR &= ~SYSCTL1_MCLKPINDIR_MCLKPINDIR_MASK;
+  } else {
+    if (44100U == sampleRate) {
+      CLOCK_InitAudioPll(&audioPllConfig);
+    } else if (0U == sampleRate % 8000U) {
+      CLOCK_InitAudioPll(&audioPllConfig1);
+    } else {
+      /* no action */
+    }
+
+    CLOCK_InitAudioPfd(kCLOCK_Pfd0, 26); /* Enable Audio PLL clock */
+    CLOCK_SetClkDiv(kCLOCK_DivAudioPllClk,
+                    15U); /* Set AUDIOPLLCLKDIV divider to value 15 */
+
+    /* Attach main clock to I3C, 396MHz / 16 = 24.75MHz. */
+    CLOCK_AttachClk(kMAIN_CLK_to_I3C_CLK);
+    CLOCK_SetClkDiv(kCLOCK_DivI3cClk, 16);
+
+    /* attach AUDIO PLL clock to FLEXCOMM1 (I2S1) */
+    CLOCK_AttachClk(kAUDIO_PLL_to_FLEXCOMM1);
+    /* attach AUDIO PLL clock to FLEXCOMM3 (I2S3) */
+    CLOCK_AttachClk(kAUDIO_PLL_to_FLEXCOMM3);
+
+    /* attach AUDIO PLL clock to MCLK (AudioPll * (18 / 26) / 15 / 1 = 24.576MHz
+     * / 22.5792MHz) */
+    CLOCK_AttachClk(kAUDIO_PLL_to_MCLK_CLK);
+    CLOCK_SetClkDiv(kCLOCK_DivMclkClk, 1);
+    SYSCTL1->MCLKPINDIR = SYSCTL1_MCLKPINDIR_MCLKPINDIR_MASK;
+
+    /* Set shared signal set 0: SCK, WS from Flexcomm1 */
+    SYSCTL1->SHAREDCTRLSET[0] = SYSCTL1_SHAREDCTRLSET_SHAREDSCKSEL(1) |
+                                SYSCTL1_SHAREDCTRLSET_SHAREDWSSEL(1);
+    /* Set flexcomm3 SCK, WS from shared signal set 0 */
+    SYSCTL1->FCCTRLSEL[3] =
+        SYSCTL1_FCCTRLSEL_SCKINSEL(1) | SYSCTL1_FCCTRLSEL_WSINSEL(1);
+
+    wm8904Config.i2cConfig.codecI2CSourceClock = CLOCK_GetI3cClkFreq();
+    wm8904Config.mclk_HZ = CLOCK_GetMclkClkFreq();
+    switch (sampleRate) {
+      case 8000:
+        wm8904Config.format.sampleRate = kWM8904_SampleRate8kHz;
+        break;
+      case 11025:
+        wm8904Config.format.sampleRate = kWM8904_SampleRate11025Hz;
+        break;
+      case 12000:
+        wm8904Config.format.sampleRate = kWM8904_SampleRate12kHz;
+        break;
+      case 16000:
+        wm8904Config.format.sampleRate = kWM8904_SampleRate16kHz;
+        break;
+      case 22050:
+        wm8904Config.format.sampleRate = kWM8904_SampleRate22050Hz;
+        break;
+      case 24000:
+        wm8904Config.format.sampleRate = kWM8904_SampleRate24kHz;
+        break;
+      case 32000:
+        wm8904Config.format.sampleRate = kWM8904_SampleRate32kHz;
+        break;
+      case 44100:
+        wm8904Config.format.sampleRate = kWM8904_SampleRate44100Hz;
+        break;
+      case 48000:
+        wm8904Config.format.sampleRate = kWM8904_SampleRate48kHz;
+        break;
+      default:
+        /* codec does not support this sample rate. */
+        break;
+    }
+  }
+
+  return CLOCK_GetMclkClkFreq();
+}
+
+void sbc_configured(struct bt_a2dp_codec_cfg* config) {
+  audioTxConfig.sampleRate_Hz = bt_a2dp_sbc_get_sampling_frequency(
+      (struct bt_a2dp_codec_sbc_params*)&config->codec_config->codec_ie[0]);
+  audioTxConfig.lineChannels = (hal_audio_channel_t)bt_a2dp_sbc_get_channel_num(
+      (struct bt_a2dp_codec_sbc_params*)&config->codec_config->codec_ie[0]);
+  audioTxConfig.srcClock_Hz =
+      BOARD_SwitchAudioFreq(audioTxConfig.sampleRate_Hz);
+
+  PW_LOG_DEBUG("a2dp configure sample rate %dHz\r\n",
+               (int)audioTxConfig.sampleRate_Hz);
+
+  HAL_AudioTxInit((hal_audio_handle_t)&audio_tx_handle[0], &audioTxConfig);
+  HAL_AudioTxInstallCallback(
+      (hal_audio_handle_t)&audio_tx_handle[0], tx_callback, NULL);
+
+  if (CODEC_Init(&codec_handle, &boardCodecConfig) != kStatus_Success) {
+    PW_LOG_DEBUG("codec init failed!\r\n");
+  }
+  CODEC_SetMute(
+      &codec_handle,
+      kCODEC_PlayChannelHeadphoneRight | kCODEC_PlayChannelHeadphoneLeft,
+      true);
+  CODEC_SetFormat(&codec_handle,
+                  audioTxConfig.srcClock_Hz,
+                  audioTxConfig.sampleRate_Hz,
+                  audioTxConfig.bitWidth);
+  CODEC_SetVolume(&codec_handle, kCODEC_VolumeDAC, A2DP_CODEC_DAC_VOLUME);
+  CODEC_SetVolume(&codec_handle,
+                  kCODEC_VolumeHeadphoneLeft | kCODEC_VolumeHeadphoneRight,
+                  A2DP_CODEC_HP_VOLUME);
+  CODEC_SetMute(
+      &codec_handle,
+      kCODEC_PlayChannelHeadphoneRight | kCODEC_PlayChannelHeadphoneLeft,
+      false);
+}
 
 void stream_configured(struct bt_a2dp_stream* stream) {
   (void)stream;
@@ -114,8 +342,49 @@ void stream_released(struct bt_a2dp_stream* stream) {
   PW_LOG_DEBUG("stream released");
 }
 
+static uint16_t jpl_callback_handle(
+    unsigned char event_type,
+    unsigned char* event_data,
+    uint16_t event_datalen) {
+  if ((JPL_UNDERFLOW_IND == event_type) ||
+      (JPL_SILENCE_DATA_IND == event_type)) {
+    // PW_LOG_DEBUG("Empty ");
+  }
+  hal_audio_transfer_t xfer;
+  xfer.dataSize = event_datalen;
+  xfer.data = event_data;
+
+  if (kStatus_HAL_AudioSuccess !=
+      HAL_AudioTransferSendNonBlocking((hal_audio_handle_t)&audio_tx_handle[0],
+                                       &xfer)) {
+    PW_LOG_DEBUG("failed to send audio data");
+  }
+
+  return API_SUCCESS;
+}
+
 void stream_started(struct bt_a2dp_stream* stream) {
   (void)stream;
+  auto result = BT_jpl_init(jpl_callback_handle);
+  if (result != API_SUCCESS) {
+    PW_LOG_CRITICAL("JPL init failed");
+    return;
+  }
+  JPL_BUFFERS buffer;
+  buffer.sbc = a2dp_sbc_buffer;
+  buffer.pcm = a2dp_pcm_buffer;
+  buffer.silence = a2dp_silence_buffer;
+  result = BT_jpl_register_buffers(&buffer);
+  if (result != API_SUCCESS) {
+    PW_LOG_CRITICAL("JPL register buffers failed");
+    return;
+  }
+  result = BT_jpl_start(&jpl_param);
+  if (result != API_SUCCESS) {
+    PW_LOG_CRITICAL("JPL start failed");
+    return;
+  }
+
   PW_LOG_DEBUG("stream started");
 }
 
@@ -124,21 +393,12 @@ void sink_sbc_streamer_data(struct bt_a2dp_stream* stream,
                             uint16_t seq_num,
                             uint32_t ts) {
   (void)stream;
-  (void)seq_num;
-  (void)ts;
-  uint8_t sbc_hdr;
-
-  sbc_hdr = net_buf_pull_u8(buf);
-  PW_LOG_DEBUG("received, num of frames: %d, data length:%d",
-               (uint8_t)sbc_hdr & 0x7,
-               buf->len());
-  PW_LOG_DEBUG("data: %d, %d, %d, %d, %d, %d ......",
-               buf->data[0],
-               buf->data[1],
-               buf->data[2],
-               buf->data[3],
-               buf->data[4],
-               buf->data[5]);
+  auto retval =
+      BT_jpl_add_frames(seq_num, ts, (buf->data.data()), (buf->len()));
+  if (retval != API_SUCCESS) {
+    PW_LOG_CRITICAL("JPL add frames failed");
+    return;
+  }
 }
 
 void stream_recv(struct bt_a2dp_stream* stream,
@@ -166,7 +426,6 @@ static struct bt_a2dp_stream_ops stream_ops = {
 void app_connected(struct bt_a2dp* a2dp, int err) {
   (void)a2dp;
   if (!err) {
-    // default_a2dp = a2dp;
     PW_LOG_DEBUG("a2dp connected");
   } else {
     PW_LOG_DEBUG("a2dp connecting fail");
@@ -175,11 +434,10 @@ void app_connected(struct bt_a2dp* a2dp, int err) {
 
 void app_disconnected(struct bt_a2dp* a2dp) {
   (void)a2dp;
-  // found_peer_sbc_endpoint = NULL;
   PW_LOG_DEBUG("a2dp disconnected");
 }
 
-int app_config_req(/*struct bt_a2dp *a2dp,*/ struct bt_a2dp_ep* ep,
+int app_config_req(struct bt_a2dp_ep* ep,
                    struct bt_a2dp_codec_cfg* codec_cfg,
                    struct bt_a2dp_stream** stream,
                    uint8_t* rsp_err_code) {
@@ -192,6 +450,7 @@ int app_config_req(/*struct bt_a2dp *a2dp,*/ struct bt_a2dp_ep* ep,
   if (*rsp_err_code == 0) {
     uint32_t sample_rate;
 
+    sbc_configured(codec_cfg);
     PW_LOG_DEBUG("SBC configure success");
     sample_rate = bt_a2dp_sbc_get_sampling_frequency(
         (struct bt_a2dp_codec_sbc_params*)&codec_cfg->codec_config
@@ -262,8 +521,6 @@ struct bt_a2dp_cb a2dp_cb = {
 };
 
 void bluetooth_thread() {
-  const DeviceAddress kLocalDevAddr(DeviceAddress::Type::kBREDR,
-                                    {0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC});
   PW_LOG_INFO("Hello from bluetooth thread!");
   std::unique_ptr<pw::bluetooth::Controller> controller =
       std::make_unique<pw::bluetooth::Mimxrt595Controller>();
@@ -293,15 +550,6 @@ void bluetooth_thread() {
       DeviceClass(DeviceClass::MajorClass::kAudioVideo),
       [](auto status) { PW_LOG_INFO("Set device class: %d", status.is_ok()); });
 
-  bt::AdvertisingData data;
-  if (!data.SetLocalName("Pigweed Beacon")) {
-    PW_LOG_CRITICAL("Failed to set local name");
-  }
-  std::vector<uint8_t> adv_data = {0x25, 0x00, 0xBC, 0x01, 0x02, 0x03, 0x04};
-  if (!data.SetManufacturerData(0x25, bt::BufferView(adv_data))) {
-    PW_LOG_CRITICAL("Failed to set manufacturer data");
-  }
-
   adapter->SetLocalName("Pigweed A2DP Sink", [](const auto& status) {
     PW_LOG_INFO("Set local name: %d", status.is_ok());
   });
@@ -325,6 +573,7 @@ void bluetooth_thread() {
   adapter->bredr()->SetConnectable(true, [](const auto& status) {
     PW_LOG_INFO("Set connectable: %d", status.is_ok());
   });
+
   std::unique_ptr<bt::gap::BrEdrDiscoverableSession> session;
   adapter->bredr()->RequestDiscoverable(
       [&session](const auto& status, auto cb_session) {
@@ -334,54 +583,49 @@ void bluetooth_thread() {
 
   std::vector<l2cap::Channel::WeakPtr> channels;
   BT_A2DP_SBC_SINK_EP_DEFAULT(sink_sbc_endpoint);
-  PW_LOG_INFO("SBC codec length: %d", sink_sbc_endpoint.codec_cap->len);
-  for (int i = 0; i < sink_sbc_endpoint.codec_cap->len; i++) {
-    PW_LOG_INFO("SBC codec capability: 0x%x",
-                sink_sbc_endpoint.codec_cap->codec_ie[i]);
-  }
-
-  // bt_avdtp_register_sep(BT_AVDTP_AUDIO, BT_AVDTP_SINK,
-  // &sink_sbc_endpoint.sep);
   bt_a2dp_register_cb(&a2dp_cb);
   PW_LOG_INFO(
       "bt_a2dp_register_ep: %d",
       bt_a2dp_register_ep(&sink_sbc_endpoint, BT_AVDTP_AUDIO, BT_AVDTP_SINK));
   bt_a2dp_init_zephyr();
+  struct bt_conn* conn = nullptr;
+  struct bt_avdtp* avdtp_session;
+
   auto handle = adapter->bredr()->RegisterService(
       records,
       kChannelParams,
-      [&channels](auto channel, const auto& data_element) {
+      [&channels, &conn, &avdtp_session](auto channel,
+                                         const auto& data_element) {
         (void)data_element;
-        //struct bt_avdtp bt_avdtp_channel = {
-        //    .br_chan = {.chan = {.chan = channel}},
-        //    .req = nullptr,
-        //    .ops = nullptr,
-        //    .current_sep = nullptr,
-        //};
-        struct bt_conn* conn = nullptr;
-        struct bt_avdtp* avdtp_session;
-        a2dp_accept(conn, &avdtp_session);
+        auto retval = a2dp_accept(conn, &avdtp_session);
+        if (retval) {
+          PW_LOG_CRITICAL("Failed to accept A2DP connection, aborting.");
+          return;
+        }
         avdtp_session->br_chan.chan.chan = channel;
-        PW_LOG_INFO("Service registered");
         channel->Activate(
             [channel, avdtp_session](auto buffer) {
               avdtp_session->br_chan.chan.chan = channel;
               struct net_buf buf;
-              for (auto& b : *buffer) {
-                // PW_LOG_INFO("Received data: 0x%x", b);
-                buf.data.push_back(b);
-              }
-              if ((buf.data[1] & 0x3f) == 0x20) {
-                // audio stream data
-                return;
+              for (unsigned int i = 0; i < buffer->size(); i++) {
+                buf.data.push_back(buffer->data()[i]);
               }
 
               bt_avdtp_l2cap_recv(&avdtp_session->br_chan.chan, &buf);
             },
-            []() { PW_LOG_INFO("Channel closed"); });
+            [&channels, &channel]() {
+                    auto chan = std::find_if(
+                        channels.begin(), channels.end(),
+                        [&channel](const auto& chan) { return chan->unique_id() == channel->unique_id(); });
+                    if (chan != channels.end()) {
+                      channels.erase(chan);
+                    }
+                    PW_LOG_INFO("Channel closed"); });
         channels.emplace_back(std::move(channel));
       });
+
   (void)handle;
+
   while (true) {
     vTaskDelay(1000 / portTICK_PERIOD_MS);
   }
@@ -392,6 +636,8 @@ void bluetooth_thread() {
 void UserAppInit() {
   // Start new thread as WorkQueue thread stack is limited to 512.
   pw::thread::DetachedThread(pw::thread::freertos::Options(), bluetooth_thread);
+  pw::thread::DetachedThread(pw::thread::freertos::Options(),
+                             frame_remove_task);
 }
 
 }  // namespace pw::system

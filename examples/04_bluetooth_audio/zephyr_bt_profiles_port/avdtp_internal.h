@@ -214,10 +214,6 @@ struct bt_avdtp_ops_cb {
 		struct bt_avdtp_sep *sep, uint8_t *errcode);
 };
 
-struct bt_l2cap_br_chan {
-	/** Common L2CAP channel reference object */
-	struct bt_l2cap_chan		chan;
-};
 ///** @brief Global AVDTP session structure. */
 struct bt_avdtp {
 	struct bt_l2cap_br_chan br_chan;
