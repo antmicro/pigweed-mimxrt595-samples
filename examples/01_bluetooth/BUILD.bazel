@@ -12,6 +12,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+load("@pigweed//pw_fastboot:binary.bzl", "pw_fastboot_binary")
 load("//targets/mimxrt595_evk_freertos:transition.bzl", "mimxrt595_binary")
 
 package(default_visibility = ["//visibility:public"])
@@ -52,3 +53,10 @@ mimxrt595_binary(
     binary = ":bluetooth",
 )
 
+pw_fastboot_binary(
+    name = "bluetooth.fastboot",
+    executable = ":bluetooth.elf",
+    remove_sections = [
+        ".flash_config",
+    ],
+)

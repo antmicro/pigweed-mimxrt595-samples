@@ -14,6 +14,7 @@
 
 load("//targets/mimxrt595_evk_freertos:transition.bzl", "mimxrt595_binary")
 load("@pigweed//third_party/mcuxpresso:mcuxpresso_sdk.bzl", "mcuxpresso_sdk")
+load("@pigweed//pw_fastboot:binary.bzl", "pw_fastboot_binary")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -54,3 +55,10 @@ mimxrt595_binary(
     binary = ":bluetooth_audio",
 )
 
+pw_fastboot_binary(
+    name = "bluetooth_audio.fastboot",
+    executable = ":bluetooth_audio.elf",
+    remove_sections = [
+        ".flash_config",
+    ],
+)
