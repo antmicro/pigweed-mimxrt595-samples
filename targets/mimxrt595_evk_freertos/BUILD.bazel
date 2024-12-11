@@ -21,19 +21,6 @@ cc_library(
     ],
 )
 
-# Custom FreeRTOS config, based on Pigweed mimxrt595_evk_freertos target
-# Adjustments to the heap size are required, as the bootloader requires
-# a larger heap to store firmware downloaded from the host.
-cc_library(
-    name = "freertos_config",
-    hdrs = [
-        "FreeRTOSConfig.h",
-    ],
-    includes = ["./"],
-    target_compatible_with = ["@pigweed//targets/mimxrt595_evk_freertos:freertos_config_cv"],
-    deps = ["@pigweed//third_party/freertos:config_assert"],
-)
-
 load(
     "@pigweed//pw_build:pigweed.bzl",
     "pw_linker_script",

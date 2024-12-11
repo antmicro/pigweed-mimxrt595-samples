@@ -7,7 +7,7 @@ MIMXRT595_SYSTEM_FLAGS = FREERTOS_FLAGS | {
     "@pigweed//pw_assert:assert_backend_impl": str(Label("@pigweed//pw_assert_basic:impl")),
     "@pigweed//pw_assert:check_backend": str(Label("@pigweed//pw_assert_basic")),
     "@pigweed//pw_assert:check_backend_impl": str(Label("@pigweed//pw_assert_basic:impl")),
-    "@freertos//:freertos_config": str(Label(":freertos_config")),
+    "@freertos//:freertos_config": str(Label("@pigweed//targets/mimxrt595_evk_freertos:freertos_config")),
     "@pigweed//pw_log:backend": str(Label("@pigweed//pw_log_basic")),
     "@pigweed//pw_log:backend_impl": str(Label("@pigweed//pw_log_basic:impl")),
     "@pigweed//pw_sys_io:backend": str(Label("@pigweed//pw_sys_io_mcuxpresso")),
