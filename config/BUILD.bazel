@@ -22,7 +22,8 @@ cc_library(
         "@pigweed//targets:mcuxpresso_sdk",
     ],
     copts = [
-        "-include", "$(location @pigweed//third_party/mcuxpresso:config/app_bluetooth_config.h)"
+        "-include", "$(location @pigweed//third_party/mcuxpresso:config/app_bluetooth_config.h)",
+        "-Wno-cast-qual",
     ],
     alwayslink = 1,
 )
