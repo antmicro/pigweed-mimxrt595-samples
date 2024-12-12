@@ -43,4 +43,6 @@ cc_library(
     defines = [
         "CONFIG_BT_A2DP_SINK",
     ],
+    # Do not build unless this is an explicit dependency to avoid broken build on host
+    tags = ["manual"],
 )
