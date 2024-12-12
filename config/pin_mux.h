@@ -104,8 +104,8 @@ void BOARD_InitBUTTONPins(void); /* Function assigned for the Cortex-M33 */
 /*! @name I3C0_PUR (coord C14), J18[3]
   @{ */
 /* Routed pin properties */
-#define BOARD_INITI3CPINS_I3C0_PUR_PERIPHERAL I3C0           /*!<@brief Peripheral name */
-#define BOARD_INITI3CPINS_I3C0_PUR_SIGNAL PUR                /*!<@brief Signal name */
+#define BOARD_INITI3CPINS_I3C0_PUR_PERIPHERAL I3C0   /*!<@brief Peripheral name */
+#define BOARD_INITI3CPINS_I3C0_PUR_SIGNAL PUR        /*!<@brief Signal name */
 #define BOARD_INITI3CPINS_I3C0_PUR_PORT 2U                   /*!<@brief PORT peripheral base pointer */
 #define BOARD_INITI3CPINS_I3C0_PUR_PIN 31U                   /*!<@brief PORT pin number */
 #define BOARD_INITI3CPINS_I3C0_PUR_PIN_MASK (1U << 31U)      /*!<@brief PORT pin mask */
@@ -170,8 +170,8 @@ void BOARD_InitI3CPinsAsGPIO(void); /* Function assigned for the Cortex-M33 */
 /*! @name SWO (coord N3), U7[12]
   @{ */
 /* Routed pin properties */
-#define BOARD_INITDEBUG_UARTPINS_SWO_PERIPHERAL SWD            /*!<@brief Peripheral name */
-#define BOARD_INITDEBUG_UARTPINS_SWO_SIGNAL SWO                /*!<@brief Signal name */
+#define BOARD_INITDEBUG_UARTPINS_SWO_PERIPHERAL SWD /*!<@brief Peripheral name */
+#define BOARD_INITDEBUG_UARTPINS_SWO_SIGNAL SWO     /*!<@brief Signal name */
 #define BOARD_INITDEBUG_UARTPINS_SWO_PORT 2U                   /*!<@brief PORT peripheral base pointer */
 #define BOARD_INITDEBUG_UARTPINS_SWO_PIN 24U                   /*!<@brief PORT pin number */
 #define BOARD_INITDEBUG_UARTPINS_SWO_PIN_MASK (1U << 24U)      /*!<@brief PORT pin mask */
@@ -274,9 +274,9 @@ void BOARD_InitM2UARTPins(void); /* Function assigned for the Cortex-M33 */
 /*! @name FLEXSPI0_DATA0 (coord T15), U38[D3]
   @{ */
 /* Routed pin properties */
-/*!
- * @brief Peripheral name */
-#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA0_PERIPHERAL FLEXSPI0
+#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA0_PERIPHERAL FLEXSPI0     /*!<@brief Peripheral name */
+#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA0_SIGNAL FLEXSPI_DATA0    /*!<@brief Signal name */
+                                                                       /* @} */
 /*!
  * @brief Signal name */
 #define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA0_SIGNAL FLEXSPI_DATA0
@@ -294,9 +294,9 @@ void BOARD_InitM2UARTPins(void); /* Function assigned for the Cortex-M33 */
 /*! @name FLEXSPI0_DATA1 (coord T14), U38[D2]
   @{ */
 /* Routed pin properties */
-/*!
- * @brief Peripheral name */
-#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA1_PERIPHERAL FLEXSPI0
+#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA1_PERIPHERAL FLEXSPI0     /*!<@brief Peripheral name */
+#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA1_SIGNAL FLEXSPI_DATA1    /*!<@brief Signal name */
+                                                                       /* @} */
 /*!
  * @brief Signal name */
 #define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA1_SIGNAL FLEXSPI_DATA1
@@ -314,9 +314,9 @@ void BOARD_InitM2UARTPins(void); /* Function assigned for the Cortex-M33 */
 /*! @name FLEXSPI0_DATA2 (coord R13), U38[C4]
   @{ */
 /* Routed pin properties */
-/*!
- * @brief Peripheral name */
-#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA2_PERIPHERAL FLEXSPI0
+#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA2_PERIPHERAL FLEXSPI0     /*!<@brief Peripheral name */
+#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA2_SIGNAL FLEXSPI_DATA2    /*!<@brief Signal name */
+                                                                       /* @} */
 /*!
  * @brief Signal name */
 #define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA2_SIGNAL FLEXSPI_DATA2
@@ -334,9 +334,9 @@ void BOARD_InitM2UARTPins(void); /* Function assigned for the Cortex-M33 */
 /*! @name FLEXSPI0_DATA3 (coord R12), U38[D4]
   @{ */
 /* Routed pin properties */
-/*!
- * @brief Peripheral name */
-#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA3_PERIPHERAL FLEXSPI0
+#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA3_PERIPHERAL FLEXSPI0     /*!<@brief Peripheral name */
+#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA3_SIGNAL FLEXSPI_DATA3    /*!<@brief Signal name */
+                                                                       /* @} */
 /*!
  * @brief Signal name */
 #define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA3_SIGNAL FLEXSPI_DATA3
@@ -354,9 +354,9 @@ void BOARD_InitM2UARTPins(void); /* Function assigned for the Cortex-M33 */
 /*! @name FLEXSPI0_DATA4 (coord N12), U38[D5]
   @{ */
 /* Routed pin properties */
-/*!
- * @brief Peripheral name */
-#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA4_PERIPHERAL FLEXSPI0
+#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA4_PERIPHERAL FLEXSPI0     /*!<@brief Peripheral name */
+#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA4_SIGNAL FLEXSPI_DATA4    /*!<@brief Signal name */
+                                                                       /* @} */
 /*!
  * @brief Signal name */
 #define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA4_SIGNAL FLEXSPI_DATA4
@@ -374,9 +374,9 @@ void BOARD_InitM2UARTPins(void); /* Function assigned for the Cortex-M33 */
 /*! @name FLEXSPI0_DATA5 (coord R14), U38[E3]
   @{ */
 /* Routed pin properties */
-/*!
- * @brief Peripheral name */
-#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA5_PERIPHERAL FLEXSPI0
+#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA5_PERIPHERAL FLEXSPI0     /*!<@brief Peripheral name */
+#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA5_SIGNAL FLEXSPI_DATA5    /*!<@brief Signal name */
+                                                                       /* @} */
 /*!
  * @brief Signal name */
 #define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA5_SIGNAL FLEXSPI_DATA5
@@ -394,9 +394,9 @@ void BOARD_InitM2UARTPins(void); /* Function assigned for the Cortex-M33 */
 /*! @name FLEXSPI0_DATA6 (coord P14), U38[E2]
   @{ */
 /* Routed pin properties */
-/*!
- * @brief Peripheral name */
-#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA6_PERIPHERAL FLEXSPI0
+#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA6_PERIPHERAL FLEXSPI0     /*!<@brief Peripheral name */
+#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA6_SIGNAL FLEXSPI_DATA6    /*!<@brief Signal name */
+                                                                       /* @} */
 /*!
  * @brief Signal name */
 #define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA6_SIGNAL FLEXSPI_DATA6
@@ -414,9 +414,9 @@ void BOARD_InitM2UARTPins(void); /* Function assigned for the Cortex-M33 */
 /*! @name FLEXSPI0_DATA7 (coord P13), U38[E1]
   @{ */
 /* Routed pin properties */
-/*!
- * @brief Peripheral name */
-#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA7_PERIPHERAL FLEXSPI0
+#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA7_PERIPHERAL FLEXSPI0     /*!<@brief Peripheral name */
+#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA7_SIGNAL FLEXSPI_DATA7    /*!<@brief Signal name */
+                                                                       /* @} */
 /*!
  * @brief Signal name */
 #define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DATA7_SIGNAL FLEXSPI_DATA7
@@ -434,9 +434,9 @@ void BOARD_InitM2UARTPins(void); /* Function assigned for the Cortex-M33 */
 /*! @name FLEXSPI0_SCLK (coord T17), U38[B2]
   @{ */
 /* Routed pin properties */
-/*!
- * @brief Peripheral name */
-#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_SCLK_PERIPHERAL FLEXSPI0
+#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_SCLK_PERIPHERAL FLEXSPI0    /*!<@brief Peripheral name */
+#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_SCLK_SIGNAL FLEXSPI_SCLK    /*!<@brief Signal name */
+                                                                     /* @} */
 /*!
  * @brief Signal name */
 #define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_SCLK_SIGNAL FLEXSPI_SCLK
@@ -454,8 +454,8 @@ void BOARD_InitM2UARTPins(void); /* Function assigned for the Cortex-M33 */
 /*! @name FLEXSPI0_SS0_N (coord U16), U38[C2]
   @{ */
 /* Routed pin properties */
-#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_CS_PERIPHERAL FLEXSPI0       /*!<@brief Peripheral name */
-#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_CS_SIGNAL FLEXSPI_SS0_N      /*!<@brief Signal name */
+#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_CS_PERIPHERAL FLEXSPI0     /*!<@brief Peripheral name */
+#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_CS_SIGNAL FLEXSPI_SS0_N    /*!<@brief Signal name */
 #define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_CS_PORT 1U                   /*!<@brief PORT peripheral base pointer */
 #define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_CS_PIN 19U                   /*!<@brief PORT pin number */
 #define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_CS_PIN_MASK (1U << 19U)      /*!<@brief PORT pin mask */
@@ -464,8 +464,8 @@ void BOARD_InitM2UARTPins(void); /* Function assigned for the Cortex-M33 */
 /*! @name FLEXSPI0_DQS (coord U14), U38[C3]
   @{ */
 /* Routed pin properties */
-#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DQS_PERIPHERAL FLEXSPI0       /*!<@brief Peripheral name */
-#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DQS_SIGNAL FLEXSPI_DQS        /*!<@brief Signal name */
+#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DQS_PERIPHERAL FLEXSPI0   /*!<@brief Peripheral name */
+#define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DQS_SIGNAL FLEXSPI_DQS    /*!<@brief Signal name */
 #define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DQS_PORT 1U                   /*!<@brief PORT peripheral base pointer */
 #define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DQS_PIN 28U                   /*!<@brief PORT pin number */
 #define BOARD_INITFLEXSPI0BPINS_FLEXSPI0_DQS_PIN_MASK (1U << 28U)      /*!<@brief PORT pin mask */
@@ -572,8 +572,8 @@ void BOARD_InitPinsM2(void); /* Function assigned for the Cortex-M33 */
 /*! @name MCLK (coord M5), JP27[2]
   @{ */
 /* Routed pin properties */
-#define BOARD_INITAUDIOPINS_MCLK_PERIPHERAL CLKCTL         /*!<@brief Peripheral name */
-#define BOARD_INITAUDIOPINS_MCLK_SIGNAL MCLK               /*!<@brief Signal name */
+#define BOARD_INITAUDIOPINS_MCLK_PERIPHERAL CLKCTL /*!<@brief Peripheral name */
+#define BOARD_INITAUDIOPINS_MCLK_SIGNAL MCLK       /*!<@brief Signal name */
 #define BOARD_INITAUDIOPINS_MCLK_PORT 1U                   /*!<@brief PORT peripheral base pointer */
 #define BOARD_INITAUDIOPINS_MCLK_PIN 10U                   /*!<@brief PORT pin number */
 #define BOARD_INITAUDIOPINS_MCLK_PIN_MASK (1U << 10U)      /*!<@brief PORT pin mask */
