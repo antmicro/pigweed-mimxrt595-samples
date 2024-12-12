@@ -39,6 +39,9 @@ cc_library(
     ],
     copts = [
         "-Wno-missing-field-initializers",
+        "-Wno-changes-meaning",
+        "-Wno-shadow",
+        "-Wno-error",
     ],
     defines = [
         "CONFIG_BT_A2DP_SINK",
