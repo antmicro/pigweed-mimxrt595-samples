@@ -13,21 +13,25 @@
 // the License.
 #define PW_LOG_MODULE_NAME "MAIN"
 
-#include <memory>
+#include <pw_random/xor_shift.h>
 
-#include "bluetooth/addr.h"
-#include "bluetooth/bluetooth.h"
+#include <memory>
+#include <optional>
+
 #include "pw_async_basic/dispatcher.h"
-#include "pw_bluetooth_sapphire/internal/host/gap/low_energy_advertising_manager.h"
-#include "pw_bluetooth_sapphire/internal/host/transport/transport.h"
+#include "pw_bluetooth_sapphire/internal/host/common/random.h"
+#include "pw_bluetooth_sapphire/internal/host/gap/adapter.h"
+#include "pw_bluetooth_sapphire/internal/host/gatt/gatt.h"
 #include "pw_bluetooth_sapphire_mcuxpresso/controller.h"
-#include "pw_bluetooth_sapphire_mcuxpresso/low_energy_advertiser.h"
 #include "pw_log/log.h"
 #include "pw_thread/detached_thread.h"
 #include "pw_thread_freertos/context.h"
 #include "pw_thread_freertos/options.h"
 
 namespace pw::system {
+using namespace bt::hci;
+using namespace bt::gap;
+using namespace bt::gatt;
 
 void bluetooth_thread() {
   PW_LOG_INFO("Hello from bluetooth thread!");
@@ -35,48 +39,56 @@ void bluetooth_thread() {
       std::make_unique<pw::bluetooth::Mimxrt595Controller>();
   pw::async::BasicDispatcher dispatcher;
 
-  pw::sync::ThreadNotification transport_init_notification;
   auto transport =
-      std::make_unique<bt::hci::Transport>(std::move(controller), dispatcher);
-  transport->Initialize([&transport_init_notification](bool success) {
-    transport_init_notification.release();
-    (void)success;
-  });
-  transport_init_notification.acquire();
+      std::make_unique<Transport>(std::move(controller), dispatcher);
+  auto gatt = GATT::Create();
 
-  bt::hci::LowEnergyAdvertiserMimxrt595 advertiser(transport->GetWeakPtr(), 1);
-  bt::DeviceAddress address;
+  pw::random::XorShiftStarRng64 rng(0);
+  bt::set_random_generator(&rng);
+  Adapter::Config config = {
+      .legacy_pairing_enabled = false,
+  };
+  auto adapter = Adapter::Create(
+      dispatcher, transport->GetWeakPtr(), gatt->GetWeakPtr(), config, nullptr);
+  pw::sync::ThreadNotification transport_init_notification;
+  adapter->Initialize(
+      [&transport_init_notification](bool success) {
+        transport_init_notification.release();
+        PW_ASSERT(success);
+        PW_LOG_INFO("Adapter initialized");
+      },
+      [] { PW_LOG_ERROR("Failed to initialize adapter"); });
+  transport_init_notification.acquire();
 
   bt::AdvertisingData data;
   if (!data.SetLocalName("Pigweed Beacon")) {
     PW_LOG_CRITICAL("Failed to set local name");
   }
-  std::vector<uint8_t> adv_data = {0x25, 0x00, 0xBC, 0x01, 0x02, 0x03, 0x04,
-                                   0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B,
-                                   0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x00, 0x00,
-                                   0x00, 0x00, 0x00, 0x00, 0xc8};
+  std::vector<uint8_t> adv_data = {0x25, 0x00, 0xBC, 0x01, 0x02, 0x03, 0x04};
   if (!data.SetManufacturerData(0x25, bt::BufferView(adv_data))) {
     PW_LOG_CRITICAL("Failed to set manufacturer data");
   }
 
-  bt::AdvertisingData scan_rsp;
-  bt::hci::LowEnergyAdvertiser::AdvertisingOptions options(
-      bt::hci::AdvertisingIntervalRange(BT_GAP_ADV_FAST_INT_MIN_2,
-                                        BT_GAP_ADV_FAST_INT_MAX_2),
-      BT_LE_ADV_OPT_USE_IDENTITY,
-      false,
-      false,
-      false);
-  advertiser.StartAdvertising(
-      address, data, scan_rsp, options, nullptr, nullptr);
+  adapter->SetLocalName("Pigweed A2DP Sink", [](const auto& status) {
+    PW_LOG_INFO("Set local name: %d", status.is_ok());
+  });
 
-  char addr_s[BT_ADDR_LE_STR_LEN];
-  bt_addr_le_t addr = {.type = 0, .a = {0, 0, 0, 0, 0, 0}};
-  size_t count = 1;
-  bt_id_get(&addr, &count);
-  bt_addr_le_to_str(&addr, addr_s, sizeof(addr_s));
-
-  PW_LOG_INFO("Beacon started, advertising as %s\n", addr_s);
+  adapter->le()->StartAdvertising(std::move(data),
+                                  bt::AdvertisingData{},
+                                  bt::gap::AdvertisingInterval::SLOW,
+                                  0,
+                                  0,
+                                  0,
+                                  std::nullopt,
+                                  std::nullopt,
+                                  [](auto instance, auto status) {
+                                    (void)instance;
+                                    PW_LOG_INFO("Advertising started: %d",
+                                                status.is_ok());
+                                    while (true) {
+                                      vTaskDelay(1000);
+                                    }
+                                  });
 
   while (true) {
     vTaskDelay(1000);

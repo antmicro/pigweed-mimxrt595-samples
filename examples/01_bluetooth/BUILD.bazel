@@ -46,7 +46,11 @@ cc_binary(
         "//config:init_peripherals",
         "@pigweed//third_party/mcuxpresso:mcuxpresso_sdk",
     ],
-    target_compatible_with = ["@platforms//:incompatible"],
+    copts = [
+        "-Wno-changes-meaning",
+        "-Wno-shadow",
+        "-Wno-error",
+    ],
 )
 
 mimxrt595_binary(
