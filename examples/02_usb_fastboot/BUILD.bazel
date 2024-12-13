@@ -16,7 +16,7 @@ cc_binary(
         "@pigweed//third_party/mcuxpresso:mcuxpresso_sdk",
         "@pigweed//pw_digital_io_mcuxpresso",
         "@pigweed//pw_log",
-        "@aosp-core//:sparse",
+        "@pigweed//third_party/aosp:libsparse",
         "//config:init_peripherals",
         "//lib/pw_fastboot_usb_mcuxpresso",
         "//targets/mimxrt595_evk_freertos:fastboot_defines",
