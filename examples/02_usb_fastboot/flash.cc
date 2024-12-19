@@ -43,7 +43,7 @@ static CommandResult FlashRawImage(pw::flash::Flash& flash,
     return CommandResult::Failed("erase failed");
   }
 
-  err = flash.Program(pw::flash::Range{part.start, image.size_bytes()}, image);
+  err = flash.Write(pw::flash::Range{part.start, image.size_bytes()}, image);
   if (!err.ok()) {
     PW_LOG_ERROR("Programming flash failed with error code %d", err.code());
     return CommandResult::Failed("write failed");
@@ -119,7 +119,7 @@ static CommandResult FlashSparseImage(pw::flash::Flash& flash,
           return -1;
         }
 
-        if (const auto err2 = ctx.flash.Program(range, chunk); !err2.ok()) {
+        if (const auto err2 = ctx.flash.Write(range, chunk); !err2.ok()) {
           PW_LOG_ERROR("Programming flash failed with error code %d",
                        err2.code());
           return -1;
@@ -171,5 +171,6 @@ CommandResult bootloader::DoFlash(Device* device, std::string name) {
   if (!flash.Initialize().ok()) {
     return CommandResult::Failed("flash init failed");
   }
+
   return FlashData(flash, partition, image);
 }

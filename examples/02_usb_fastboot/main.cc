@@ -22,9 +22,9 @@
 // When remapping is enabled, the jump will target the start of flash
 // instead of the application slot.
 #if defined(FASTBOOT_ENABLE_FLASH_REMAP) && FASTBOOT_ENABLE_FLASH_REMAP > 0
-#define USER_APP_VTOR FASTBOOT_BOOTLOADER_BEGIN
+#define USER_APP_VTOR (FASTBOOT_FLASH_BASE + FASTBOOT_BOOTLOADER_BEGIN)
 #else
-#define USER_APP_VTOR FASTBOOT_APP_VECTOR_TABLE
+#define USER_APP_VTOR (FASTBOOT_FLASH_BASE + FASTBOOT_APP_VECTOR_TABLE)
 #endif
 
 #if defined(FASTBOOT_ENABLE_GPIO) && FASTBOOT_ENABLE_GPIO > 0
@@ -235,7 +235,7 @@ void UserAppInit() {
     }
     case BootMode::User: {
 #if defined(FASTBOOT_ENABLE_FLASH_REMAP) && FASTBOOT_ENABLE_FLASH_REMAP > 0
-      constexpr uint32_t start = FASTBOOT_BOOTLOADER_BEGIN;
+      constexpr uint32_t start = FASTBOOT_FLASH_BASE + FASTBOOT_BOOTLOADER_BEGIN;
       constexpr uint32_t end = start + FASTBOOT_APP_SIZE;
       constexpr uint32_t offset =
           FASTBOOT_APP_VECTOR_TABLE - FASTBOOT_BOOTLOADER_BEGIN;
