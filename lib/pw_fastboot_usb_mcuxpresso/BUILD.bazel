@@ -25,7 +25,7 @@ cc_library(
         "third_party",
     ],
     deps = [
-        "@pigweed//third_party/mcuxpresso:mcuxpresso_sdk",
+        "@pigweed//targets:mcuxpresso_sdk",
     ],
 )
 

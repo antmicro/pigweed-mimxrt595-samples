@@ -63,7 +63,6 @@ void BOARD_I3C_ReleaseBus(void) {
   uint8_t i = 0;
 
   GPIO_PortInit(GPIO, 2);
-  BOARD_InitI3CPinsAsGPIO();
 
   /* Drive SDA low first to simulate a start */
   GPIO_PinWrite(GPIO, 2, 30, 0U);

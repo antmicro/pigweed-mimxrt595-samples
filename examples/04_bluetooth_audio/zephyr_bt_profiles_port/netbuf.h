@@ -13,6 +13,7 @@
 #include "pw_containers/vector.h"
 #include <stddef.h>
 #include <cstring>
+#include <cstdint>
 #ifndef __aligned
 #define __aligned(x)	__attribute__((__aligned__(x)))
 #endif
@@ -26,10 +27,6 @@
 //#include <zephyr/sys/util.h>
 //#include <zephyr/kernel.h>
 //#include <zephyr/sys/iterable_sections.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * @brief Network buffer library
@@ -2717,9 +2714,5 @@ struct net_buf *net_buf_frag_del(struct net_buf *parent, struct net_buf *frag);
 /**
  * @}
  */
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* ZEPHYR_INCLUDE_NET_BUF_H_ */

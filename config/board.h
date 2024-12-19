@@ -11,6 +11,7 @@
 #include "fsl_common.h"
 #include "fsl_reset.h"
 #include "fsl_gpio.h"
+#include "fsl_clock.h"
 
 /*******************************************************************************
  * Definitions

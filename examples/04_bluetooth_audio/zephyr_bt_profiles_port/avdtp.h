@@ -12,9 +12,6 @@
 #define ZEPHYR_INCLUDE_BLUETOOTH_AVDTP_H_
 
 #include "l2cap.h"
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * @brief AVDTP error code
@@ -148,9 +145,5 @@ int bt_avdtp_media_l2cap_recv(struct bt_l2cap_chan* chan, struct net_buf* buf);
 
 #define CONTAINER_OF(ptr, type, field) \
   ((type*)(((char*)(ptr)) - offsetof(type, field)))
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* ZEPHYR_INCLUDE_BLUETOOTH_AVDTP_H_ */

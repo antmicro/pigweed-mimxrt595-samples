@@ -18,10 +18,6 @@
 #include "avdtp.h"
 #include "a2dp_codec_sbc.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define BT_A2DP_STREAM_BUF_RESERVE (12u + BT_L2CAP_BUF_SIZE(0))
 
 /** SBC IE length */
@@ -792,8 +788,5 @@ void bt_a2dp_stream_cb_register(struct bt_a2dp_stream *stream, struct bt_a2dp_st
 
 int a2dp_accept(struct bt_conn *conn, struct bt_avdtp **session);
 int bt_a2dp_init_zephyr(void);
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* ZEPHYR_INCLUDE_BLUETOOTH_A2DP_H_ */

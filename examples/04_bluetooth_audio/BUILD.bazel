@@ -31,10 +31,10 @@ cc_binary(
         "@pigweed//pw_intrusive_ptr:pw_intrusive_ptr",
         "@pigweed//pw_async_basic:dispatcher",
         "@pigweed//pw_bluetooth_sapphire_mcuxpresso:bluetooth_sapphire_mcuxpresso",
-        "@pigweed//third_party/mcuxpresso:mcuxpresso_sdk",
+        "@pigweed//targets:mcuxpresso_sdk",
         "@pigweed//pw_random",
-        "//config:init_peripherals",
         "//examples/04_bluetooth_audio/zephyr_bt_profiles_port:a2dp_profile",
+        "//config:init_peripherals",
     ],
     copts = [
         "-Wno-missing-field-initializers",

@@ -25,7 +25,7 @@
 #include "netbuf.h"
 #include "pw_async_basic/dispatcher.h"
 #include "pw_bluetooth_sapphire/internal/host/common/random.h"
-#include "pw_bluetooth_sapphire/public/pw_bluetooth_sapphire/internal/host/gap/pairing_delegate.h"
+#include "pw_bluetooth_sapphire/internal/host/gap/pairing_delegate.h"
 #include "pw_bluetooth_sapphire_mcuxpresso/controller.h"
 #include "pw_log/log.h"
 #include "pw_thread/detached_thread.h"

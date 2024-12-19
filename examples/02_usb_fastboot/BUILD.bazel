@@ -13,15 +13,15 @@ cc_binary(
     deps = [
         "@pigweed//pw_chrono:wrap_time_system_clock",
         "@pigweed//pw_system:pw_system",
-        "@pigweed//third_party/mcuxpresso:mcuxpresso_sdk",
+        "@pigweed//targets:mcuxpresso_sdk",
         "@pigweed//pw_digital_io_mcuxpresso",
         "@pigweed//pw_log",
         "@pigweed//third_party/aosp:libsparse",
-        "//config:init_peripherals",
         "//lib/pw_fastboot_usb_mcuxpresso",
         "//targets/mimxrt595_evk_freertos:fastboot_defines",
         "@pigweed//pw_flash",
         "@pigweed//pw_flash_mcuxpresso",
+        "//config:init_peripherals",
     ],
 )
 

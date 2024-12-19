@@ -29,6 +29,7 @@ cc_library(
         "avdtp.cc",
         "a2dp.cc",
         "sbc.cc",
+        "netbuf.cc",
     ],
     includes = [
         ".",

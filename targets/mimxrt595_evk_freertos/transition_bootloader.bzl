@@ -2,7 +2,7 @@ load("@pigweed//pw_build:merge_flags.bzl", "merge_flags_for_transition_impl", "m
 load("//targets/mimxrt595_evk_freertos:transition.bzl", "MIMXRT595_SYSTEM_FLAGS")
 
 _mimxrt595_bootloader_overrides = {
-    "//command_line_option:platforms": str(Label("@pigweed//targets/mimxrt595_evk_freertos:platform")),
+    "//command_line_option:platforms": str(Label("//targets/mimxrt595_evk_freertos:platform")),
     "@pigweed//pw_system:extra_platform_libs": str(Label(":bootloader_extra_platform_libs")),
 }
 

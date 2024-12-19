@@ -22,10 +22,6 @@
 #define ZEPHYR_INCLUDE_BLUETOOTH_A2DP_CODEC_H_
 #include <cstdint>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* Sampling Frequency */
 #define A2DP_SBC_SAMP_FREQ_16000 BIT(7)
 #define A2DP_SBC_SAMP_FREQ_32000 BIT(6)
@@ -117,9 +113,5 @@ uint8_t bt_a2dp_sbc_get_channel_num(struct bt_a2dp_codec_sbc_params *sbc_codec);
  *  @return the sample rate.
  */
 uint32_t bt_a2dp_sbc_get_sampling_frequency(struct bt_a2dp_codec_sbc_params *sbc_codec);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* ZEPHYR_INCLUDE_BLUETOOTH_A2DP_CODEC_H_ */

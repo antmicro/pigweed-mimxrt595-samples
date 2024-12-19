@@ -27,10 +27,6 @@
 //#include <zephyr/bluetooth/hci.h>
 #include "pw_bluetooth_sapphire/internal/host/gap/adapter.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /** L2CAP PDU header size, used for buffer size calculations */
 #define BT_L2CAP_HDR_SIZE               4
 
@@ -762,10 +758,6 @@ int bt_l2cap_chan_connect(struct bt_conn *conn, struct bt_l2cap_chan *chan,
 // */
 //int bt_l2cap_chan_recv_complete(struct bt_l2cap_chan *chan,
 //				struct net_buf *buf);
-
-#ifdef __cplusplus
-}
-#endif
 
 /**
  * @}

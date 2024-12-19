@@ -9,13 +9,13 @@ cc_binary(
         "main.cc",
     ],
     deps = [
-        "//config:init_peripherals",
         "//targets/mimxrt595_evk_freertos:fastboot_defines",
         "@pigweed//pw_assert",
         "@pigweed//pw_chrono:wrap_time_system_clock",
         "@pigweed//pw_log",
         "@pigweed//pw_system",
-        "@pigweed//third_party/mcuxpresso:mcuxpresso_sdk",
+        "@pigweed//targets:mcuxpresso_sdk",
+        "//config:init_peripherals",
     ],
 )
 
