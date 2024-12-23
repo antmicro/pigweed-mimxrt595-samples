@@ -34,6 +34,48 @@ static std::optional<bootloader::Partition> FindPartitionByName(
   return it != parts.end() ? std::optional{*it} : std::nullopt;
 }
 
+static bool VerifyFlashedData(pw::flash::Flash& flash,
+                              pw::flash::Range flashed_range,
+                              pw::ConstByteSpan data) {
+  static constexpr size_t kValidateBufSize = 4096;
+  static std::byte buffer[kValidateBufSize];
+
+  if (flashed_range.size != data.size_bytes()) {
+    return false;
+  }
+
+  size_t offset = 0;
+  size_t current = flashed_range.size;
+  while (current) {
+    const auto read_size = std::min(current, kValidateBufSize);
+
+    const auto err =
+        flash.Read(pw::flash::Range{flashed_range.start + offset, read_size},
+                   pw::ByteSpan{buffer});
+    if (!err.ok()) {
+      PW_LOG_ERROR(
+          "Failed to read from flash offset %04x during validate (error=%s)",
+          offset,
+          err.str());
+      return false;
+    }
+
+    if (memcmp(buffer, data.data() + offset, read_size) != 0) {
+      PW_LOG_ERROR(
+          "Validation failed - flashed contents do not match, block with size "
+          "%04x at flash offset %04x",
+          read_size,
+          offset);
+      return false;
+    }
+
+    offset += read_size;
+    current -= read_size;
+  }
+
+  return true;
+}
+
 static CommandResult FlashRawImage(pw::flash::Flash& flash,
                                    const bootloader::Partition& part,
                                    pw::ConstByteSpan image) {
@@ -43,10 +85,16 @@ static CommandResult FlashRawImage(pw::flash::Flash& flash,
     return CommandResult::Failed("erase failed");
   }
 
-  err = flash.Write(pw::flash::Range{part.start, image.size_bytes()}, image);
+  auto range = pw::flash::Range{part.start, image.size_bytes()};
+  err = flash.Write(range, image);
   if (!err.ok()) {
     PW_LOG_ERROR("Programming flash failed with error code %d", err.code());
     return CommandResult::Failed("write failed");
+  }
+
+  if (!VerifyFlashedData(flash, range, image)) {
+    PW_LOG_ERROR("Verify failed");
+    return CommandResult::Failed("verify failed");
   }
 
   PW_LOG_INFO("Flashing raw image completed!");
@@ -122,6 +170,11 @@ static CommandResult FlashSparseImage(pw::flash::Flash& flash,
         if (const auto err2 = ctx.flash.Write(range, chunk); !err2.ok()) {
           PW_LOG_ERROR("Programming flash failed with error code %d",
                        err2.code());
+          return -1;
+        }
+
+        if (!VerifyFlashedData(ctx.flash, range, chunk)) {
+          PW_LOG_ERROR("Verify failed");
           return -1;
         }
 
