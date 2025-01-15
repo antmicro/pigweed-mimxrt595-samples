@@ -131,6 +131,10 @@ cc_library(
         "SD_TIMING_MAX=kSD_TimingDDR50Mode",
         "WIFI_BT_USE_M2_INTERFACE",
         "WLAN_ED_MAC_CTRL=\"{.ed_ctrl_2g = 0x1, .ed_offset_2g = 0x0, .ed_ctrl_5g = 0x1, .ed_offset_5g = 0x6}\"",
+        "FSL_RTOS_FREE_RTOS",
+        "FSL_OSA_BM_TASK_ENABLE=0",
+        "FSL_OSA_BM_TIMER_CONFIG=0",
+        "USB_STACK_USE_DEDICATED_RAM=1",
     ],
     target_compatible_with = [
         "@pigweed//pw_build/constraints/board:mimxrt595_evk",
