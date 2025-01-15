@@ -19,7 +19,7 @@ build-pigweed:
     - chmod +x bazelisk-linux-amd64 && mv bazelisk-linux-amd64 /usr/bin/bazelisk
     - git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@${PIGWEED_REPO}".insteadOf "https://github.com/antmicro/pigweed.git"
     - git submodule update --init --recursive
-    - bazelisk build //examples/...
+    - for file in $(ls examples); do bazelisk build //examples/${file}:all; done
     - mkdir out
     - cp -Lr bazel-bin/examples/* out
   artifacts:
