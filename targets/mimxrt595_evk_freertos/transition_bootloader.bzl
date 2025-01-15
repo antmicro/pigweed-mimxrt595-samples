@@ -4,6 +4,10 @@ load("//targets/mimxrt595_evk_freertos:transition.bzl", "MIMXRT595_SYSTEM_FLAGS"
 _mimxrt595_bootloader_overrides = {
     "//command_line_option:platforms": str(Label("//targets/mimxrt595_evk_freertos:platform")),
     "@pigweed//pw_system:extra_platform_libs": str(Label(":bootloader_extra_platform_libs")),
+    "@mcuxpresso//:user_config": "//config:mcuxpresso_sdk_lib_config_bt_usb",
+    "@mcuxpresso//:user_defines": "//config:mcuxpresso_sdk_lib_config_define",
+    "@mcuxpresso//:app_include": "//config:app_bluetooth_config.h",
+    "@pigweed//targets:mcuxpresso_sdk": "//config:mcuxpresso_sdk_bt_usb",
 }
 
 def _mimxrt595_bootloader_transition_impl(settings, attr):
