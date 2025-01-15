@@ -1,5 +1,5 @@
 load("@pigweed//pw_fastboot:binary.bzl", "pw_fastboot_binary")
-load("//targets/mimxrt595_evk_freertos:transition_bootloader.bzl", "mimxrt595_bootloader_binary")
+load("//targets/mimxrt595_evk_freertos:transition.bzl", "mimxrt595_bootloader_binary")
 
 package(default_visibility = ["//visibility:public"])
 

@@ -13,6 +13,7 @@ bazel_dep(name = "pw_toolchain")
 bazel_dep(name = "rules_cc", version = "0.0.10")
 bazel_dep(name = "rules_fuzzing", version = "0.5.2")
 bazel_dep(name = "rules_python", version = "0.36.0")
+bazel_dep(name = "rules_platform", version = "0.1.0")
 
 local_path_override(
     module_name = "pigweed",

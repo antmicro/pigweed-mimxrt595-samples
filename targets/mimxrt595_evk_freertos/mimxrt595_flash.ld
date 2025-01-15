@@ -125,6 +125,17 @@ MEMORY
    */
 }
 
+/* NOTE: The last LITTLEFS_REGION_SIZE Flash( in range (FLASH_start + FLASH_size) ~ (FLASH_start + FLASH_size + LITTLEFS_REGION_SIZE -1)) is reserved for litteFS data */
+
+LITTLEFS_REGION_SIZE = 0x00800000;
+
+/*** littleFS configuration Start ***/
+EDGEFAST_BT_LITTLEFS_STORAGE_START_ADDRESS = PW_BOOT_FLASH_BEGIN + PW_BOOT_FLASH_SIZE;
+EDGEFAST_BT_LITTLEFS_STORAGE_SECTOR_SIZE   = 0x1000;  /* 4k flash sector size */
+EDGEFAST_BT_LITTLEFS_STORAGE_MAX_SECTORS   = LITTLEFS_REGION_SIZE / EDGEFAST_BT_LITTLEFS_STORAGE_SECTOR_SIZE;
+/*** littleFS configuration End ***/
+
+
 SECTIONS
 {
   .flash_config :
@@ -201,7 +212,7 @@ SECTIONS
     KEEP(*(SORT(.fini_array.*)))
     KEEP(*(.fini_array*))
     PROVIDE_HIDDEN(__fini_array_end = .);
-  } >FLASH
+  } >IMAGE AT >FLASH
 
   /* Used by unwind-arm/ */
   .ARM : ALIGN(4) {

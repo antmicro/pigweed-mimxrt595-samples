@@ -556,7 +556,7 @@
     "@@pigweed+//third_party/mcuxpresso:extensions.bzl%mcuxpresso": {
       "general": {
         "bzlTransitiveDigest": "+jWkjiPKOu+FT87EP75wxCA6xjaTZFNQ2n/S0VLeIUk=",
-        "usagesDigest": "NRYh2rkDGetUSCw+WtIpqNokCbuSQjUaninceTe8jJk=",
+        "usagesDigest": "n5FPs1JhmK9nMUPwKIMAfkjAauH8nzB0Nsz5btpu38A=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -565,7 +565,7 @@
             "bzlFile": "@@bazel_tools//tools/build_defs/repo:git.bzl",
             "ruleClassName": "git_repository",
             "attributes": {
-              "commit": "f485a6c67967ef7ee874927893d802617fa9ccd7",
+              "commit": "059f4d87bc1a4beb3900bdc10b9ecbe0f3015081",
               "remote": "https://github.com/antmicro/mcuxpresso-sdk.git"
             }
           }

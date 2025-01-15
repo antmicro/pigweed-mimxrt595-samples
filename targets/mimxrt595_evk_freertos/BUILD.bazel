@@ -41,6 +41,7 @@ cc_library(
         "FASTBOOT_BOOT_DATA_BASE=0x20007F00",
     ],
 )
+
 platform(
     name = "platform",
     constraint_values = [
@@ -68,6 +69,48 @@ platform(
         "@pigweed//pw_log:backend_impl": "@pigweed//pw_log_basic:impl",
         "@pigweed//pw_sys_io:backend": "@pigweed//pw_sys_io_mcuxpresso",
         "@pigweed//pw_system:extra_platform_libs": ":extra_platform_libs",
+        "@pigweed//pw_thread_freertos:config_override": "//examples/01_bluetooth:config_overrides",
+        "@pigweed//pw_function:config_override": "//config:pw_function_config_override",
+        "@pigweed//targets:mcuxpresso_sdk": "//config:mcuxpresso_sdk_bt_usb",
+        "@mcuxpresso//:user_config": "//config:mcuxpresso_sdk_lib_config_bt_usb",
+        "@mcuxpresso//:user_defines": "//config:mcuxpresso_sdk_lib_config_define",
+        "@mcuxpresso//:app_include": "//config:app_bluetooth_config.h",
+    }),
+)
+
+platform(
+    name = "bootloader_platform",
+    constraint_values = [
+        "@pigweed//targets/mimxrt595_evk_freertos:freertos_config_cv",
+        "@pigweed//pw_build/constraints/rtos:freertos",
+        "@pigweed//pw_interrupt_cortex_m:backend",
+        "@pigweed//pw_build/constraints/board:mimxrt595_evk",
+        "@pigweed//pw_malloc_freertos:backend",
+        "@pw_toolchain//constraints/arm_mcpu:cortex-m33",
+        "@freertos//:port_ARM_CM33_NTZ",
+        "@freertos//:malloc_heap_4",
+        "@freertos//:disable_task_statics",
+        "@platforms//cpu:armv8-m",
+        "@platforms//os:linux",
+        "@mcuxpresso//:middleware.freertos-kernel.MIMXRT595S",
+    ],
+    flags = flags_from_dict(FREERTOS_FLAGS | {
+        "@freertos//:freertos_config": "@pigweed//targets/mimxrt595_evk_freertos:freertos_config",
+        "@pigweed//pw_assert:assert_backend": "@pigweed//pw_assert_basic",
+        "@pigweed//pw_assert:assert_backend_impl": "@pigweed//pw_assert_basic:impl",
+        "@pigweed//pw_assert:check_backend": "@pigweed//pw_assert_basic",
+        "@pigweed//pw_assert:check_backend_impl": "@pigweed//pw_assert_basic:impl",
+        "@pigweed//pw_boot:backend": "@pigweed//pw_boot_cortex_m:armv8m",
+        "@pigweed//pw_log:backend": "@pigweed//pw_log_basic",
+        "@pigweed//pw_log:backend_impl": "@pigweed//pw_log_basic:impl",
+        "@pigweed//pw_sys_io:backend": "@pigweed//pw_sys_io_mcuxpresso",
+        "@pigweed//pw_system:extra_platform_libs": "//targets/mimxrt595_evk_freertos:bootloader_extra_platform_libs",
+        "@pigweed//pw_thread_freertos:config_override": "//examples/01_bluetooth:config_overrides",
+        "@pigweed//pw_function:config_override": "//config:pw_function_config_override",
+        "@pigweed//targets:mcuxpresso_sdk": "//config:mcuxpresso_sdk_bt_usb",
+        "@mcuxpresso//:user_config": "//config:mcuxpresso_sdk_lib_config_bt_usb",
+        "@mcuxpresso//:user_defines": "//config:mcuxpresso_sdk_lib_config_define",
+        "@mcuxpresso//:app_include": "//config:app_bluetooth_config.h",
     }),
 )
 
@@ -198,7 +241,6 @@ cc_library(
 cc_library(
     name = "bootloader_extra_platform_libs",
     deps = [
-        # TODO: Replace locally defined target with one from pigweed
         ":bootloader_boot",
         ":bootloader_flash_linker_script",
         "@pigweed//pw_tokenizer:linker_script",
