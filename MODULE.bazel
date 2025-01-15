@@ -52,5 +52,5 @@ git_override(
 )
 
 mcuxpresso = use_extension("@pigweed//third_party/mcuxpresso:extensions.bzl", "mcuxpresso")
-mcuxpresso.source_commit(sha = "29753f0970a5ccf5078b2459fd041f6e286370cd")
+mcuxpresso.source_commit(sha = "f485a6c67967ef7ee874927893d802617fa9ccd7")
 use_repo(mcuxpresso, "mcuxpresso")

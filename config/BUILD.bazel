@@ -23,6 +23,7 @@ cc_library(
     includes = [ "." ],
     copts = [
         "-Wno-cast-qual",
+        "-include", "$(location app_bluetooth_config.h)",
     ],
     deps = [
         "@mcuxpresso//:platform.drivers.lpc_gpio.MIMXRT595S",
@@ -45,6 +46,7 @@ cc_library(
         "@pigweed//targets:mcuxpresso_sdk",
     ],
     copts = [
+        "-include", "$(location app_bluetooth_config.h)",
         "-Wno-cast-qual",
     ],
     alwayslink = 1,
@@ -123,7 +125,6 @@ cc_library(
         "SDK_I2C_BASED_COMPONENT_USED=1",
         "SDK_I3C_BASED_COMPONENT_USED=1",
         "BOARD_USE_CODEC=1",
-        "WIFI_IW416_BOARD_MURATA_1XK_M2",
         "WIFI_BT_TX_PWR_LIMITS=wlan_txpwrlimit_cfg_murata_1XK_WW.h",
         "SD8978",
         "SDMMCHOST_OPERATION_VOLTAGE_1V8",
