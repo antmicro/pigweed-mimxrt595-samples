@@ -24,6 +24,7 @@
 #include "a2dp_codec_sbc.h"
 #include "a2dp.h"
 #include "netbuf.h"
+#include "zephyr_interface.h"
 //
 //#include "common/assert.h"
 //

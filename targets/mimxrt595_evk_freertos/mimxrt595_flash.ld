@@ -229,6 +229,9 @@ SECTIONS
     *(.data)
     *(.data*)
     . = ALIGN(4);
+    _net_buf_pool_list = .;
+    KEEP(*(SORT(._net_buf_pool*)))
+    . = ALIGN(4);
   } >RAM AT> FLASH
 
   /* Represents unused space in the FLASH segment. This MUST be the last section

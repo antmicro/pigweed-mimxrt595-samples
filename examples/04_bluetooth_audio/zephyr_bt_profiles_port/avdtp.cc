@@ -36,8 +36,8 @@
 static int bt_l2cap_chan_send(struct bt_l2cap_chan* chan, struct net_buf* buf) {
   PW_LOG_DEBUG("bt_l2cap_chan_send");
   bt::MutableByteBufferPtr ptr =
-      std::make_unique<bt::DynamicByteBuffer>(buf->len());
-  for (unsigned int i = 0; i < buf->len(); i++) {
+      std::make_unique<bt::DynamicByteBuffer>(buf->len);
+  for (unsigned int i = 0; i < buf->len; i++) {
     ptr->mutable_data()[i] = buf->data[i];
     PW_LOG_DEBUG("Sending buf->data[%d] = 0x%02x", i, buf->data[i]);
   }
@@ -442,7 +442,7 @@ int bt_avdtp_parse_capability_codec(struct net_buf* buf,
     return -EINVAL;
   }
 
-  while (buf->len()) {
+  while (buf->len) {
     data = net_buf_pull_u8(buf);
     switch (data) {
       case BT_AVDTP_SERVICE_MEDIA_TRANSPORT:
@@ -1064,11 +1064,11 @@ int bt_avdtp_l2cap_recv(struct bt_l2cap_chan* chan, struct net_buf* buf) {
   struct bt_avdtp* session = AVDTP_CHAN(chan);
   uint8_t i, msgtype, pack_type, sigid, tid;
 
-  if (buf->len() < sizeof(*hdr)) {
+  if (buf->len < sizeof(*hdr)) {
     PW_LOG_CRITICAL("Recvd Wrong AVDTP Header");
     return 0;
   }
-  if (AVDTP_GET_SIG_ID(buf->data.data()[1]) == 0x20) {
+  if (AVDTP_GET_SIG_ID(buf->data[1]) == 0x20) {
     bt_avdtp_media_l2cap_recv(chan, buf);
     return 0;
   }
@@ -1091,7 +1091,7 @@ int bt_avdtp_l2cap_recv(struct bt_l2cap_chan* chan, struct net_buf* buf) {
       struct net_buf* rsp_buf;
       int err;
 
-      if (buf->len() < sizeof(sigid)) {
+      if (buf->len < sizeof(sigid)) {
         PW_LOG_CRITICAL("Invalid AVDTP Header");
         return 0;
       }
@@ -1100,7 +1100,7 @@ int bt_avdtp_l2cap_recv(struct bt_l2cap_chan* chan, struct net_buf* buf) {
       rsp_buf = avdtp_create_reply_pdu(
           BT_AVDTP_REJECT, BT_AVDTP_PACKET_TYPE_SINGLE, sigid, tid);
       if (!rsp_buf) {
-        PW_LOG_CRITICAL("Error: No Buff available");
+        PW_LOG_CRITICAL("Error: No Buff available recv");
         return 0;
       }
       err = bt_l2cap_chan_send(&session->br_chan.chan, rsp_buf);

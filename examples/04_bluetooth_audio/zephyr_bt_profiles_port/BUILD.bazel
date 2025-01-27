@@ -24,12 +24,17 @@ cc_library(
         "a2dp_codec_sbc.h",
         "sbc.h",
         "l2cap.h",
+        "rfcomm.h",
+        "rfcomm_internal.h",
+        "zephyr_interface.h",
     ],
     srcs = [
         "avdtp.cc",
         "a2dp.cc",
         "sbc.cc",
         "netbuf.cc",
+        "rfcomm.cc",
+        "zephyr_interface.cc",
     ],
     includes = [
         ".",
@@ -37,6 +42,9 @@ cc_library(
     deps = [
         "@pigweed//pw_containers:vector",
         "@pigweed//pw_bluetooth_sapphire/host:stack",
+        "@pigweed//pw_thread:thread",
+        "@pigweed//pw_sync:counting_semaphore",
+        "@pigweed//pw_sync:binary_semaphore",
     ],
     copts = [
         "-Wno-missing-field-initializers",

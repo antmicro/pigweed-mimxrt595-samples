@@ -13,9 +13,7 @@
 // the License.
 #define PW_LOG_MODULE_NAME "MAIN"
 
-#include "sbc.h"
 #include "BT_jpl_api.h"
-#include "a2dp.h"
 #include "avdtp.h"
 #include "avdtp_internal.h"
 #include "board.h"
@@ -28,11 +26,14 @@
 #include "pw_bluetooth_sapphire/internal/host/gap/pairing_delegate.h"
 #include "pw_bluetooth_sapphire_mcuxpresso/controller.h"
 #include "pw_log/log.h"
+#include "pw_random/xor_shift.h"
 #include "pw_thread/detached_thread.h"
 #include "pw_thread_freertos/context.h"
 #include "pw_thread_freertos/options.h"
-#include "pw_random/xor_shift.h"
+#include "rfcomm_internal.h"
+#include "sbc.h"
 #include "sbc_api.h"
+#include "a2dp.h"
 
 namespace bt::gap {
 using namespace bt;
@@ -195,8 +196,7 @@ static void frame_remove_task() {
     audio_cond.acquire();
     BT_jpl_remove_frames(pcm_buffer_ptr, JPL_PCM_BLOCK_SIZE);
     pcm_buffer_ptr += JPL_PCM_BLOCK_SIZE;
-    if (pcm_buffer_ptr >=
-        a2dp_pcm_buffer + sizeof(a2dp_pcm_buffer)) {
+    if (pcm_buffer_ptr >= a2dp_pcm_buffer + sizeof(a2dp_pcm_buffer)) {
       pcm_buffer_ptr = a2dp_pcm_buffer;
     }
   }
@@ -342,10 +342,9 @@ void stream_released(struct bt_a2dp_stream* stream) {
   PW_LOG_DEBUG("stream released");
 }
 
-static uint16_t jpl_callback_handle(
-    unsigned char event_type,
-    unsigned char* event_data,
-    uint16_t event_datalen) {
+static uint16_t jpl_callback_handle(unsigned char event_type,
+                                    unsigned char* event_data,
+                                    uint16_t event_datalen) {
   if ((JPL_UNDERFLOW_IND == event_type) ||
       (JPL_SILENCE_DATA_IND == event_type)) {
     // PW_LOG_DEBUG("Empty ");
@@ -393,8 +392,7 @@ void sink_sbc_streamer_data(struct bt_a2dp_stream* stream,
                             uint16_t seq_num,
                             uint32_t ts) {
   (void)stream;
-  auto retval =
-      BT_jpl_add_frames(seq_num, ts, (buf->data.data()), (buf->len()));
+  auto retval = BT_jpl_add_frames(seq_num, ts, (buf->data), (buf->len));
   if (retval != API_SUCCESS) {
     PW_LOG_CRITICAL("JPL add frames failed");
     return;
@@ -520,6 +518,51 @@ struct bt_a2dp_cb a2dp_cb = {
     .reconfig_rsp = NULL,
 };
 
+static void rfcomm_recv(struct bt_rfcomm_dlc* dlci, struct net_buf* buf) {
+  PW_LOG_INFO("Incoming data dlc %p len %u", dlci, buf->len);
+for (int i = 0; i < buf->len; i++) {
+    PW_LOG_INFO("0x%x", buf->data[i]);
+}
+}
+
+static void rfcomm_connected(struct bt_rfcomm_dlc* dlci) {
+  PW_LOG_INFO("Dlc %p connected", dlci);
+}
+
+static void rfcomm_disconnected(struct bt_rfcomm_dlc* dlci) {
+  PW_LOG_INFO("Dlc %p disconnected", dlci);
+}
+
+static struct bt_rfcomm_dlc_ops rfcomm_ops = {
+    .connected = rfcomm_connected,
+    .disconnected = rfcomm_disconnected,
+    .recv = rfcomm_recv,
+};
+
+static struct bt_rfcomm_dlc rfcomm_dlc = {
+    .ops = &rfcomm_ops,
+    .mtu = 1016,
+};
+
+static int rfcomm_accept(struct bt_conn* conn,
+                         struct bt_rfcomm_server* server,
+                         struct bt_rfcomm_dlc** dlc) {
+  PW_LOG_INFO("Incoming RFCOMM conn %p", conn);
+
+  if (rfcomm_dlc.session) {
+    PW_LOG_ERROR("No channels available");
+    return -ENOMEM;
+  }
+
+  *dlc = &rfcomm_dlc;
+
+  return 0;
+}
+
+struct bt_rfcomm_server rfcomm_server = {
+    .accept = &rfcomm_accept,
+};
+
 void bluetooth_thread() {
   PW_LOG_INFO("Hello from bluetooth thread!");
   std::unique_ptr<pw::bluetooth::Controller> controller =
@@ -563,8 +606,17 @@ void bluetooth_thread() {
                                protocol::kAVDTP,
                                DataElement(uint16_t{0x0103}));  // Version
   record.AddProfile(profile::kAdvancedAudioDistribution, 1, 3);
+  ServiceRecord psm_rfcomm;
+  psm_rfcomm.SetServiceClassUUIDs({profile::kAVRemoteControl});
+  psm_rfcomm.AddProtocolDescriptor(
+      ServiceRecord::kPrimaryProtocolList, protocol::kL2CAP, DataElement());
+  psm_rfcomm.AddProtocolDescriptor(ServiceRecord::kPrimaryProtocolList,
+                                   protocol::kRFCOMM,
+                                   DataElement(uint16_t{5}));
   std::vector<ServiceRecord> records;
+  std::vector<ServiceRecord> records_rfcomm;
   records.emplace_back(std::move(record));
+  records_rfcomm.emplace_back(std::move(psm_rfcomm));
   constexpr l2cap::ChannelParameters kChannelParams;
 
   MockPairingDelegate pairing_delegate;
@@ -591,6 +643,35 @@ void bluetooth_thread() {
   struct bt_conn* conn = nullptr;
   struct bt_avdtp* avdtp_session;
 
+  // bt_rfcomm_init();
+  struct bt_l2cap_chan* rfcomm_chan = nullptr;
+
+  auto handle_rfcomm = adapter->bredr()->RegisterService(
+      records_rfcomm,
+      kChannelParams,
+      [channels, &rfcomm_chan](auto channel, const auto& data_element) {
+        (void)data_element;
+        PW_LOG_INFO("Channel opened");
+        auto retval = rfcomm_accept(nullptr, nullptr, &rfcomm_chan);
+        rfcomm_chan->chan = channel;
+        rfcomm_server.channel = BT_RFCOMM_CHAN_HFP_HF;
+        bt_rfcomm_server_register(&rfcomm_server);
+
+        channel->Activate(
+            [channel, &rfcomm_chan](auto buffer) {
+              struct net_buf* buf;
+              buf = bt_l2cap_create_pdu(NULL, 0);
+              net_buf_add_mem(buf, buffer->data(), buffer->size());
+
+              rfcomm_recv(rfcomm_chan, buf);
+              delete buf;
+            },
+            []() {
+              PW_LOG_INFO("Channel closed");
+            });
+        channels.emplace_back(std::move(channel));
+      });
+
   auto handle = adapter->bredr()->RegisterService(
       records,
       kChannelParams,
@@ -606,25 +687,21 @@ void bluetooth_thread() {
         channel->Activate(
             [channel, avdtp_session](auto buffer) {
               avdtp_session->br_chan.chan.chan = channel;
-              struct net_buf buf;
-              for (unsigned int i = 0; i < buffer->size(); i++) {
-                buf.data.push_back(buffer->data()[i]);
-              }
+              struct net_buf* buf;
+              buf = bt_l2cap_create_pdu(NULL, 0);
+              net_buf_add_mem(buf, buffer->data(), buffer->size());
 
-              bt_avdtp_l2cap_recv(&avdtp_session->br_chan.chan, &buf);
+              bt_avdtp_l2cap_recv(&avdtp_session->br_chan.chan, buf);
+              delete buf;
             },
-            [&channels, &channel]() {
-                    auto chan = std::find_if(
-                        channels.begin(), channels.end(),
-                        [&channel](const auto& chan) { return chan->unique_id() == channel->unique_id(); });
-                    if (chan != channels.end()) {
-                      channels.erase(chan);
-                    }
-                    PW_LOG_INFO("Channel closed"); });
+            []() {
+              PW_LOG_INFO("Channel closed");
+            });
         channels.emplace_back(std::move(channel));
       });
 
   (void)handle;
+  (void)handle_rfcomm;
 
   while (true) {
     vTaskDelay(1000 / portTICK_PERIOD_MS);
