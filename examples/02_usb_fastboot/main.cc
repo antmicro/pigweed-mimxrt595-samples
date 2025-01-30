@@ -144,6 +144,7 @@ static void FastbootProtocolLoop() {
   pw::fastboot::Device device{pw::fastboot::CreateMimxrt595UsbTransport(),
                               std::move(variables),
                               std::make_unique<BootloaderHal>()};
+  PW_LOG_INFO("Ready to accept fastboot commands, connect to USB port J38..");
   device.ExecuteCommands();
 }
 
@@ -219,6 +220,8 @@ void UserAppInit() {
   const auto boot_mode =
       BOOTDATA->valid() ? BOOTDATA->boot_mode : BootMode::User;
   BOOTDATA->clear();
+  PW_LOG_INFO("Fastboot bootloader: %s mode",
+              boot_mode == BootMode::User ? "application" : "fastboot");
 
   switch (boot_mode) {
     default:
@@ -235,7 +238,8 @@ void UserAppInit() {
     }
     case BootMode::User: {
 #if defined(FASTBOOT_ENABLE_FLASH_REMAP) && FASTBOOT_ENABLE_FLASH_REMAP > 0
-      constexpr uint32_t start = FASTBOOT_FLASH_BASE + FASTBOOT_BOOTLOADER_BEGIN;
+      constexpr uint32_t start =
+          FASTBOOT_FLASH_BASE + FASTBOOT_BOOTLOADER_BEGIN;
       constexpr uint32_t end = start + FASTBOOT_APP_SIZE;
       constexpr uint32_t offset =
           FASTBOOT_APP_VECTOR_TABLE - FASTBOOT_BOOTLOADER_BEGIN;

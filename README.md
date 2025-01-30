@@ -106,7 +106,8 @@ INF  System init
 INF  Registering RPC services
 INF  Starting threads
 INF  Running RPC server
-USB device CDC virtual com demo
+INF  Fastboot bootloader: fastboot mode
+INF  Ready to accept fastboot commands, connect to USB port J38..
 ```
 
 At this point, you can connect the **Target USB** port (`J38`, bottom micro-USB port on the right) on the board to the host PC.
