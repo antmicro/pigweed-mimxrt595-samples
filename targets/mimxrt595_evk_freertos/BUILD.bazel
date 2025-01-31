@@ -160,7 +160,7 @@ cc_library(
     name = "flash_linker_script_defines",
     defines = [
         "PW_BOOT_FLASH_BEGIN=0x08001180",
-        "PW_BOOT_FLASH_SIZE=0x001FEE80",
+        "PW_BOOT_FLASH_SIZE=(FASTBOOT_APP_SIZE)",
         "PW_BOOT_HEAP_SIZE=200K",
         "PW_BOOT_MIN_STACK_SIZE=1K",
         "PW_BOOT_RAM_BEGIN=0x20080000",
@@ -168,6 +168,9 @@ cc_library(
         "PW_BOOT_VECTOR_TABLE_BEGIN=0x08001000",
         "PW_BOOT_VECTOR_TABLE_SIZE=0x00000180",
     ],
+    deps = [
+        ":fastboot_defines"
+    ]
 )
 
 pw_linker_script(
