@@ -246,6 +246,20 @@ void UserAppInit() {
       return;
     }
     case BootMode::User: {
+      struct vector_table {
+        std::size_t msp;
+        std::size_t reset;
+        std::size_t nmi;
+        std::size_t hardfault;
+        std::size_t mpufault;
+        std::size_t busfault;
+        std::size_t usagefault;
+        std::size_t securefault;
+        std::size_t nxp_image_length;  // Vendor specific: length of the
+                                       // application image
+      };
+      auto* vt = reinterpret_cast<struct vector_table*>(USER_APP_VTOR);
+
 #if defined(FASTBOOT_ENABLE_FLASH_REMAP) && FASTBOOT_ENABLE_FLASH_REMAP > 0
       constexpr uint32_t start =
           FASTBOOT_FLASH_BASE + FASTBOOT_BOOTLOADER_BEGIN;
@@ -253,6 +267,19 @@ void UserAppInit() {
       constexpr uint32_t offset =
           FASTBOOT_APP_VECTOR_TABLE - FASTBOOT_BOOTLOADER_BEGIN;
       Mimxrt595EnableRemap(start, end, offset);
+
+      PW_LOG_DEBUG("Image entrypoint=%08x", vt->reset);
+      PW_LOG_DEBUG("Image size=%08x", vt->nxp_image_length);
+      if (vt->nxp_image_length > FASTBOOT_APP_SIZE) {
+        PW_LOG_CRITICAL(
+            "Application image is larger than remap window size (%08x > %08x)",
+            vt->nxp_image_length,
+            FASTBOOT_APP_SIZE);
+        PW_LOG_CRITICAL(
+            "This indicates that the application was built for a larger flash "
+            "than what is available");
+        PW_LOG_CRITICAL("The application will likely not function correctly");
+      }
 #endif
 
       // Make sure that interrupts are disabled and the bootloader
@@ -263,11 +290,6 @@ void UserAppInit() {
       CleanUpAfterBootloader();
 
       // Jump to the user application
-      struct vector_table {
-        std::size_t msp;
-        std::size_t reset;
-      };
-      auto* vt = reinterpret_cast<struct vector_table*>(USER_APP_VTOR);
       (reinterpret_cast<void (*)(void)>(vt->reset))();
       // If this returns, the user app was corrupted. This will
       // never happen in regular circumstances, as the very first thing
