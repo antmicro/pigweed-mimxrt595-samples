@@ -5,6 +5,7 @@
 #include "board.h"
 #include "bootloader.h"
 #include "flash.h"
+#include "fsl_debug_console.h"
 #include "pw_fastboot/commands.h"
 #include "pw_fastboot/device_hal.h"
 #include "pw_fastboot/device_variable.h"
@@ -149,6 +150,14 @@ static void FastbootProtocolLoop() {
 }
 
 static void CleanUpAfterBootloader() {
+  // Wait for all output on debug UART to finish
+  // This is important for two reasons:
+  // 1) The bootloader prints some debug information, so let it be seen
+  // 2) Interrupting a log while it's being transmitted to the UART (which
+  //    will happen as we're disabling interrupts here) will cause a spurious
+  //    interrupt in the user application, which it may not be able to handle.
+  DbgConsole_Flush();
+
   // Disable interrupts
   asm volatile("cpsid i");
 
