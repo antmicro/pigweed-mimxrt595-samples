@@ -24,7 +24,7 @@ cc_library(
         # relative offsets, as it is done using the generic pw::flash::Flash
         # interface.
         'FASTBOOT_FLASH_BASE=0x08000000',
-        'FASTBOOT_FLASH_SIZE=0x200000',
+        'FASTBOOT_FLASH_SIZE=0x4000000',
         # Start/size of the bootloader/fastboot partition
         # This is relative to the start of the underlying flash device.
         # On this target, first 0x1000 bytes of flash are reserved for bootrom flash
